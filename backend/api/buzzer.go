@@ -60,7 +60,6 @@ func RegisterBuzzer(client *Client, event *Event) GameError {
 		return GameError{code: PLAYER_NOT_FOUND}
 	}
 	// Set up recurring ping loop to get player latency
-	clientPlayer.stopPing = make(chan bool)
 	go clientPlayer.pingInterval()
 	s.writeRoom(room.Game.Room, room)
 	return GameError{}

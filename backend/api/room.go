@@ -59,7 +59,8 @@ func (p *RegisteredClient) pingInterval() error {
 			if p.client.send != nil {
 				p.client.send <- message
 			}
-		case <-p.stopPing:
+		// Stop ping interval when client stops
+		case <-p.client.stop:
 			log.Println("Stop ping via channel", p.id)
 			return nil
 		}
@@ -102,7 +103,6 @@ type RegisteredClient struct {
 	id       string
 	client   *Client
 	room     *room
-	stopPing chan bool
 }
 
 type roomConnections struct {

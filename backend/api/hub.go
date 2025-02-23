@@ -36,7 +36,6 @@ func (h *Hub) run() {
 	defer func() {
 		for client := range h.clients {
 			client.conn.Close()
-			close(client.send)
 		}
 		close(h.register)
 		close(h.unregister)
@@ -49,14 +48,12 @@ func (h *Hub) run() {
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
-				close(client.send)
 			}
 		case message := <-h.broadcast:
 			for client := range h.clients {
 				select {
 				case client.send <- message:
 				default:
-					close(client.send)
 					delete(h.clients, client)
 				}
 			}
