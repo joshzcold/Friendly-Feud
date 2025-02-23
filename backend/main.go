@@ -50,8 +50,11 @@ func main() {
 		log.Panicf("Error: unable initalize store: %s", err)
 	}
 
+	hub := api.NewHub()
+	go hub.Run()
+
 	http.HandleFunc("/api/ws", func(httpWriter http.ResponseWriter, httpRequest *http.Request) {
-		api.ServeWs(httpWriter, httpRequest)
+		api.ServeWs(hub, httpWriter, httpRequest)
 	})
 
 	http.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {

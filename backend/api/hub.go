@@ -32,7 +32,7 @@ func NewHub() *Hub {
 	}
 }
 
-func (h *Hub) run() {
+func (h *Hub) Run() {
 	defer func() {
 		for client := range h.clients {
 			client.conn.Close()
@@ -48,6 +48,10 @@ func (h *Hub) run() {
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
+				select {
+				case client.stop <- true:
+				default:
+				}
 			}
 		case message := <-h.broadcast:
 			for client := range h.clients {
@@ -57,7 +61,7 @@ func (h *Hub) run() {
 					delete(h.clients, client)
 				}
 			}
-		case <- h.stop:
+		case <-h.stop:
 			return
 		}
 	}

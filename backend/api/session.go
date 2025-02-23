@@ -124,7 +124,7 @@ func JoinRoom(client *Client, event *Event) GameError {
 func InitalizeRoom(client *Client, newRoomCode string) room {
 	initRoom := NewGame(newRoomCode)
 	initRoom.Hub = NewHub()
-	go initRoom.Hub.run()
+	go initRoom.Hub.Run()
 	go initRoom.gameTimeout()
 	initRoom.Hub.register <- client
 	return initRoom
