@@ -3,7 +3,7 @@ RUN mkdir -p /src
 WORKDIR /src
 
 FROM base AS dev
-ENV CGO_ENABLED 1
+ENV CGO_ENABLED=1
 ENV GOCACHE=/src/.cache/go-build
 ENV GOMODCACHE=/src/.cache/go-mod
 RUN apk add gcc musl-dev sqlite curl
@@ -15,7 +15,7 @@ RUN mkdir -p .cache/go-build .cache/go-mod && \
 CMD ["air", "--build.cmd", "go build .", "--build.bin", "/src/Cold-Friendly-Feud"]
 
 FROM base AS builder
-ENV CGO_ENABLED 1
+ENV CGO_ENABLED=1
 RUN apk add gcc musl-dev
 COPY . .
 RUN go build .
