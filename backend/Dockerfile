@@ -1,8 +1,8 @@
-FROM golang:1.23.3-alpine as base
+FROM golang:1.23.3-alpine AS base
 RUN mkdir -p /src
 WORKDIR /src
 
-FROM base as dev
+FROM base AS dev
 ENV CGO_ENABLED 1
 ENV GOCACHE=/src/.cache/go-build
 ENV GOMODCACHE=/src/.cache/go-mod
@@ -20,7 +20,7 @@ RUN apk add gcc musl-dev
 COPY . .
 RUN go build .
 
-FROM base as app
+FROM base AS app
 RUN mkdir -p /src
 WORKDIR /src
 COPY --from=games . /src/games/
