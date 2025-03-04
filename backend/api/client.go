@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -36,6 +38,32 @@ var (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		allowedOriginsEnv := os.Getenv("ALLOWED_ORIGINS")
+
+		if allowedOriginsEnv == "" || allowedOriginsEnv == "*" {
+			return true
+		}
+
+		// Split the environment variable by comma to get a list of allowed origins
+		allowedOrigins := strings.Split(allowedOriginsEnv, ",")
+		origin := r.Header.Get("Origin")
+
+		if origin == "" {
+			// No origin header, likely same-origin request
+			return true
+		}
+		
+		// Check if the request origin is in the list of allowed origins
+		for _, allowedOrigin := range allowedOrigins {
+			if strings.TrimSpace(allowedOrigin) == origin {
+				return true
+			}
+		}
+
+		// Otherwise reject the connection
+		return false
+	},
 }
 
 // Client is a middleman between the websocket connection and the hub.

@@ -8,7 +8,7 @@ COPY package-lock.json package.json /app/
 RUN npm install
 
 FROM golang:1.23.3-alpine AS back-end-builder
-ENV CGO_ENABLED 1
+ENV CGO_ENABLED=1
 RUN apk add gcc musl-dev sqlite
 WORKDIR /src
 COPY ./backend/ .
@@ -17,6 +17,7 @@ RUN go build .
 FROM base AS app
 RUN apk add nginx bash
 WORKDIR /app
+ENV ALLOWED_ORIGINS="*"
 COPY --chmod=755 docker/allinone/start.sh /start.sh
 COPY ./games/ /app/games/
 COPY --from=back-end-builder /src/Cold-Friendly-Feud /app/Cold-Friendly-Feud
