@@ -195,7 +195,7 @@ export default function Home() {
             <AdminPage
               ws={ws}
               game={game}
-              id={playerID}
+              playerId={playerID}
               setGame={setGame}
               room={registeredRoomCode}
               quitGame={quitGame}
