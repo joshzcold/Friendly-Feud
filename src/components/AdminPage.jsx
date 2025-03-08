@@ -5,6 +5,7 @@ import { Buffer } from "buffer";
 import AdminSettings from "@/components/Admin/AdminSettings";
 import CSVLoader from "@/components/Admin/CSVLoader";
 import GameLoader from "@/components/Admin/GameLoader";
+import HideGameQuestions from "@/components/Admin/HideGameQuestions";
 import Players from "@/components/Admin/Players";
 import BuzzerTable from "@/components/BuzzerTable";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -621,6 +622,8 @@ export default function AdminPage(props) {
                   {t("Title Card")}
                 </button>
 
+                <HideGameQuestions game={game} setGame={props.setGame} send={send} />
+
                 {/* FINAL ROUND BUTTON */}
                 {game.final_round ? (
                   <button
@@ -654,6 +657,7 @@ export default function AdminPage(props) {
                     game.teams[0].mistakes = 0;
                     game.teams[1].mistakes = 0;
                     game.title = false;
+                    game.settings.hide_questions = true;
                     props.setGame((prv) => ({ ...prv }));
                     setPointsGivin({
                       state: false,
@@ -680,6 +684,7 @@ export default function AdminPage(props) {
                     game.is_final_round = false;
                     game.is_final_second = false;
                     game.round = 0;
+                    game.settings.hide_questions = true;
                     props.setGame((prv) => ({
                       ...prv,
                     }));
@@ -707,6 +712,7 @@ export default function AdminPage(props) {
                     if (game.round < game.rounds.length - 1) {
                       game.round = game.round + 1;
                     }
+                    game.settings.hide_questions = true;
                     props.setGame((prv) => ({ ...prv }));
                     setPointsGivin({
                       state: false,
