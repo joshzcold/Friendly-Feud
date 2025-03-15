@@ -1,4 +1,6 @@
-export function handleJsonFile(file, { setError, t, send }) {
+import { toast } from "sonner";
+
+export function handleJsonFile(file, { t, send }) {
   var reader = new FileReader();
   reader.readAsText(file, "utf-8");
   reader.onload = function (evt) {
@@ -7,19 +9,19 @@ export function handleJsonFile(file, { setError, t, send }) {
       let errors = validateGameData(data, { t });
 
       if (errors.length > 0) {
-        setError(t("Game file error") + ":\n" + errors.join("\n"));
+        toast.error(t("Game file error") + ":\n" + errors.join("\n"));
         return;
       }
       console.debug(data);
       send({ action: "load_game", data: data });
     } catch (e) {
       console.error("Invalid JSON file", e);
-      setError(t(`Invalid JSON file: ${e}`));
+      toast.error(t(`Invalid JSON file: ${e}`));
     }
   };
   reader.onerror = function (evt) {
     console.error("error reading file");
-    setError(t("error reading file"));
+    toast.error(t("error reading file"));
   };
 }
 
