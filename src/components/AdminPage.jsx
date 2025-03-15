@@ -14,6 +14,7 @@ import { debounce } from "@/lib/utils";
 import { FileUp } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { toast } from "sonner";
 
 function TitleMusic() {
   const { i18n, t } = useTranslation();
@@ -222,7 +223,7 @@ function TitleLogoUpload(props) {
               if (file) {
                 if (file.size > process.env.NEXT_PUBLIC_MAX_IMAGE_UPLOAD_SIZE_MB * 1024 * 1024) {
                   console.error("Logo image is too large");
-                  props.setError(t(ERROR_CODES.IMAGE_TOO_LARGE, { message: "2MB" }));
+                  toast.error(t(ERROR_CODES.IMAGE_TOO_LARGE, { message: "2MB" }));
                   return;
                 }
                 var reader = new FileReader();
@@ -250,7 +251,7 @@ function TitleLogoUpload(props) {
                       mimetype = "jpeg";
                       break;
                     default:
-                      props.setError(t(ERROR_CODES.UNKNOWN_FILE_TYPE));
+                      toast.error(t(ERROR_CODES.UNKNOWN_FILE_TYPE));
                       return;
                   }
 
@@ -348,7 +349,6 @@ export default function AdminPage(props) {
     textColor: "text-foreground",
   });
   const [gameSelector, setGameSelector] = useState([]);
-  const [error, setErrorVal] = useState("");
   const [imageUploaded, setImageUploaded] = useState(null);
   const [timerStarted, setTimerStarted] = useState(false);
   const [timerCompleted, setTimerCompleted] = useState(false);
@@ -357,14 +357,6 @@ export default function AdminPage(props) {
   let ws = props.ws;
   let game = props.game;
   let refreshCounter = 0;
-
-  function setError(e) {
-    setErrorVal(e);
-    console.error(e);
-    setTimeout(() => {
-      setErrorVal("");
-    }, 10000);
-  }
 
   function send(data) {
     data.room = props.room;
@@ -376,7 +368,7 @@ export default function AdminPage(props) {
   useEffect(() => {
     const retryInterval = setInterval(() => {
       if (ws.current.readyState !== 1) {
-        setError(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounter}` }));
+        toast.error(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounter}` }));
         refreshCounter++;
         if (refreshCounter >= 10) {
           console.debug("admin reload()");
@@ -399,7 +391,7 @@ export default function AdminPage(props) {
         }
       } else if (json.action === "error") {
         console.error(json.code);
-        setError(t(json.code, { message: json.message }));
+        toast.error(t(json.code, { message: json.message }));
       } else if (json.action === "timer_complete") {
         setTimerStarted(false);
         setTimerCompleted(true);
@@ -484,7 +476,6 @@ export default function AdminPage(props) {
             <GameLoader
               gameSelector={gameSelector}
               send={send}
-              setError={setError}
               setCsvFileUpload={setCsvFileUpload}
               setCsvFileUploadText={setCsvFileUploadText}
             />
@@ -516,7 +507,6 @@ export default function AdminPage(props) {
               room={props.room}
               setGame={props.setGame}
               game={game}
-              setError={setError}
               setImageUploaded={setImageUploaded}
               imageUploaded={imageUploaded}
             />
@@ -581,9 +571,6 @@ export default function AdminPage(props) {
                 value={game.teams[1].points}
               ></input>
             </div>
-          </div>
-          <div id="errorText" className="whitespace-pre-wrap text-xl text-failure-700">
-            {error.code ? t(error.code, { message: error.message }) : t(error)}
           </div>
         </div>
         <hr className="my-12" />
