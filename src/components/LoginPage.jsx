@@ -6,33 +6,26 @@ import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
 import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
 import { ERROR_CODES } from "@/i18n/errorCodes";
+import { toast } from "sonner";
 
 export default function LoginPage(props) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [playerName, setPlayerName] = useState("");
   const [roomCode, setRoomCode] = useState("");
-  const [error, setErrorVal] = useState("");
   const [game, setGame] = useState({ settings: { theme: theme || "default" } });
-
-  function setError(e) {
-    setErrorVal(e);
-    setTimeout(() => {
-      setErrorVal("");
-    }, 5000);
-  }
 
   const isValidRoomCode = (code) => code.length === 4;
   const isValidPlayerName = (name) => name.length > 0 && name.length <= 12;
 
   const handlePlay = () => {
     if (!isValidPlayerName(playerName)) {
-      setError(t(ERROR_CODES.MISSING_INPUT, { message: t("name") }));
+      toast.error(t(ERROR_CODES.MISSING_INPUT, { message: t("name") }));
       return;
     }
 
     if (!isValidRoomCode(roomCode)) {
-      setError(t("room code is not correct length, should be 4 characters"));
+      toast.error(t("room code is not correct length, should be 4 characters"));
       return;
     }
 
@@ -40,8 +33,6 @@ export default function LoginPage(props) {
     props.setPlayerName(playerName);
     props.joinRoom();
   };
-
-  const displayError = props.error || error;
 
   return (
     <div className={`flex min-h-screen w-full flex-col space-y-10 bg-background p-5`}>
@@ -96,11 +87,6 @@ export default function LoginPage(props) {
           {t("host")}
         </button>
       </div>
-      {displayError !== "" ? (
-        <p id="errorText" className="text-2xl text-failure-700">
-          {displayError.code ? t(displayError.code, { message: displayError.message }) : t(displayError)}
-        </p>
-      ) : null}
     </div>
   );
 }
