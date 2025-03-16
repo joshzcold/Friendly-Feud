@@ -719,7 +719,7 @@ export default function AdminPage(props) {
                     send({ action: "show_mistake" });
                   }}
                 >
-                  <Image width={150} height={150} style={{ objectFit: "contain" }} src="/x.svg" alt="Show Mistake" />
+                  <Image width={150} height={150} style={{ objectFit: "contain" }} src="/x.png" alt="Show Mistake" />
                 </button>
                 <button
                   id="resetMistakesButton"
