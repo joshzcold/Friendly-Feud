@@ -28,7 +28,6 @@ const GameLoader = ({ gameSelector, send, setError, setCsvFileUpload, setCsvFile
         pattern: /^application\/(json|.*\+json)$/,
         handler: (file) =>
           handleJsonFile(file, {
-            setError,
             t,
             send,
           }),
