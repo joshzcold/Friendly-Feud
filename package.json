@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "autoprefixer": "^10.1.0",
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "cookie-cutter": "^0.2.0",
     "eslint": "^8.57.1",
     "i18next": "^24.2.1",
