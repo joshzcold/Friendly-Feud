@@ -233,7 +233,7 @@ export default function Game(props) {
             className={`pointer-events-none fixed inset-0 z-50 p-24 ${
               showMistake ? "opacity-90" : "opacity-0"
             } transition-opacity duration-300 ease-in-out`}
-            src="/x.svg"
+            src="/x.png"
             alt="Mistake indicator"
             aria-hidden={!showMistake}
           />
