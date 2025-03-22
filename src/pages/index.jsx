@@ -81,6 +81,14 @@ export default function Home() {
         } else if (json.action === "error") {
           console.error(json);
           toast.error(t(json.code, { message: json.message }));
+          if (json.code === "errors.room_not_found") {
+            // Clear stale session data so that the user isn't continuously reconnected using an invalid session
+            setPlayerID(null);
+            setRegisteredRoomCode(null);
+            setGame({});
+            setHost(false);
+            cookieCutter.set("session", "");
+          }
         } else if (json.action === "ping") {
           console.debug("index.js: ping");
         } else {
