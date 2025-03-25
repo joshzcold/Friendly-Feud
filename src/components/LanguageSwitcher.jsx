@@ -2,7 +2,7 @@ import { Languages } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-export default function LanguageSwitcher(props) {
+export default function LanguageSwitcher({ onChange }) {
   const { i18n, t } = useTranslation();
   return (
     <div className="flex items-center gap-4 ">
@@ -12,8 +12,8 @@ export default function LanguageSwitcher(props) {
         className="w-full rounded-lg bg-secondary-300 p-2 capitalize text-foreground sm:w-fit"
         value={i18n.language}
         onChange={
-          props.onChange
-            ? props.onChange
+          onChange
+            ? onChange
             : (e) => {
                 i18n.changeLanguage(e.target.value);
               }
