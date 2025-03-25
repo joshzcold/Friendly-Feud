@@ -15,19 +15,16 @@ import { toast } from "sonner";
 
 let timerInterval = null;
 
-export default function BuzzerPage(props) {
+export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setTeam, team }) {
   const { i18n, t } = useTranslation();
   const [buzzed, setBuzzed] = useState(false);
   const [timer, setTimer] = useState(0);
   const [showMistake, setShowMistake] = useState(false);
   let refreshCounter = 0;
 
-  let game = props.game;
-  let ws = props.ws;
-
   const send = function (data) {
-    data.room = props.room;
-    data.id = props.id;
+    data.room = room;
+    data.id = id;
     ws.current.send(JSON.stringify(data));
   };
 
@@ -39,7 +36,7 @@ export default function BuzzerPage(props) {
   };
 
   useEffect(() => {
-    cookieCutter.set("session", `${props.room}:${props.id}:0`);
+    cookieCutter.set("session", `${room}:${id}:0`);
     setInterval(() => {
       if (ws.current.readyState !== 1) {
         toast.error(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounter}` }));
@@ -56,8 +53,8 @@ export default function BuzzerPage(props) {
       let json = JSON.parse(received_msg);
       if (json.action === "ping") {
         // server gets the average latency periodically
-        console.debug(props.id);
-        send({ action: "pong", id: props.id });
+        console.debug(id);
+        send({ action: "pong", id: id });
       } else if (json.action === "mistake" || json.action === "show_mistake") {
         var audio = new Audio("wrong.mp3");
         audio.play();
@@ -68,8 +65,8 @@ export default function BuzzerPage(props) {
           }, 2000);
         }
       } else if (json.action === "quit") {
-        props.setGame(null);
-        props.setTeam(null);
+        setGame(null);
+        setTeam(null);
         location.reload();
       } else if (json.action === "set_timer") {
         setTimer(json.data);
@@ -96,7 +93,7 @@ export default function BuzzerPage(props) {
         if (json.data.teams[1].name === "Team 2") {
           json.data.teams[1].name = `${t("team")} ${t("number", { count: 2 })}`;
         }
-        props.setGame(json.data);
+        setGame(json.data);
       } else if (json.action === "buzzed") {
         setBuzzed(true);
       } else if (json.action === "clearbuzzers") {
@@ -105,15 +102,15 @@ export default function BuzzerPage(props) {
         console.debug("Language Change", json.data);
         i18n.changeLanguage(json.data);
       } else if (json.action === "registered") {
-        console.debug(props.id);
-        send({ action: "pong", id: props.id });
+        console.debug(id);
+        send({ action: "pong", id: id });
       } else {
         console.debug("didnt expect action in buzzer: ", json);
       }
     });
   }, []);
 
-  const currentPlayer = game.registeredPlayers[props.id];
+  const currentPlayer = game.registeredPlayers[id];
   if (currentPlayer?.hidden)
     return (
       <div className="flex min-h-screen flex-col items-center justify-center text-foreground">
@@ -146,7 +143,7 @@ export default function BuzzerPage(props) {
         >
           {t("quit")}
         </button>
-        {props.id in game.registeredPlayers && game.registeredPlayers[props.id].team !== null ? (
+        {id in game.registeredPlayers && game.registeredPlayers[id].team !== null ? (
           <>
             {!game.title && !game.is_final_round ? (
               <div className="flex flex-col space-y-5 pt-8">
@@ -154,7 +151,7 @@ export default function BuzzerPage(props) {
 
                 {/* Buzzer Section TODO replace with function*/}
                 <div className="w-full text-center">
-                  {buzzed || game.buzzed.map((a) => a.id).includes(props.id) ? (
+                  {buzzed || game.buzzed.map((a) => a.id).includes(id) ? (
                     <Image
                       className="inline-block w-1/2"
                       id="buzzerButtonPressed"
@@ -170,7 +167,7 @@ export default function BuzzerPage(props) {
                       height={200}
                       className="inline-block w-1/2 cursor-pointer"
                       onClick={() => {
-                        send({ action: "buzz", id: props.id });
+                        send({ action: "buzz", id: id });
                         // Play sound based on settings
                         if (game.settings.player_buzzer_sound) {
                           if (!game.settings.first_buzzer_sound_only || game.buzzed.length === 0) {
@@ -230,20 +227,20 @@ export default function BuzzerPage(props) {
                   </div>
                 ) : (
                   <div>
-                    {props.game.settings.logo_url ? (
+                    {game.settings.logo_url ? (
                       <div className="flex justify-center">
                         <Image
                           width={300}
                           height={300}
                           style={{ objectFit: "contain" }}
-                          src={`${props.game.settings.logo_url}?v=${Date.now()}`}
+                          src={`${game.settings.logo_url}?v=${Date.now()}`}
                           alt="Game logo"
                           priority // Load image immediately
                           unoptimized // Skip caching
                         />
                       </div>
                     ) : (
-                      <TitleLogo insert={props.game.title_text} />
+                      <TitleLogo insert={game.title_text} />
                     )}
                     <p id="waitingForHostText" className="py-12 text-center text-3xl text-foreground">
                       {t("Waiting for host to start")}
@@ -255,35 +252,35 @@ export default function BuzzerPage(props) {
           </>
         ) : (
           <>
-            {props.game.settings.logo_url ? (
+            {game.settings.logo_url ? (
               <div className="mx-auto w-full max-w-md">
                 <Image
                   id="titleLogoUserUploaded"
                   width={300}
                   height={300}
                   style={{ objectFit: "contain" }}
-                  src={`${props.game.settings.logo_url}?v=${Date.now()}`}
+                  src={`${game.settings.logo_url}?v=${Date.now()}`}
                   alt="Game logo"
                   priority // Load image immediately
                   unoptimized // Skip caching
                 />
               </div>
             ) : (
-              <TitleLogo insert={props.game.title_text} />
+              <TitleLogo insert={game.title_text} />
             )}
             <div className="flex flex-row justify-center">
               <h1 className="text-3xl text-foreground">
-                {t("team")}: {props.team != null ? game.teams[props.team].name : t("pick your team")}
+                {t("team")}: {team != null ? game.teams[team].name : t("pick your team")}
               </h1>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <button
                 id="joinTeam1"
                 className={`rounded-md bg-primary-200 p-5 hover:shadow-md ${
-                  props.team === 0 ? "border-2 border-sky-600" : ""
+                  team === 0 ? "border-2 border-sky-600" : ""
                 }`}
                 onClick={() => {
-                  props.setTeam(0);
+                  setTeam(0);
                 }}
               >
                 {game.teams[0].name}
@@ -292,10 +289,10 @@ export default function BuzzerPage(props) {
               <button
                 id="joinTeam2"
                 className={`rounded-md bg-primary-200 p-5 hover:shadow-md ${
-                  props.team === 1 ? "border-2 border-sky-600" : ""
+                  team === 1 ? "border-2 border-sky-600" : ""
                 }`}
                 onClick={() => {
-                  props.setTeam(1);
+                  setTeam(1);
                 }}
               >
                 {game.teams[1].name}
@@ -304,13 +301,13 @@ export default function BuzzerPage(props) {
             <div className="flex flex-row justify-center">
               <button
                 id="registerBuzzerButton"
-                disabled={props.team === null}
+                disabled={team === null}
                 className={`rounded-md bg-success-200 px-16 py-8 font-bold uppercase hover:shadow-md ${
-                  props.team === null ? "cursor-not-allowed opacity-50 hover:shadow-none" : ""
+                  team === null ? "cursor-not-allowed opacity-50 hover:shadow-none" : ""
                 }`}
                 onClick={() => {
-                  if (props.team != null) {
-                    send({ action: "registerbuzz", team: props.team });
+                  if (team != null) {
+                    send({ action: "registerbuzz", team: team });
                   }
                 }}
               >
@@ -323,7 +320,7 @@ export default function BuzzerPage(props) {
                   id="openGameWindowButton"
                   className="rounded-md bg-secondary-300 px-8 py-4 hover:shadow-md"
                   onClick={() => {
-                    send({ action: "registerspectator", team: props.team });
+                    send({ action: "registerspectator", team: team });
                   }}
                 >
                   {t("Open Game Window")}
