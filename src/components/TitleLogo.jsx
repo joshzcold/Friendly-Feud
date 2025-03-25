@@ -17,14 +17,14 @@ function adjustTextSize(text, limit = 8, startingSize = 80) {
   return startingSize;
 }
 
-export default function TitleLogo(props) {
+export default function TitleLogo({ insert }) {
   const [isMounted, setIsMounted] = useState(false);
-  
+
   useEffect(() => {
     setIsMounted(true);
-  }, [])
+  }, []);
 
-  let hasTitle = props.insert.length > 0 ? true : false;
+  let hasTitle = insert.length > 0 ? true : false;
   const { t } = useTranslation();
 
   if (!isMounted) {
@@ -165,12 +165,12 @@ export default function TitleLogo(props) {
               text-align: center;
             "
             font-weight="700"
-            font-size="${adjustTextSize(props.insert)}"
+            font-size="${adjustTextSize(insert)}"
             font-family="C059"
             text-anchor="middle"
             id="tspan32"
           >
-            ${props.insert}
+            ${insert}
           </tspan>
         </tspan>
       </text>
@@ -188,13 +188,13 @@ export default function TitleLogo(props) {
       >
         <tspan
           style="fill: url(#f);"
-          font-size="${adjustTextSize(props.insert)}"
+          font-size="${adjustTextSize(insert)}"
           text-anchor="middle"
           stroke="#000000"
           stroke-width="1.13319"
           id="tspan54"
         >
-          ${props.insert}
+          ${insert}
         </tspan>
       </tspan>
     </text>
