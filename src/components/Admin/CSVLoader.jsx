@@ -140,9 +140,9 @@ function initalizeCSVRoundCount(csvData, roundCount, setRoundCount, roundFinalCo
   }
 }
 
-export default function CSVLoader(props) {
-  const { i18n, t } = useTranslation();
-  const csvData = useMemo(() => csvStringToArray(props.csvFileUploadText), [props.csvFileUploadText]);
+export default function CSVLoader({ csvFileUpload, csvFileUploadText, setCsvFileUpload, send }) {
+  const { t } = useTranslation();
+  const csvData = useMemo(() => csvStringToArray(csvFileUploadText), [csvFileUploadText]);
   const [roundCount, setRoundCount] = useState(-1);
   const [roundFinalCount, setRoundFinalCount] = useState(-1);
   const [noHeader, setNoHeader] = useState(false);
@@ -166,7 +166,7 @@ export default function CSVLoader(props) {
           </div>
           <p className="text-foreground">{t("CSV file upload")}: </p>
           <div className="rounded bg-secondary-500 p-2">
-            <p>{props.csvFileUpload.name}</p>
+            <p>{csvFileUpload.name}</p>
           </div>
           <hr />
         </div>
@@ -306,7 +306,7 @@ export default function CSVLoader(props) {
               className="flex w-48 justify-center rounded bg-secondary-500 p-2 hover:bg-secondary-200"
               onClick={() => {
                 setError(null);
-                props.setCsvFileUpload(null);
+                setCsvFileUpload(null);
               }}
             >
               {t("Cancel")}
@@ -325,9 +325,9 @@ export default function CSVLoader(props) {
                   timer,
                   timer2nd,
                   setError,
-                  props.send
+                  send
                 );
-                props.setCsvFileUpload(null);
+                setCsvFileUpload(null);
               }}
             >
               <div className="flex w-48 justify-center rounded bg-success-200 p-2 hover:shadow-md">{t("Submit")}</div>
