@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-function TitleMusic() {
+export default function TitleMusic() {
   const { t } = useTranslation();
   return (
     <div className="flex flex-row items-center space-x-5  p-5">
@@ -11,5 +11,3 @@ function TitleMusic() {
     </div>
   );
 }
-
-export default TitleMusic;
