@@ -1,17 +1,9 @@
-import { useTranslation } from "react-i18next";
 import GameLoader from "@/components/Admin/GameLoader";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
-function RoomSettings({
-  room,
-  gameSelector,
-  send,
-  setError,
-  setCsvFileUpload,
-  setCsvFileUploadText,
-  quitGame
-}) {
+function RoomSettings({ room, gameSelector, send, setCsvFileUpload, setCsvFileUploadText, quitGame }) {
   const { i18n, t } = useTranslation();
   return (
     <div className="min-h-full">
@@ -36,11 +28,7 @@ function RoomSettings({
             </div>
           </button>
         </Link>
-        <button
-          id="quitButton"
-          className="text-2xl"
-          onClick={() => quitGame(true)}
-        >
+        <button id="quitButton" className="text-2xl" onClick={() => quitGame(true)}>
           <div className="flex w-32 justify-center rounded bg-failure-200 p-2 hover:shadow-md">{t("Quit")}</div>
         </button>
       </div>
@@ -54,7 +42,6 @@ function RoomSettings({
         <GameLoader
           gameSelector={gameSelector}
           send={send}
-          setError={setError}
           setCsvFileUpload={setCsvFileUpload}
           setCsvFileUploadText={setCsvFileUploadText}
         />

@@ -1,11 +1,12 @@
-import { useTranslation } from "react-i18next";
+import FinalRoundButtonControls from "@/components/Admin/GameDisplay/FinalRoundButtonControls";
+import FinalRoundPointTotals from "@/components/Admin/GameDisplay/FinalRoundPointTotals";
+import TeamControls from "@/components/Admin/GameDisplay/TeamControls";
+import TitleMusic from "@/components/Admin/GameDisplay/TitleMusic";
+import HideGameQuestions from "@/components/Admin/HideGameQuestions";
 import Players from "@/components/Admin/Players";
 import BuzzerTable from "@/components/BuzzerTable";
 import Image from "next/image";
-import TitleMusic from "@/components/Admin/GameDisplay/TitleMusic";
-import TeamControls from "@/components/Admin/GameDisplay/TeamControls";
-import FinalRoundButtonControls from "@/components/Admin/GameDisplay/FinalRoundButtonControls";
-import FinalRoundPointTotals from "@/components/Admin/GameDisplay/FinalRoundPointTotals";
+import { useTranslation } from "react-i18next";
 
 function GameDisplay({
   ws,
@@ -18,12 +19,14 @@ function GameDisplay({
   timerStarted,
   timerCompleted,
   setTimerStarted,
-  setTimerCompleted
+  setTimerCompleted,
 }) {
   const { t } = useTranslation();
 
   if (game.rounds == null) {
-    {/* SHOW ERRORS TO ADMIN */}
+    {
+      /* SHOW ERRORS TO ADMIN */
+    }
     return <p className="py-20 text-center text-2xl text-secondary-900">[{t("Please load a game")}]</p>;
   }
 
@@ -73,6 +76,8 @@ function GameDisplay({
           >
             {t("Title Card")}
           </button>
+
+          <HideGameQuestions game={game} setGame={setGame} send={send} />
 
           {/* FINAL ROUND BUTTON */}
           {game.final_round ? (
@@ -280,13 +285,11 @@ function GameDisplay({
                     setGame((prv) => ({ ...prv }));
 
                     if (x.trig) {
-                      game.point_tracker[game.round] =
-                        game.point_tracker[game.round] + x.pnt * current_round.multiply;
+                      game.point_tracker[game.round] = game.point_tracker[game.round] + x.pnt * current_round.multiply;
                       setGame((prv) => ({ ...prv }));
                       send({ action: "reveal" });
                     } else {
-                      game.point_tracker[game.round] =
-                        game.point_tracker[game.round] - x.pnt * current_round.multiply;
+                      game.point_tracker[game.round] = game.point_tracker[game.round] - x.pnt * current_round.multiply;
                       if (game.point_tracker[game.round] < 0) {
                         game.point_tracker[game.round] = 0;
                       }

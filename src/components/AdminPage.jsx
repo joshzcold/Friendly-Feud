@@ -1,19 +1,13 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
-import CSVLoader from "@/components/Admin/CSVLoader";
 import AdminSettings from "@/components/Admin/AdminSettings";
 import CSVLoader from "@/components/Admin/CSVLoader";
-import GameLoader from "@/components/Admin/GameLoader";
-import HideGameQuestions from "@/components/Admin/HideGameQuestions";
-import Players from "@/components/Admin/Players";
-import BuzzerTable from "@/components/BuzzerTable";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { ERROR_CODES } from "@/i18n/errorCodes";
+import GameDisplay from "@/components/Admin/GameDisplay";
 import RoomSettings from "@/components/Admin/RoomSettings";
 import TitlesAndLogoSettings from "@/components/Admin/TitlesAndLogoSettings";
-import GameDisplay from "@/components/Admin/GameDisplay";
-
+import { ERROR_CODES } from "@/i18n/errorCodes";
+import { toast } from "sonner";
 
 export default function AdminPage({ ws, game, setGame, room, quitGame, playerId }) {
   const { i18n, t } = useTranslation();
@@ -30,12 +24,6 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
   const [csvFileUpload, setCsvFileUpload] = useState(null);
   const [csvFileUploadText, setCsvFileUploadText] = useState(null);
   let refreshCounter = 0;
-
-  function setError(e) {
-    setErrorVal(e);
-    console.error(e);
-    setTimeout(() => setErrorVal(""), 10000);
-  }
 
   function send(data) {
     console.debug("Sending", data);
@@ -68,7 +56,7 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
   useEffect(() => {
     const retryInterval = setInterval(() => {
       if (ws.current.readyState !== 1) {
-        setError(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounter}` }));
+        toast.error(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounter}` }));
         refreshCounter++;
         if (refreshCounter >= 10) {
           console.debug("admin reload()");
@@ -104,7 +92,6 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
         room={room}
         gameSelector={gameSelector}
         send={send}
-        setError={setError}
         setCsvFileUpload={setCsvFileUpload}
         setCsvFileUploadText={setCsvFileUploadText}
         quitGame={quitGame}
@@ -115,10 +102,8 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
         send={send}
         room={room}
         setGame={setGame}
-        setError={setError}
         setImageUploaded={setImageUploaded}
         imageUploaded={imageUploaded}
-        error={error}
       />
       <hr className="my-12" />
       {/* ADMIN CONTROLS */}
@@ -137,14 +122,14 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
         setTimerCompleted={setTimerCompleted}
       />
       {/* Modal over whole admin page */}
-      {csvFileUpload &&
+      {csvFileUpload && (
         <CSVLoader
           csvFileUpload={csvFileUpload}
           setCsvFileUpload={setCsvFileUpload}
           csvFileUploadText={csvFileUploadText}
           send={send}
         />
-      }
+      )}
     </div>
   );
 }

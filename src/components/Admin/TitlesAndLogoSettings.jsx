@@ -1,17 +1,8 @@
-import { useTranslation } from "react-i18next";
-import { debounce } from "@/lib/utils";
 import TitleLogoUpload from "@/components/Admin/TitleLogoUpload";
+import { debounce } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
-function TitlesAndLogoSettings({
-  game,
-  send,
-  room,
-  setGame,
-  setError,
-  setImageUploaded,
-  imageUploaded,
-  error
-}) {
+function TitlesAndLogoSettings({ game, send, room, setGame, setImageUploaded, imageUploaded, error }) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center space-y-5">
@@ -38,7 +29,6 @@ function TitlesAndLogoSettings({
           room={room}
           setGame={setGame}
           game={game}
-          setError={setError}
           setImageUploaded={setImageUploaded}
           imageUploaded={imageUploaded}
         />
@@ -104,9 +94,6 @@ function TitlesAndLogoSettings({
           ></input>
         </div>
       </div>
-      <p id="errorText" className="text-xl text-failure-700">
-        {error.code ? t(error.code, { message: error.message }) : t(error)}
-      </p>
     </div>
   );
 }

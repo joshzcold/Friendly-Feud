@@ -146,7 +146,7 @@ export default function CSVLoader(props) {
   const [roundCount, setRoundCount] = useState(-1);
   const [roundFinalCount, setRoundFinalCount] = useState(-1);
   const [noHeader, setNoHeader] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
   const [timer, setTimer] = useState(20);
   const [timer2nd, setTimer2nd] = useState(25);
   useEffect(() => {

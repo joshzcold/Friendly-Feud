@@ -1,9 +1,11 @@
 import { Buffer } from "buffer";
+import { ERROR_CODES } from "@/i18n/errorCodes";
 import { FileUp } from "lucide-react";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
-function BeforeUpload({ send, room, setGame, game, setError, setImageUploaded }) {
+function BeforeUpload({ send, room, setGame, game, setImageUploaded }) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-row items-center space-x-2">
@@ -22,7 +24,7 @@ function BeforeUpload({ send, room, setGame, game, setError, setImageUploaded })
             if (file) {
               if (file.size > process.env.NEXT_PUBLIC_MAX_IMAGE_UPLOAD_SIZE_MB * 1024 * 1024) {
                 console.error("Logo image is too large");
-                setError(t(ERROR_CODES.IMAGE_TOO_LARGE, { message: "2MB" }));
+                toast.error(t(ERROR_CODES.IMAGE_TOO_LARGE, { message: "2MB" }));
                 return;
               }
               var reader = new FileReader();
@@ -50,7 +52,7 @@ function BeforeUpload({ send, room, setGame, game, setError, setImageUploaded })
                     mimetype = "jpeg";
                     break;
                   default:
-                    setError(t(ERROR_CODES.UNKNOWN_FILE_TYPE));
+                    toast.error(t(ERROR_CODES.UNKNOWN_FILE_TYPE));
                     return;
                 }
 
@@ -124,16 +126,9 @@ function AfterUpload({ send, room, game, setGame, setImageUploaded, imageUploade
   );
 }
 
-function TitleLogoUpload({ send, room, setGame, game, setError, setImageUploaded, imageUploaded }) {
+function TitleLogoUpload({ send, room, setGame, game, setImageUploaded, imageUploaded }) {
   return imageUploaded === null ? (
-    <BeforeUpload
-      send={send}
-      room={room}
-      game={game}
-      setGame={setGame}
-      setError={setError}
-      setImageUploaded={setImageUploaded}
-    />
+    <BeforeUpload send={send} room={room} game={game} setGame={setGame} setImageUploaded={setImageUploaded} />
   ) : (
     <AfterUpload
       send={send}
