@@ -5,7 +5,7 @@ import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { validateGameData } from "@/lib/utils";
 
-export default function CreateGame(props) {
+export default function CreateGame() {
   const { t } = useTranslation();
   let gameTemplate = {
     settings: {},

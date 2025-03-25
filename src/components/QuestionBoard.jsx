@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
 
-export default function QuestionBoard(props) {
+export default function QuestionBoard({ round }) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-row items-center justify-center">
@@ -9,7 +9,7 @@ export default function QuestionBoard(props) {
         className="grid grow gap-3 rounded-3xl border-black bg-black lg:grid-flow-col lg:grid-rows-4"
         style={{ borderWidth: 12 }}
       >
-        {props.round.answers.map((x, index) => (
+        {round.answers.map((x, index) => (
           <div
             key={`qboard-answer-${index}`}
             className=" items-center rounded border-2 text-center font-extrabold uppercase"

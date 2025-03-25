@@ -4,8 +4,9 @@ import { handleCsvFile, handleJsonFile, isValidFileType } from "@/lib/utils";
 import { FileUp } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
-const GameLoader = ({ gameSelector, send, setError, setCsvFileUpload, setCsvFileUploadText }) => {
+const GameLoader = ({ gameSelector, send, setCsvFileUpload, setCsvFileUploadText }) => {
   const [selectedGame, setSelectedGame] = useState("");
   const MAX_SIZE_MB = process.env.NEXT_PUBLIC_MAX_CSV_UPLOAD_SIZE_MB
     ? parseInt(process.env.NEXT_PUBLIC_MAX_CSV_UPLOAD_SIZE_MB, 10) // type safety
@@ -18,7 +19,7 @@ const GameLoader = ({ gameSelector, send, setError, setCsvFileUpload, setCsvFile
     if (file) {
       if (file.size > MAX_SIZE_MB * 1024 * 1024) {
         console.error("This csv file is too large");
-        setError(t(ERROR_CODES.CSV_TOO_LARGE));
+        toast.error(t(ERROR_CODES.CSV_TOO_LARGE));
         return;
       }
     }
@@ -36,7 +37,6 @@ const GameLoader = ({ gameSelector, send, setError, setCsvFileUpload, setCsvFile
         pattern: /^(text\/csv|application\/(vnd\.ms-excel|csv|x-csv|text-csv))$/,
         handler: (file) =>
           handleCsvFile(file, {
-            setError,
             t,
             setCsvFileUpload,
             setCsvFileUploadText,

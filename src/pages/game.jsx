@@ -3,7 +3,7 @@ import FinalPage from "@/components/FinalPage";
 import QuestionBoard from "@/components/QuestionBoard";
 import Round from "@/components/Round";
 import TeamName from "@/components/TeamName";
-import TitlePage from "@/components/Title/TitlePage.jsx";
+import TitlePage from "@/components/Title/TitlePage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
 import cookieCutter from "cookie-cutter";
 import Image from "next/image";
@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 let timerInterval = null;
 
-export default function Game(props) {
+export default function Game() {
   const { i18n, t } = useTranslation();
   const [game, setGame] = useState({});
   const [timer, setTimer] = useState(0);

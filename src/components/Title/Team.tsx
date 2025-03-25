@@ -1,4 +1,9 @@
-const Team = ({ team, players }) => {
+interface TeamProps {
+  team: string;
+  players: string[];
+}
+
+export default function Team({ team, players }: TeamProps) {
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-xl bg-secondary-500 text-center shadow-lg">
       <p className="rounded-t-xl bg-secondary-700 py-2 text-4xl font-bold text-foreground shadow-sm" id="team-name">
@@ -17,6 +22,4 @@ const Team = ({ team, players }) => {
       </div>
     </div>
   );
-};
-
-export default Team;
+}

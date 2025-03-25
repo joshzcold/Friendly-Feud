@@ -25,13 +25,13 @@ export function handleJsonFile(file, { t, send }) {
   };
 }
 
-export function handleCsvFile(file, { setError, t, setCsvFileUpload, setCsvFileUploadText }) {
+export function handleCsvFile(file, { t, setCsvFileUpload, setCsvFileUploadText }) {
   var reader = new FileReader();
   reader.readAsText(file, "utf-8");
   reader.onload = function (evt) {
     let lineCount = evt.target.result.split("\n");
     if (lineCount.length > 30) {
-      setError(t("This csv file is too large"));
+      toast.error(t("This csv file is too large"));
     } else {
       setCsvFileUpload(file);
       setCsvFileUploadText(evt.target.result);
@@ -39,7 +39,7 @@ export function handleCsvFile(file, { setError, t, setCsvFileUpload, setCsvFileU
   };
   reader.onerror = function (evt) {
     console.error("error reading file");
-    setError(t("error reading file"));
+    toast.error(t("error reading file"));
   };
 }
 

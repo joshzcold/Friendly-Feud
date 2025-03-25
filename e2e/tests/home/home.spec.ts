@@ -35,3 +35,19 @@ test("clears session cookie on room not found error", async ({ page, context, ba
   const sessionCookie = cookies.find((c) => c.name === "session");
   expect(sessionCookie?.value).toBe("");
 });
+
+test("language switcher changes content language", async ({ page }) => {
+  await page.goto("/");
+
+  // Locate specific UI elements that should change with language and verify initial text
+  const hostButton = page.getByTestId("hostRoomButton");
+  await expect(hostButton).toHaveText("host");
+
+  // Switch to Spanish and verify text changed
+  await page.locator("#languageInput").selectOption("es");
+  await expect(hostButton).toHaveText("anfitrión");
+
+  // Switch to French and verify text changed
+  await page.locator("#languageInput").selectOption("fr");
+  await expect(hostButton).toHaveText("Régie");
+});

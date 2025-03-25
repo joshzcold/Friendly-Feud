@@ -8,11 +8,9 @@ import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
 import { ERROR_CODES } from "@/i18n/errorCodes";
 import { toast } from "sonner";
 
-export default function LoginPage(props) {
+export default function LoginPage({ hostRoom, roomCode, setRoomCode, playerName, setPlayerName, joinRoom }) {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const [playerName, setPlayerName] = useState("");
-  const [roomCode, setRoomCode] = useState("");
   const [game, setGame] = useState({ settings: { theme: theme || "default" } });
 
   const isValidRoomCode = (code) => code.length === 4;
@@ -29,9 +27,7 @@ export default function LoginPage(props) {
       return;
     }
 
-    props.setRoomCode(roomCode);
-    props.setPlayerName(playerName);
-    props.joinRoom();
+    joinRoom();
   };
 
   return (
@@ -81,7 +77,7 @@ export default function LoginPage(props) {
           id="hostRoomButton"
           className="rounded-md bg-secondary-300 p-4 text-2xl uppercase text-foreground shadow-md"
           onClick={() => {
-            props.hostRoom();
+            hostRoom();
           }}
         >
           {t("host")}
