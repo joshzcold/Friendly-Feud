@@ -1,6 +1,10 @@
 import { useTranslation } from "react-i18next";
 
-const RoomCode = ({ code }) => {
+interface RoomCodeProps {
+  code: string;
+}
+
+export default function RoomCode({ code }: RoomCodeProps) {
   const { t } = useTranslation();
   if (!code) return null;
 
@@ -24,6 +28,4 @@ const RoomCode = ({ code }) => {
       </div>
     </div>
   );
-};
-
-export default RoomCode;
+}
