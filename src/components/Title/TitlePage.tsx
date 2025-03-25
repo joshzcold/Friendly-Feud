@@ -1,28 +1,28 @@
 import RoomCode from "@/components/Title/RoomCode";
 import Team from "@/components/Title/Team";
 import TitleLogo from "@/components/TitleLogo";
+import { Game } from "@/src/types";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export default function TitlePage({ game }) {
-  const [titleSize, setTitleSize] = useState("10%");
+interface TitlePageProps {
+  game: Game;
+}
+
+export default function TitlePage({ game }: TitlePageProps) {
+  const [titleSize, setTitleSize] = useState(10);
 
   useEffect(() => {
     const handleResize = () => {
       if (game.settings.logo_url) {
-        setTitleSize(window.innerWidth * 0.75);
+        setTitleSize(70);
       } else {
         setTitleSize(
-          window.innerWidth *
-            (window.innerWidth < 640
-              ? 0.8
-              : window.innerWidth < 1024
-                ? 0.8
-                : window.innerWidth < 1280
-                  ? 0.7
-                  : window.innerWidth < 1536
-                    ? 0.75
-                    : 0.75)
+          window.innerWidth < 640
+            ? 45 // Mobile
+            : window.innerWidth < 1024
+              ? 80 // Tablet
+              : 90 // Desktop and larger
         );
       }
     };
@@ -35,8 +35,8 @@ export default function TitlePage({ game }) {
     };
   }, [game.settings.logo_url]);
 
-  function returnTeamMates(team) {
-    let players = [];
+  function returnTeamMates(team: number) {
+    let players: string[] = [];
     console.debug(game);
     Object.keys(game.registeredPlayers).forEach((k) => {
       console.debug(k);
@@ -53,7 +53,7 @@ export default function TitlePage({ game }) {
       {/* Logo Section */}
       <div
         style={{
-          width: titleSize,
+          width: `${titleSize}%`,
           transition: "width 2s",
         }}
         className="inline-block align-middle"
@@ -70,7 +70,7 @@ export default function TitlePage({ game }) {
               unoptimized // Skip caching
             />
           ) : (
-            <TitleLogo insert={game.title_text} size={titleSize} />
+            <TitleLogo insert={game.title_text} />
           )}
         </div>
       </div>
@@ -78,7 +78,7 @@ export default function TitlePage({ game }) {
       <div
         className="grid h-[200px] grid-cols-3 gap-4 2xl:h-[250px]"
         style={{
-          width: titleSize,
+          width: `${titleSize}%`,
           transition: "width 2s",
         }}
       >
