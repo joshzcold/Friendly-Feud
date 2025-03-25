@@ -1,7 +1,14 @@
-import { Info } from "lucide-react";
+import { Info, LucideIcon } from "lucide-react";
 import { useState } from "react";
 
-const ToolTipIcon = ({ message, Icon = Info, size = 20, cursor = "default" }) => {
+interface ToolTipIconProps {
+  message: string;
+  Icon?: LucideIcon;
+  size?: number;
+  cursor?: "default" | "pointer";
+}
+
+export default function ToolTipIcon({ message, Icon = Info, size = 20, cursor = "default" }: ToolTipIconProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   return (
@@ -23,6 +30,4 @@ const ToolTipIcon = ({ message, Icon = Info, size = 20, cursor = "default" }) =>
       )}
     </div>
   );
-};
-
-export default ToolTipIcon;
+}
