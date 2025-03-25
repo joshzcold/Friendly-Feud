@@ -3,6 +3,12 @@ import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
 import CSVLoader from "@/components/Admin/CSVLoader";
 import AdminSettings from "@/components/Admin/AdminSettings";
+import CSVLoader from "@/components/Admin/CSVLoader";
+import GameLoader from "@/components/Admin/GameLoader";
+import HideGameQuestions from "@/components/Admin/HideGameQuestions";
+import Players from "@/components/Admin/Players";
+import BuzzerTable from "@/components/BuzzerTable";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { ERROR_CODES } from "@/i18n/errorCodes";
 import RoomSettings from "@/components/Admin/RoomSettings";
 import TitlesAndLogoSettings from "@/components/Admin/TitlesAndLogoSettings";
@@ -18,7 +24,6 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
     textColor: "text-foreground",
   });
   const [gameSelector, setGameSelector] = useState([]);
-  const [error, setErrorVal] = useState("");
   const [imageUploaded, setImageUploaded] = useState(null);
   const [timerStarted, setTimerStarted] = useState(false);
   const [timerCompleted, setTimerCompleted] = useState(false);
@@ -51,7 +56,7 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
       }
     } else if (json.action === "error") {
       console.error(json.code);
-      setError(t(json.code, { message: json.message }));
+      toast.error(t(json.code, { message: json.message }));
     } else if (json.action === "timer_complete") {
       setTimerStarted(false);
       setTimerCompleted(true);

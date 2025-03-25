@@ -8,6 +8,8 @@ test("quit button should return to home page", async ({ browser }) => {
   const host = await s.host();
   const spectator = await s.addPlayer(true);
   const gamePage = new GamePage(spectator.page);
-  await gamePage.quitButton.click();
+  await expect(async () => {
+    await gamePage.quitButton.click();
+  }).toPass();
   await expect(host.page).toHaveURL("/");
 });

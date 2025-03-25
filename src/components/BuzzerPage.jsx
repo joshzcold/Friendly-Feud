@@ -11,23 +11,16 @@ import cookieCutter from "cookie-cutter";
 import { EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { toast } from "sonner";
 
 let timerInterval = null;
 
 export default function BuzzerPage(props) {
   const { i18n, t } = useTranslation();
   const [buzzed, setBuzzed] = useState(false);
-  const [error, setErrorVal] = useState("");
   const [timer, setTimer] = useState(0);
   const [showMistake, setShowMistake] = useState(false);
   let refreshCounter = 0;
-
-  function setError(e) {
-    setErrorVal(e);
-    setTimeout(() => {
-      setErrorVal("");
-    }, 5000);
-  }
 
   let game = props.game;
   let ws = props.ws;
@@ -49,14 +42,12 @@ export default function BuzzerPage(props) {
     cookieCutter.set("session", `${props.room}:${props.id}:0`);
     setInterval(() => {
       if (ws.current.readyState !== 1) {
-        setError(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounter}` }));
+        toast.error(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounter}` }));
         refreshCounter++;
         if (refreshCounter >= 10) {
           console.debug("buzzer reload()");
           location.reload();
         }
-      } else {
-        setError("");
       }
     }, 1000);
 
@@ -141,7 +132,7 @@ export default function BuzzerPage(props) {
             className={`pointer-events-none fixed inset-0 z-50 p-24 ${
               showMistake ? "opacity-90" : "opacity-0"
             } transition-opacity duration-300 ease-in-out`}
-            src="/x.svg"
+            src="/x.png"
             alt="Mistake indicator"
             aria-hidden={!showMistake}
           />
@@ -192,7 +183,6 @@ export default function BuzzerPage(props) {
                     />
                   )}
                   <p className="p-2 italic text-secondary-900">{t("buzzer is reset between rounds")}</p>
-                  {error !== "" ? <p className="text-2xl text-failure-700">{error}</p> : null}
                 </div>
                 {/* END Buzzer Section TODO replace with function*/}
                 <div className="flex min-w-full flex-row justify-between space-x-3">
@@ -340,7 +330,6 @@ export default function BuzzerPage(props) {
                 </button>
               </Link>
             </div>
-            {error != null && error !== "" ? <p>👾 {error}</p> : null}
           </>
         )}
       </>

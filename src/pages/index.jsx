@@ -8,12 +8,12 @@ import Footer from "@/components/Login/Footer";
 import LoginPage from "@/components/LoginPage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
 import cookieCutter from "cookie-cutter";
+import { toast } from "sonner";
 
 export default function Home() {
   const { t } = useTranslation();
   const [playerName, setPlayerName] = useState("");
   const [roomCode, setRoomCode] = useState("");
-  const [error, setErrorVal] = useState("");
   const [registeredRoomCode, setRegisteredRoomCode] = useState(null);
   const [host, setHost] = useState(false);
   const [game, setGame] = useState(null);
@@ -22,12 +22,6 @@ export default function Home() {
 
   const ws = useRef(null);
 
-  function setError(e) {
-    setErrorVal(e);
-    setTimeout(() => {
-      setErrorVal("");
-    }, 5000);
-  }
   /**
    * send quit message to server
    * server cleans up data on backend then
@@ -86,7 +80,15 @@ export default function Home() {
           setGame(json.game);
         } else if (json.action === "error") {
           console.error(json);
-          setError(t(json.code, { message: json.message }));
+          toast.error(t(json.code, { message: json.message }));
+          if (json.code === "errors.room_not_found") {
+            // Clear stale session data so that the user isn't continuously reconnected using an invalid session
+            setPlayerID(null);
+            setRegisteredRoomCode(null);
+            setGame({});
+            setHost(false);
+            cookieCutter.set("session", "");
+          }
         } else if (json.action === "ping") {
           console.debug("index.js: ping");
         } else {
@@ -110,7 +112,7 @@ export default function Home() {
         console.debug("wait for connection...");
         tries++;
         if (tries > 30) {
-          setError(t(ERROR_CODES.UNABLE_TO_CONNECT));
+          toast.error(t(ERROR_CODES.UNABLE_TO_CONNECT));
           return;
         }
         waitForSocketConnection(socket, callback, tries);
@@ -165,7 +167,6 @@ export default function Home() {
    */
   function joinRoom() {
     console.debug(`ws.current `, ws);
-    setError("");
     let roomcode = document.getElementById("roomCodeInput").value;
     if (roomcode.length === 4) {
       let playername = document.getElementById("playerNameInput").value;
@@ -179,10 +180,10 @@ export default function Home() {
           })
         );
       } else {
-        setError(t(ERROR_CODES.MISSING_INPUT, { message: t("name") }));
+        toast.error(t(ERROR_CODES.MISSING_INPUT, { message: t("name") }));
       }
     } else {
-      setError(t("room code is not correct length, should be 4 characters"));
+      toast.error(t("room code is not correct length, should be 4 characters"));
     }
   }
 
@@ -231,7 +232,6 @@ export default function Home() {
               playerName={playerName}
               joinRoom={joinRoom}
               hostRoom={hostRoom}
-              error={error}
             />
           </div>
           <Footer />

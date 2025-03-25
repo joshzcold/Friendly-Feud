@@ -36,10 +36,6 @@ func quitPlayer(room *room, client *Client, event *Event) error {
 		}
 	}
 
-	if ok && playerClient.stopPing != nil {
-		// clear interval
-		playerClient.stopPing <- true
-	}
 	message, err := NewSendQuit()
 	if err != nil {
 		return fmt.Errorf(" %w", err)
@@ -177,15 +173,14 @@ func getBackInPlayer(client *Client, room room, roomCode string, playerID string
 
 	playerClient, ok := room.registeredClients[playerID]
 	if ok {
-		if playerClient.stopPing != nil {
-			playerClient.stopPing <- true
+		if playerClient.client.stop != nil {
+			playerClient.client.stop <- true
 		}
 	}
 	playerClient = &RegisteredClient{
 		id:       playerID,
 		client:   client,
 		room:     &room,
-		stopPing: make(chan bool),
 	}
 	go playerClient.pingInterval()
 	room.registeredClients[playerID] = playerClient

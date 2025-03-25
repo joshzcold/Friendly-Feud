@@ -9,6 +9,7 @@ import cookieCutter from "cookie-cutter";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 let timerInterval = null;
 
@@ -16,7 +17,6 @@ export default function Game(props) {
   const { i18n, t } = useTranslation();
   const [game, setGame] = useState({});
   const [timer, setTimer] = useState(0);
-  const [error, setErrorVal] = useState("");
   const [showMistake, setShowMistake] = useState(false);
   const [isHost, setIsHost] = useState(false);
   const [buzzed, setBuzzed] = useState({});
@@ -29,13 +29,6 @@ export default function Game(props) {
       setTimer(game.final_round_timers[timerIndex]);
     }
   }, [game.is_final_round, game.is_final_second]);
-
-  function setError(e) {
-    setErrorVal(e);
-    setTimeout(() => {
-      setErrorVal("");
-    }, 5000);
-  }
 
   useEffect(() => {
     ws.current = new WebSocket(`wss://${window.location.host}/api/ws`);
@@ -179,14 +172,12 @@ export default function Game(props) {
 
     setInterval(() => {
       if (ws.current.readyState !== 1) {
-        setError(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounter}` }));
+        toast.error(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounter}` }));
         refreshCounter++;
         if (refreshCounter >= 5) {
           console.debug("game reload()");
           location.reload();
         }
-      } else {
-        setError("");
       }
     }, 1000);
   }, []);
@@ -242,16 +233,13 @@ export default function Game(props) {
             className={`pointer-events-none fixed inset-0 z-50 p-24 ${
               showMistake ? "opacity-90" : "opacity-0"
             } transition-opacity duration-300 ease-in-out`}
-            src="/x.svg"
+            src="/x.png"
             alt="Mistake indicator"
             aria-hidden={!showMistake}
           />
         </div>
         <div className={`${game?.settings?.theme} min-h-screen`}>
-          <div className="">
-            {gameSession}
-            {error !== "" ? <p className="text-2xl text-failure-700">{error}</p> : null}
-          </div>
+          <div className="">{gameSession}</div>
         </div>
         <BuzzerPopup buzzed={buzzed} />
       </>
