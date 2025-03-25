@@ -1,7 +1,7 @@
-import { useTranslation } from "react-i18next";
 import { Buffer } from "buffer";
 import { FileUp } from "lucide-react";
-import { Image } from "next/image";
+import Image from "next/image";
+import { useTranslation } from "react-i18next";
 
 function BeforeUpload({ send, room, setGame, game, setError, setImageUploaded }) {
   const { t } = useTranslation();
@@ -125,9 +125,25 @@ function AfterUpload({ send, room, game, setGame, setImageUploaded, imageUploade
 }
 
 function TitleLogoUpload({ send, room, setGame, game, setError, setImageUploaded, imageUploaded }) {
-  return imageUploaded === null
-    ? <BeforeUpload send={send} room={room} game={game} setGame={setGame} setError={setError} setImageUploaded={setImageUploaded} />
-    : <AfterUpload send={send} room={room} game={game} setGame={setGame} setImageUploaded={setImageUploaded} imageUploaded={imageUploaded} />;
+  return imageUploaded === null ? (
+    <BeforeUpload
+      send={send}
+      room={room}
+      game={game}
+      setGame={setGame}
+      setError={setError}
+      setImageUploaded={setImageUploaded}
+    />
+  ) : (
+    <AfterUpload
+      send={send}
+      room={room}
+      game={game}
+      setGame={setGame}
+      setImageUploaded={setImageUploaded}
+      imageUploaded={imageUploaded}
+    />
+  );
 }
 
 export default TitleLogoUpload;
