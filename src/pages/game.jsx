@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 let timerInterval = null;
 
-export default function Game(props) {
+export default function Game() {
   const { i18n, t } = useTranslation();
   const [game, setGame] = useState({});
   const [timer, setTimer] = useState(0);

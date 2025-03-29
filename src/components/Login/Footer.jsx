@@ -52,7 +52,7 @@ const SourceCode = () => {
   );
 };
 
-export default function Footer(props) {
+export default function Footer() {
   return (
     <div className="absolute bottom-0 left-0 min-w-full bg-background">
       <hr />

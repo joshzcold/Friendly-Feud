@@ -3,15 +3,13 @@ import Team from "@/components/Title/Team";
 import TitleLogo from "@/components/TitleLogo";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 
-export default function TitlePage(props) {
-  const { i18n, t } = useTranslation();
+export default function TitlePage({ game }) {
   const [titleSize, setTitleSize] = useState("10%");
 
   useEffect(() => {
     const handleResize = () => {
-      if (props.game.settings.logo_url) {
+      if (game.settings.logo_url) {
         setTitleSize(window.innerWidth * 0.75);
       } else {
         setTitleSize(
@@ -35,15 +33,15 @@ export default function TitlePage(props) {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [props.game.settings.logo_url]);
+  }, [game.settings.logo_url]);
 
   function returnTeamMates(team) {
     let players = [];
-    console.debug(props.game);
-    Object.keys(props.game.registeredPlayers).forEach((k) => {
+    console.debug(game);
+    Object.keys(game.registeredPlayers).forEach((k) => {
       console.debug(k);
-      if (props.game.registeredPlayers[k].team === team) {
-        players.push(props.game.registeredPlayers[k].name);
+      if (game.registeredPlayers[k].team === team) {
+        players.push(game.registeredPlayers[k].name);
       }
     });
     console.debug(players);
@@ -61,18 +59,18 @@ export default function TitlePage(props) {
         className="inline-block align-middle"
       >
         <div className="flex w-full justify-center ">
-          {props.game.settings.logo_url ? (
+          {game.settings.logo_url ? (
             <Image
               width={300}
               height={300}
               style={{ objectFit: "contain" }}
-              src={`${props.game.settings.logo_url}?v=${Date.now()}`}
+              src={`${game.settings.logo_url}?v=${Date.now()}`}
               alt="Game logo"
               priority // Load image immediately
               unoptimized // Skip caching
             />
           ) : (
-            <TitleLogo insert={props.game.title_text} size={titleSize} />
+            <TitleLogo insert={game.title_text} size={titleSize} />
           )}
         </div>
       </div>
@@ -84,9 +82,9 @@ export default function TitlePage(props) {
           transition: "width 2s",
         }}
       >
-        <Team team={props.game.teams[0].name} players={returnTeamMates(0)} />
-        <RoomCode code={props.game.room} />
-        <Team team={props.game.teams[1].name} players={returnTeamMates(1)} />
+        <Team team={game.teams[0].name} players={returnTeamMates(0)} />
+        <RoomCode code={game.room} />
+        <Team team={game.teams[1].name} players={returnTeamMates(1)} />
       </div>
     </div>
   );

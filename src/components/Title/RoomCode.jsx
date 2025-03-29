@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 const RoomCode = ({ code }) => {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   if (!code) return null;
 
   return (
