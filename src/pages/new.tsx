@@ -4,11 +4,14 @@ import "@/i18n/i18n";
 import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { validateGameData } from "@/lib/utils";
+import type { FinalRoundAnswer } from "@/src/types/game";
 
 export default function CreateGame() {
   const { t } = useTranslation();
   let gameTemplate = {
-    settings: {},
+    settings: {
+      theme: "default",
+    },
     rounds: [
       {
         question: "",
@@ -16,10 +19,10 @@ export default function CreateGame() {
         multiply: 1,
       },
     ],
-    final_round: Array.from(Array(5), (x, index) => {
+    final_round: Array.from(Array(5), (_, index) => {
       return {
         question: `${t("question")} ${t("number", { count: index + 1 })}`,
-        answers: [],
+        answers: [] as FinalRoundAnswer[],
       };
     }),
     final_round_timers: [20, 25],
@@ -27,12 +30,14 @@ export default function CreateGame() {
   const [error, setError] = useState("");
   const [game, setGame] = useState(gameTemplate);
   const [theme, setTheme] = useState({
-    settings: {},
+    settings: {
+      theme: "default",
+    },
   });
 
   console.debug(game);
 
-  const downloadToFile = (content, filename, contentType) => {
+  const downloadToFile = (content: string, filename: string, contentType: string) => {
     const a = document.createElement("a");
     const file = new Blob([content], { type: contentType });
 
@@ -71,21 +76,24 @@ export default function CreateGame() {
                   id="gamePickerSubmitButton"
                   className="rounded-md bg-primary-200 p-2 hover:shadow-md"
                   onClick={() => {
-                    var file = document.getElementById("gamePicker").files[0];
+                    const fileInput = document.getElementById("gamePicker") as HTMLInputElement;
+                    const file = fileInput?.files?.[0];
                     if (file) {
                       var reader = new FileReader();
                       reader.readAsText(file, "utf-8");
                       reader.onload = function (evt) {
-                        let data = JSON.parse(evt.target.result);
-                        console.debug(data);
+                        if (evt.target?.result) {
+                          let data = JSON.parse(evt.target.result as string);
+                          console.debug(data);
 
-                        data.final_round == null ? (data.final_round = gameTemplate.final_round) : null;
-                        data.rounds == null ? (data.rounds = gameTemplate.rounds) : null;
-                        data.final_round_timers == null
-                          ? (data.final_round_timers = gameTemplate.final_round_timers)
-                          : null;
-                        data.settings == null ? (data.settings = gameTemplate.settings) : null;
-                        setGame(data);
+                          data.final_round == null ? (data.final_round = gameTemplate.final_round) : null;
+                          data.rounds == null ? (data.rounds = gameTemplate.rounds) : null;
+                          data.final_round_timers == null
+                            ? (data.final_round_timers = gameTemplate.final_round_timers)
+                            : null;
+                          data.settings == null ? (data.settings = gameTemplate.settings) : null;
+                          setGame(data);
+                        }
                       };
                       reader.onerror = function (evt) {
                         console.error("error reading file");
@@ -307,7 +315,7 @@ export default function CreateGame() {
                   <button
                     id={`finalRoundQuestion${qin}AddAnswerButton`}
                     onClick={() => {
-                      q.answers.push(["", ""]);
+                      q.answers.push(["", 0]);
                       setGame((prv) => ({ ...prv }));
                     }}
                     className="text-md rounded-md bg-success-200 px-3 py-1 hover:shadow-md"

@@ -46,6 +46,7 @@ export interface Round {
 export interface FinalRoundAnswer {
   0: string; // Answer text
   1: number; // Points
+  [index: number]: string | number;
 }
 
 export interface FinalRound {
