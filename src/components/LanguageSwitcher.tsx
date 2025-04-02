@@ -2,7 +2,11 @@ import { Languages } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-export default function LanguageSwitcher({ onChange }) {
+interface LanguageSwitcherProps {
+  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+
+export default function LanguageSwitcher({ onChange }: LanguageSwitcherProps) {
   const { i18n, t } = useTranslation();
   return (
     <div className="flex items-center gap-4 ">
