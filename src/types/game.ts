@@ -16,6 +16,12 @@ export interface Buzzed {
   id: string;
 }
 
+export interface BuzzedState {
+  id?: string;
+  name?: string;
+  team?: string;
+}
+
 export interface Settings {
   logo_url: string | null;
   hide_questions: boolean;
