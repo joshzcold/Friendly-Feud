@@ -156,10 +156,16 @@ export default function GamePage() {
       } else if (json.action === "set_timer") {
         setTimer(json.data);
       } else if (json.action === "stop_timer") {
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = null;
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
       } else if (json.action === "start_timer") {
-        if (timerInterval) clearInterval(timerInterval);
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+
         timerInterval = setInterval(() => {
           setTimer((prevTimer) => {
             if (prevTimer > 0) {
@@ -167,20 +173,18 @@ export default function GamePage() {
             } else {
               var audio = new Audio("try-again.mp3");
               audio.play();
-              if (timerInterval) clearInterval(timerInterval);
+
+              clearInterval(timerInterval!);
               timerInterval = null;
 
               try {
                 const session = cookieCutter.get("session");
-                let sessionParts;
-
-                if (session) {
-                  sessionParts = session.split(":");
-                } else {
+                if (!session) {
                   console.error("No session cookie found");
                   return 0;
                 }
 
+                const sessionParts = session.split(":");
                 if (sessionParts.length !== 2) {
                   console.error("Invalid session cookie format");
                   return 0;
@@ -195,6 +199,8 @@ export default function GamePage() {
                       id: id,
                     })
                   );
+                } else {
+                  console.warn("WebSocket not open when trying to send timer_complete");
                 }
               } catch (error) {
                 console.error("Error processing session cookie:", error);
