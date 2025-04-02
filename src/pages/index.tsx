@@ -7,6 +7,8 @@ import BuzzerPage from "@/components/BuzzerPage";
 import Footer from "@/components/Login/Footer";
 import LoginPage from "@/components/LoginPage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
+import { Game } from "@/types/game";
+// @ts-expect-error: not sure if cookie-cutter is typed
 import cookieCutter from "cookie-cutter";
 import { toast } from "sonner";
 
@@ -14,13 +16,13 @@ export default function Home() {
   const { t } = useTranslation();
   const [playerName, setPlayerName] = useState("");
   const [roomCode, setRoomCode] = useState("");
-  const [registeredRoomCode, setRegisteredRoomCode] = useState(null);
+  const [registeredRoomCode, setRegisteredRoomCode] = useState<string | null>("");
   const [host, setHost] = useState(false);
-  const [game, setGame] = useState(null);
-  const [team, setTeam] = useState(null);
-  const [playerID, setPlayerID] = useState(null);
+  const [game, setGame] = useState<Game | null>(null);
+  const [team, setTeam] = useState<number | null>(null);
+  const [playerID, setPlayerID] = useState<string | null>("");
 
-  const ws = useRef(null);
+  const ws = useRef<WebSocket | null>(null);
 
   /**
    * send quit message to server
@@ -28,83 +30,89 @@ export default function Home() {
    * tells client to clean up
    */
   function quitGame(host = false) {
-    ws.current.send(
-      JSON.stringify({
-        action: "quit",
-        host: host,
-        id: playerID,
-        room: registeredRoomCode,
-      })
-    );
+    if (ws.current) {
+      ws.current.send(
+        JSON.stringify({
+          action: "quit",
+          host: host,
+          id: playerID,
+          room: registeredRoomCode,
+        })
+      );
+    } else {
+      console.error("WebSocket connection is not open.");
+    }
   }
 
-  function startWsConnection(ws) {
+  function startWsConnection() {
     ws.current = new WebSocket(`wss://${window.location.host}/api/ws`);
     ws.current.onopen = function () {
       console.debug("game connected to server", ws.current);
-      ws.current.onmessage = function (evt) {
-        var received_msg = evt.data;
-        let json = JSON.parse(received_msg);
-        if (json.action === "host_room") {
-          console.debug("registering room with host", json.room);
-          setPlayerID(json.id);
-          setHost(true);
-          setRegisteredRoomCode(json.room);
-          setGame(json.game);
-          cookieCutter.set("session", `${json.room}:${json.id}`);
-        } else if (json.action === "join_room") {
-          console.debug("Joining room : ", json);
-          setPlayerID(json.id);
-          setRegisteredRoomCode(json.room);
-          setGame(json.game);
-          if (json.team != null) {
-            setTeam(json.team);
-          }
-        } else if (json.action === "quit") {
-          console.debug("player quit");
-          setPlayerID(null);
-          setRegisteredRoomCode(null);
-          cookieCutter.set("session", "");
-          setGame({});
-          setHost(false);
-        } else if (json.action === "get_back_in") {
-          console.debug("Getting back into room", json);
-          if (json.host === true) {
+      if (ws.current) {
+        ws.current.onmessage = function (evt: MessageEvent) {
+          var received_msg = evt.data;
+          let json = JSON.parse(received_msg);
+          if (json.action === "host_room") {
+            console.debug("registering room with host", json.room);
+            setPlayerID(json.id);
             setHost(true);
-          }
-          if (Number.isInteger(json.team)) {
-            setTeam(json.team);
-          }
-          setPlayerID(json.id);
-          setRegisteredRoomCode(json.room);
-          setGame(json.game);
-        } else if (json.action === "error") {
-          console.error(json);
-          toast.error(t(json.code, { message: json.message }));
-          if (json.code === "errors.room_not_found") {
-            // Clear stale session data so that the user isn't continuously reconnected using an invalid session
+            setRegisteredRoomCode(json.room);
+            setGame(json.game);
+            cookieCutter.set("session", `${json.room}:${json.id}`);
+          } else if (json.action === "join_room") {
+            console.debug("Joining room : ", json);
+            setPlayerID(json.id);
+            setRegisteredRoomCode(json.room);
+            setGame(json.game);
+            if (json.team != null) {
+              setTeam(json.team);
+            }
+          } else if (json.action === "quit") {
+            console.debug("player quit");
             setPlayerID(null);
             setRegisteredRoomCode(null);
-            setGame({});
-            setHost(false);
             cookieCutter.set("session", "");
+            setGame(null);
+            setHost(false);
+          } else if (json.action === "get_back_in") {
+            console.debug("Getting back into room", json);
+            if (json.host === true) {
+              setHost(true);
+            }
+            if (Number.isInteger(json.team)) {
+              setTeam(json.team);
+            }
+            setPlayerID(json.id);
+            setRegisteredRoomCode(json.room);
+            setGame(json.game);
+          } else if (json.action === "error") {
+            console.error(json);
+            toast.error(t(json.code, { message: json.message }));
+            if (json.code === "errors.room_not_found") {
+              // Clear stale session data so that the user isn't continuously reconnected using an invalid session
+              setPlayerID(null);
+              setRegisteredRoomCode(null);
+              setGame(null);
+              setHost(false);
+              cookieCutter.set("session", "");
+            }
+          } else if (json.action === "ping") {
+            console.debug("index.js: ping");
+          } else {
+            console.debug("did not expect in index.js: ", json);
           }
-        } else if (json.action === "ping") {
-          console.debug("index.js: ping");
-        } else {
-          console.debug("did not expect in index.js: ", json);
-        }
-      };
+        };
 
-      ws.current.onerror = function (e) {
-        console.error(e);
-      };
+        ws.current.onerror = function (e: Event) {
+          console.error(e);
+        };
+      }
     };
   }
 
-  function waitForSocketConnection(socket, callback, tries = 0) {
+  function waitForSocketConnection(socket: WebSocket | null, callback: () => void, tries = 0) {
     setTimeout(function () {
-      if (socket.readyState === 1) {
+      if (socket && socket.readyState === 1) {
         if (callback != null) {
           callback();
         }
@@ -126,13 +134,17 @@ export default function Home() {
    * doesn't stay idleing while a player is sitting
    * on the main page
    */
-  function send(message) {
+  function send(message: string) {
     console.debug("send", ws);
-    if (ws.current?.readyState !== 1 || !ws.current) {
+    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
       console.debug("connecting to server... new connection");
-      startWsConnection(ws);
+      startWsConnection();
       waitForSocketConnection(ws.current, function () {
-        ws.current.send(message);
+        if (ws.current) {
+          ws.current.send(message);
+        } else {
+          console.error("WebSocket connection is not open after waiting.");
+        }
       });
     } else {
       console.debug("send", message);
@@ -167,16 +179,16 @@ export default function Home() {
    */
   function joinRoom() {
     console.debug(`ws.current `, ws);
-    let roomcode = document.getElementById("roomCodeInput").value;
-    if (roomcode.length === 4) {
-      let playername = document.getElementById("playerNameInput").value;
-      if (playername.length > 0) {
-        console.debug(`roomcode: ${roomcode}, playername ${playername}`);
+    const roomCodeInput = document.getElementById("roomCodeInput") as HTMLInputElement;
+    const playerNameInput = document.getElementById("playerNameInput") as HTMLInputElement;
+    if (roomCodeInput && roomCodeInput.value.length === 4) {
+      if (playerNameInput && playerNameInput.value.length > 0) {
+        console.debug(`roomcode: ${roomCodeInput.value}, playername ${playerNameInput.value}`);
         send(
           JSON.stringify({
             action: "join_room",
-            room: roomcode.toUpperCase(),
-            name: playername,
+            room: roomCodeInput.value.toUpperCase(),
+            name: playerNameInput.value,
           })
         );
       } else {
@@ -241,7 +253,7 @@ export default function Home() {
   }
 
   if (typeof window !== "undefined") {
-    document.body.className = game?.settings?.theme + " bg-background";
+    document.body.className = (game?.settings?.theme ?? "default") + " bg-background";
   }
   return (
     <>
@@ -258,7 +270,7 @@ export default function Home() {
           style={{
             width: "100vh",
           }}
-          className={`${game?.settings?.theme} h-screen w-screen`}
+          className={`${game?.settings?.theme ?? "default"} h-screen w-screen`}
         >
           {/* TODO put in the theme switcher and put setting here */}
           {getPage()}
