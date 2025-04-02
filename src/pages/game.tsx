@@ -5,30 +5,33 @@ import Round from "@/components/Round";
 import TeamName from "@/components/TeamName";
 import TitlePage from "@/components/Title/TitlePage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
+import { BuzzedState, Game } from "@/types/game";
+// @ts-expect-error: not sure if cookie-cutter is typed
 import cookieCutter from "cookie-cutter";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-let timerInterval = null;
+let timerInterval: NodeJS.Timeout | null = null;
 
-export default function Game() {
+export default function GamePage() {
   const { i18n, t } = useTranslation();
-  const [game, setGame] = useState({});
+  const [game, setGame] = useState<Game | null>(null);
   const [timer, setTimer] = useState(0);
   const [showMistake, setShowMistake] = useState(false);
   const [isHost, setIsHost] = useState(false);
-  const [buzzed, setBuzzed] = useState({});
-  const ws = useRef(null);
-  let refreshCounter = 0;
+  const [buzzed, setBuzzed] = useState<BuzzedState>({});
+  const ws = useRef<WebSocket | null>(null);
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const refreshCounterRef = useRef(0);
 
   useEffect(() => {
-    if (game.is_final_round && game.final_round_timers) {
+    if (game?.is_final_round && game.final_round_timers) {
       const timerIndex = game.is_final_second ? 1 : 0;
       setTimer(game.final_round_timers[timerIndex]);
     }
-  }, [game.is_final_round, game.is_final_second]);
+  }, [game?.is_final_round, game?.is_final_second, game?.final_round_timers]);
 
   useEffect(() => {
     ws.current = new WebSocket(`wss://${window.location.host}/api/ws`);
@@ -36,58 +39,94 @@ export default function Game() {
       console.log("game connected to server");
       let session = cookieCutter.get("session");
       console.debug(session);
-      if (session != null) {
+      if (session != null && ws.current) {
         console.debug("found user session", session);
         ws.current.send(JSON.stringify({ action: "game_window", session: session }));
-        setInterval(() => {
-          console.debug("sending pong in game window");
-          let [room, id] = session.split(":");
-          ws.current.send(
-            JSON.stringify({
-              action: "pong",
-              session: session,
-              id: session.split(":")[1],
-              room: session.split(":")[0],
-            })
-          );
+
+        const pingInterval = setInterval(() => {
+          if (ws.current?.readyState === WebSocket.OPEN) {
+            console.debug("sending pong in game window");
+            const sessionParts = session?.split(":");
+            if (sessionParts?.length === 2) {
+              const [room, id] = sessionParts;
+              ws.current.send(
+                JSON.stringify({
+                  action: "pong",
+                  session: session,
+                  id: id,
+                  room: room,
+                })
+              );
+            } else {
+              console.error("Invalid session format for pong:", session);
+            }
+          } else {
+            clearInterval(pingInterval);
+          }
         }, 5000);
+
+        return () => clearInterval(pingInterval);
       }
     };
 
     ws.current.onmessage = function (evt) {
       var received_msg = evt.data;
-      let json = JSON.parse(received_msg);
+      let json;
+      try {
+        json = JSON.parse(received_msg);
+      } catch (error) {
+        console.error("Failed to parse WebSocket message:", error);
+        return;
+      }
+
       console.debug(json);
       if (json.action === "data") {
-        if (Object.keys(buzzed).length === 0 && json.data.buzzed.length > 0) {
-          let userId = json.data.buzzed[0].id;
-          let user = json.data.registeredPlayers[userId];
-          setBuzzed({
-            id: userId,
-            name: user.name,
-            team: json.data.teams[user.team].name,
-          });
-        } else if (Object.keys(buzzed).length > 0 && json.data.buzzed.length === 0) {
+        const newGameData: Game = json.data;
+
+        if (Object.keys(buzzed).length === 0 && newGameData.buzzed.length > 0) {
+          const buzzerInfo = newGameData.buzzed[0];
+          const user = newGameData.registeredPlayers[buzzerInfo.id];
+          if (user && newGameData.teams[user.team ?? 0]) {
+            setBuzzed({
+              id: buzzerInfo.id,
+              name: user.name,
+              team: newGameData.teams[user.team ?? 0].name,
+            });
+          } else {
+            console.warn("Buzzed user or team not found:", buzzerInfo, newGameData);
+            setBuzzed({});
+          }
+        } else if (Object.keys(buzzed).length > 0 && newGameData.buzzed.length === 0) {
           setBuzzed({});
         }
-        if (json.data.title_text === "Change Me") {
-          json.data.title_text = t("Change Me");
+
+        if (newGameData.title_text === "Change Me") {
+          newGameData.title_text = t("Change Me");
         }
-        if (json.data.teams[0].name === "Team 1") {
-          json.data.teams[0].name = `${t("team")} ${t("number", {
+        if (newGameData.teams[0]?.name === "Team 1") {
+          newGameData.teams[0].name = `${t("team")} ${t("number", {
             count: 1,
           })}`;
         }
-        if (json.data.teams[1].name === "Team 2") {
-          json.data.teams[1].name = `${t("team")} ${t("number", {
+        if (newGameData.teams[1]?.name === "Team 2") {
+          newGameData.teams[1].name = `${t("team")} ${t("number", {
             count: 2,
           })}`;
         }
-        setGame(json.data);
+
+        setGame(newGameData);
+
         let session = cookieCutter.get("session");
-        let [_, id] = session.split(":");
-        if (json.data?.registeredPlayers[id] == "host") {
-          setIsHost(true);
+        let sessionParts;
+        if (session) {
+          sessionParts = session.split(":");
+        } else {
+          console.error("No session cookie found");
+          return;
+        }
+        if (sessionParts.length === 2) {
+          const [_, id] = sessionParts;
+          setIsHost(newGameData.host.id === id);
         }
       } else if (json.action === "mistake" || json.action === "show_mistake") {
         var audio = new Audio("wrong.mp3");
@@ -97,7 +136,7 @@ export default function Game() {
           setShowMistake(false);
         }, 2000);
       } else if (json.action === "quit") {
-        setGame({});
+        setGame(null);
         window.close();
       } else if (json.action === "reveal") {
         var audio = new Audio("good-answer.mp3");
@@ -117,8 +156,10 @@ export default function Game() {
       } else if (json.action === "set_timer") {
         setTimer(json.data);
       } else if (json.action === "stop_timer") {
-        clearInterval(timerInterval);
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
       } else if (json.action === "start_timer") {
+        if (timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(() => {
           setTimer((prevTimer) => {
             if (prevTimer > 0) {
@@ -126,30 +167,35 @@ export default function Game() {
             } else {
               var audio = new Audio("try-again.mp3");
               audio.play();
-              clearInterval(timerInterval);
+              if (timerInterval) clearInterval(timerInterval);
+              timerInterval = null;
 
-              // Send timer stop to admin.js
               try {
-                let session = cookieCutter.get("session");
-                let [room, id] = session.split(":");
+                const session = cookieCutter.get("session");
+                let sessionParts;
 
-                if (!session) {
+                if (session) {
+                  sessionParts = session.split(":");
+                } else {
                   console.error("No session cookie found");
                   return 0;
                 }
 
-                if (!room || !id) {
+                if (sessionParts.length !== 2) {
                   console.error("Invalid session cookie format");
                   return 0;
                 }
+                const [room, id] = sessionParts;
 
-                ws.current.send(
-                  JSON.stringify({
-                    action: "timer_complete",
-                    room: room,
-                    id: id,
-                  })
-                );
+                if (ws.current?.readyState === WebSocket.OPEN) {
+                  ws.current.send(
+                    JSON.stringify({
+                      action: "timer_complete",
+                      room: room,
+                      id: id,
+                    })
+                  );
+                }
               } catch (error) {
                 console.error("Error processing session cookie:", error);
               }
@@ -170,19 +216,37 @@ export default function Game() {
       }
     };
 
-    setInterval(() => {
-      if (ws.current.readyState !== 1) {
-        toast.error(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounter}` }));
-        refreshCounter++;
-        if (refreshCounter >= 5) {
+    ws.current.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      toast.error(t(ERROR_CODES.CONNECTION_LOST));
+    };
+
+    ws.current.onclose = (event) => {
+      console.log("WebSocket connection closed:", event.code, event.reason);
+    };
+
+    refreshIntervalRef.current = setInterval(() => {
+      if (ws.current?.readyState !== WebSocket.OPEN) {
+        refreshCounterRef.current++;
+        toast.error(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounterRef.current}` }));
+        if (refreshCounterRef.current >= 5) {
           console.debug("game reload()");
+          if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
           location.reload();
         }
+      } else {
+        refreshCounterRef.current = 0;
       }
-    }, 1000);
+    }, 3000);
+
+    return () => {
+      if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
+      if (timerInterval) clearInterval(timerInterval);
+      ws.current?.close();
+    };
   }, []);
 
-  if (game.teams != null) {
+  if (game?.teams != null) {
     let gameSession;
     if (game.title) {
       gameSession = <TitlePage game={game} />;
@@ -195,20 +259,26 @@ export default function Game() {
         </div>
       );
     } else {
-      gameSession = (
-        <div className="flex flex-col space-y-10 px-10 py-20">
-          <Round game={game} />
-          <QuestionBoard round={game.rounds[game.round]} />
-          <div className="flex flex-row justify-around">
-            <TeamName game={game} team={0} />
-            <TeamName game={game} team={1} />
+      const currentRoundData = game.rounds && game.rounds[game.round];
+      if (!currentRoundData) {
+        console.error("Invalid round index or missing round data:", game.round, game.rounds);
+        gameSession = <div>Error: Invalid round data</div>;
+      } else {
+        gameSession = (
+          <div className="flex flex-col space-y-10 px-10 py-20">
+            <Round game={game} />
+            <QuestionBoard round={currentRoundData} />
+            <div className="flex flex-row justify-around">
+              <TeamName game={game} team={0} />
+              <TeamName game={game} team={1} />
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
     }
 
     if (typeof window !== "undefined") {
-      document.body.className = game?.settings?.theme + " bg-background";
+      document.body.className = (game?.settings?.theme ?? "default") + " bg-background";
     }
     return (
       <>
@@ -238,7 +308,7 @@ export default function Game() {
             aria-hidden={!showMistake}
           />
         </div>
-        <div className={`${game?.settings?.theme} min-h-screen`}>
+        <div className={`${game?.settings?.theme ?? "default"} min-h-screen`}>
           <div className="">{gameSession}</div>
         </div>
         <BuzzerPopup buzzed={buzzed} />
