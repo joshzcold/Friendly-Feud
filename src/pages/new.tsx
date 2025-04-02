@@ -4,7 +4,7 @@ import "@/i18n/i18n";
 import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { validateGameData } from "@/lib/utils";
-import type { FinalRoundAnswer } from "@/src/types/game";
+import type { FinalRoundAnswer } from "@/types/game";
 
 export default function CreateGame() {
   const { t } = useTranslation();
