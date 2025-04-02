@@ -4,8 +4,12 @@ import ToasterWithTheme from "@/components/ToasterWithTheme";
 import Head from "next/head";
 import Script from "next/script";
 
-// This default export is required in a new `pages/_app.js` file.
-export default function MyApp({ Component, pageProps }) {
+interface MyAppProps {
+  Component: React.ComponentType;
+  pageProps: Record<string, unknown>;
+}
+
+export default function MyApp({ Component, pageProps }: MyAppProps) {
   return (
     <>
       <Head>
