@@ -158,14 +158,8 @@ export default function GamePage() {
       } else if (json.action === "stop_timer") {
         if (timerInterval) {
           clearInterval(timerInterval);
-          timerInterval = null;
         }
       } else if (json.action === "start_timer") {
-        if (timerInterval) {
-          clearInterval(timerInterval);
-          timerInterval = null;
-        }
-
         timerInterval = setInterval(() => {
           setTimer((prevTimer) => {
             if (prevTimer > 0) {
@@ -174,22 +168,24 @@ export default function GamePage() {
               var audio = new Audio("try-again.mp3");
               audio.play();
 
-              clearInterval(timerInterval!);
-              timerInterval = null;
+              if (timerInterval) {
+                clearInterval(timerInterval);
+              }
 
+              // Send timer stop to admin.js
               try {
-                const session = cookieCutter.get("session");
+                let session = cookieCutter.get("session");
+                let [room, id] = session.split(":");
+
                 if (!session) {
                   console.error("No session cookie found");
                   return 0;
                 }
 
-                const sessionParts = session.split(":");
-                if (sessionParts.length !== 2) {
+                if (!room || !id) {
                   console.error("Invalid session cookie format");
                   return 0;
                 }
-                const [room, id] = sessionParts;
 
                 if (ws.current?.readyState === WebSocket.OPEN) {
                   ws.current.send(
