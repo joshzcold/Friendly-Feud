@@ -1,14 +1,19 @@
+import { BuzzedState } from "@/types/game";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const BuzzerPopup = ({ buzzed }) => {
+interface BuzzerPopupProps {
+  buzzed: BuzzedState;
+}
+
+export default function BuzzerPopup({ buzzed }: BuzzerPopupProps) {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const firstPressRef = useRef(false);
   const isInitialMount = useRef(true);
 
   useEffect(() => {
-    let timer;
+    let timer: NodeJS.Timeout | null = null;
 
     if (isVisible) {
       timer = setTimeout(() => {
@@ -84,6 +89,4 @@ const BuzzerPopup = ({ buzzed }) => {
       </div>
     </div>
   );
-};
-
-export default BuzzerPopup;
+}
