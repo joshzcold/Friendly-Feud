@@ -8,7 +8,7 @@ interface HideGameQuestionsProps {
   send: (data: any) => void;
 }
 
-function HideGameQuestions({ game, setGame, send }: HideGameQuestionsProps) {
+export default function HideGameQuestions({ game, setGame, send }: HideGameQuestionsProps) {
   const { t } = useTranslation();
 
   let textColor = game.settings.hide_questions ? "text-foreground" : "text-foreground";
@@ -21,16 +21,30 @@ function HideGameQuestions({ game, setGame, send }: HideGameQuestionsProps) {
       id="hideQuestionsInput"
       className={`rounded border-4 p-10 text-2xl ${textColor} ${buttonColor} ${disabledOpacity}`}
       onClick={() => {
-        game.settings.hide_questions = !game.settings.hide_questions;
-        setGame((prv) => ({ ...prv }));
-        send({ action: "data", data: game });
+        setGame((prevGame) => {
+          if (prevGame === null) {
+            return prevGame;
+          }
+
+          const hideGame = !game.settings.hide_questions;
+
+          const updatedGame = {
+            ...prevGame,
+            settings: {
+              ...prevGame.settings,
+              hide_questions: hideGame,
+            },
+          };
+
+          send({ action: "data", data: updatedGame });
+
+          return updatedGame;
+        });
       }}
-      type="checkbox"
+      type="button"
       disabled={game.is_final_round}
     >
       {textContent}
     </button>
   );
 }
-
-export default HideGameQuestions;
