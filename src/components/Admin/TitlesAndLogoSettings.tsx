@@ -1,8 +1,26 @@
 import TitleLogoUpload from "@/components/Admin/TitleLogoUpload";
 import { debounce } from "@/lib/utils";
+import { Game } from "@/types/game";
+import React, { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
-function TitlesAndLogoSettings({ game, send, room, setGame, setImageUploaded, imageUploaded, error }) {
+interface TitlesAndLogoSettingsProps {
+  game: Game;
+  send: (data: any) => void;
+  room: string;
+  setGame: React.Dispatch<React.SetStateAction<Game | null>>;
+  setImageUploaded: Dispatch<SetStateAction<null>>;
+  imageUploaded: string | null;
+}
+
+export default function TitlesAndLogoSettings({
+  game,
+  send,
+  room,
+  setGame,
+  setImageUploaded,
+  imageUploaded,
+}: TitlesAndLogoSettingsProps) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center space-y-5">
@@ -14,10 +32,23 @@ function TitlesAndLogoSettings({ game, send, room, setGame, setImageUploaded, im
             <input
               id="titleTextInput"
               className="w-44 rounded border-4 bg-secondary-500 p-1 text-2xl text-foreground placeholder:text-secondary-900"
-              onChange={debounce((e) => {
-                game.title_text = e.target.value;
-                setGame((prv) => ({ ...prv }));
-                send({ action: "data", data: game });
+              onChange={debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+                setGame((prevGame) => {
+                  if (prevGame === null) {
+                    return prevGame;
+                  }
+
+                  const newTitleText = e.target.value;
+
+                  const updatedGame = {
+                    ...prevGame,
+                    title_text: newTitleText,
+                  };
+
+                  send({ action: "data", data: updatedGame });
+
+                  return updatedGame;
+                });
               })}
               placeholder={t("My Family")}
               defaultValue={game.title_text}
@@ -37,10 +68,29 @@ function TitlesAndLogoSettings({ game, send, room, setGame, setImageUploaded, im
           <input
             id="teamOneNameInput"
             className="w-52 rounded border-4 bg-secondary-500 p-1 text-3xl text-foreground placeholder:text-secondary-900"
-            onChange={debounce((e) => {
-              game.teams[0].name = e.target.value;
-              setGame((prv) => ({ ...prv }));
-              send({ action: "data", data: game });
+            onChange={debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+              setGame((prevGame) => {
+                if (prevGame === null) {
+                  return prevGame;
+                }
+
+                const team1Name = e.target.value;
+
+                const updatedGame = {
+                  ...prevGame,
+                  teams: [
+                    {
+                      ...prevGame.teams[0],
+                      name: team1Name,
+                    },
+                    prevGame.teams[1],
+                  ],
+                };
+
+                send({ action: "data", data: updatedGame });
+
+                return updatedGame;
+              });
             })}
             placeholder={t("Team Name")}
             defaultValue={game.teams[0].name}
@@ -56,9 +106,28 @@ function TitlesAndLogoSettings({ game, send, room, setGame, setImageUploaded, im
               let number = parseInt(e.target.value);
               console.debug(number);
               isNaN(number) ? (number = 0) : null;
-              game.teams[0].points = number;
-              setGame((prv) => ({ ...prv }));
-              send({ action: "data", data: game });
+              setGame((prevGame) => {
+                if (prevGame === null) {
+                  return prevGame;
+                }
+
+                const team1Points = number;
+
+                const updatedGame = {
+                  ...prevGame,
+                  teams: [
+                    {
+                      ...prevGame.teams[0],
+                      points: team1Points,
+                    },
+                    prevGame.teams[1],
+                  ],
+                };
+
+                send({ action: "data", data: updatedGame });
+
+                return updatedGame;
+              });
             }}
             value={game.teams[0].points}
           ></input>
@@ -68,10 +137,29 @@ function TitlesAndLogoSettings({ game, send, room, setGame, setImageUploaded, im
           <input
             id="teamTwoNameInput"
             className="w-52 rounded border-4 bg-secondary-500 p-1 text-3xl text-foreground placeholder:text-secondary-900"
-            onChange={debounce((e) => {
-              game.teams[1].name = e.target.value;
-              setGame((prv) => ({ ...prv }));
-              send({ action: "data", data: game });
+            onChange={debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+              setGame((prevGame) => {
+                if (prevGame === null) {
+                  return prevGame;
+                }
+
+                const team2Name = e.target.value;
+
+                const updatedGame = {
+                  ...prevGame,
+                  teams: [
+                    prevGame.teams[0],
+                    {
+                      ...prevGame.teams[1],
+                      name: team2Name,
+                    },
+                  ],
+                };
+
+                send({ action: "data", data: updatedGame });
+
+                return updatedGame;
+              });
             })}
             placeholder={t("Team Name")}
             defaultValue={game.teams[1].name}
@@ -86,9 +174,29 @@ function TitlesAndLogoSettings({ game, send, room, setGame, setImageUploaded, im
             onChange={(e) => {
               let number = parseInt(e.target.value);
               isNaN(number) ? (number = 0) : null;
-              game.teams[1].points = number;
-              setGame((prv) => ({ ...prv }));
-              send({ action: "data", data: game });
+
+              setGame((prevGame) => {
+                if (prevGame === null) {
+                  return prevGame;
+                }
+
+                const team2Points = number;
+
+                const updatedGame = {
+                  ...prevGame,
+                  teams: [
+                    prevGame.teams[0],
+                    {
+                      ...prevGame.teams[1],
+                      points: team2Points,
+                    },
+                  ],
+                };
+
+                send({ action: "data", data: updatedGame });
+
+                return updatedGame;
+              });
             }}
             value={game.teams[1].points}
           ></input>
@@ -97,5 +205,3 @@ function TitlesAndLogoSettings({ game, send, room, setGame, setImageUploaded, im
     </div>
   );
 }
-
-export default TitlesAndLogoSettings;
