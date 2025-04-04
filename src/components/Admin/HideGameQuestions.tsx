@@ -1,6 +1,14 @@
+import { Game } from "@/src/types/game";
+import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
-function HideGameQuestions({ game, setGame, send }) {
+interface HideGameQuestionsProps {
+  game: Game;
+  setGame: Dispatch<SetStateAction<Game>>;
+  send: (data: any) => void;
+}
+
+function HideGameQuestions({ game, setGame, send }: HideGameQuestionsProps) {
   const { t } = useTranslation();
 
   let textColor = game.settings.hide_questions ? "text-foreground" : "text-foreground";
