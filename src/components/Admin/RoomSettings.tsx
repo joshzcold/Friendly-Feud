@@ -1,9 +1,26 @@
 import GameLoader from "@/components/Admin/GameLoader";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Link from "next/link";
+import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
-function RoomSettings({ room, gameSelector, send, setCsvFileUpload, setCsvFileUploadText, quitGame }) {
+interface RoomSettingsProps {
+  room: string;
+  gameSelector: string[];
+  send: (data: any) => void;
+  setCsvFileUpload: Dispatch<SetStateAction<File>>;
+  setCsvFileUploadText: Dispatch<SetStateAction<string>>;
+  quitGame: (host: boolean) => void;
+}
+
+export default function RoomSettings({
+  room,
+  gameSelector,
+  send,
+  setCsvFileUpload,
+  setCsvFileUploadText,
+  quitGame,
+}: RoomSettingsProps) {
   const { i18n, t } = useTranslation();
   return (
     <div className="min-h-full">
@@ -49,5 +66,3 @@ function RoomSettings({ room, gameSelector, send, setCsvFileUpload, setCsvFileUp
     </div>
   );
 }
-
-export default RoomSettings;
