@@ -1,5 +1,5 @@
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
-import { useEffect, useState } from 'react';
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { useEffect, useState } from "react";
 
 const ThemeProvider = ({ children }) => {
   const [mounted, setMounted] = useState(false);
@@ -19,7 +19,7 @@ const ThemeProvider = ({ children }) => {
         darkTheme: "darkTheme",
         slate: "slate",
         educational: "educational",
-        red: "red"
+        red: "red",
       }}
       storageKey="theme"
     >
@@ -28,4 +28,4 @@ const ThemeProvider = ({ children }) => {
   );
 };
 
-export default ThemeProvider; 
+export default ThemeProvider;
