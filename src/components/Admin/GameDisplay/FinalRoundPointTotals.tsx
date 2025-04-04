@@ -1,6 +1,19 @@
+import { FinalRound, Game } from "@/src/types/game";
 import { useTranslation } from "react-i18next";
 
-function FinalRoundPointTotalsTextFunction({ title, total, isFinalSecond, place }) {
+interface FinalRoundPointTotalsTextFunctionProps {
+  title: string;
+  total: number;
+  isFinalSecond: boolean;
+  place: number;
+}
+
+function FinalRoundPointTotalsTextFunction({
+  title,
+  total,
+  isFinalSecond,
+  place,
+}: FinalRoundPointTotalsTextFunctionProps) {
   const { t } = useTranslation();
   const backgroundColor =
     (isFinalSecond && place === 1) || (!isFinalSecond && place === 0) ? "bg-primary-200" : "bg-secondary-300";
@@ -14,9 +27,13 @@ function FinalRoundPointTotalsTextFunction({ title, total, isFinalSecond, place 
   );
 }
 
-const calculateTotalPoints = (rounds) => rounds.reduce((total, round) => total + parseInt(round.points), 0);
+const calculateTotalPoints = (rounds: FinalRound[]) => rounds.reduce((total, round) => total + round.points, 0);
 
-function FinalRoundPointTotals({ game }) {
+interface FinalRoundPointTotalsProps {
+  game: Game;
+}
+
+export default function FinalRoundPointTotals({ game }: FinalRoundPointTotalsProps) {
   const roundOneTotal = calculateTotalPoints(game.final_round);
   const roundTwoTotal = calculateTotalPoints(game.final_round_2);
   return (
@@ -42,5 +59,3 @@ function FinalRoundPointTotals({ game }) {
     </div>
   );
 }
-
-export default FinalRoundPointTotals;
