@@ -6,7 +6,7 @@ import translationET from "public/locales/et/translation.json";
 import translationFR from "public/locales/fr/translation.json";
 import translationID from "public/locales/id/translation.json";
 import { initReactI18next } from "react-i18next";
-import format from "./i18n-format.js";
+import format from "./i18n-format";
 
 const resources = {
   en: {
@@ -37,5 +37,7 @@ i18n
     interpolation: {
       format,
     },
-    whitelist: ["es", "en", "id", "et", "fr"],
+    supportedLngs: ["es", "en", "id", "et", "fr"],
   });
+
+export default i18n;
