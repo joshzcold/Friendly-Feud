@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
 import { useEffect, useState } from "react";
 
-function adjustTextSize(text, limit = 8, startingSize = 80) {
+function adjustTextSize(text: string, limit = 8, startingSize = 80) {
   if (text.length > limit) {
     let shrink = 0;
 
@@ -17,7 +17,11 @@ function adjustTextSize(text, limit = 8, startingSize = 80) {
   return startingSize;
 }
 
-export default function TitleLogo({ insert }) {
+interface TitleLogoProps {
+  insert: string;
+}
+
+export default function TitleLogo({ insert }: TitleLogoProps) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
