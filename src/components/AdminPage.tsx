@@ -7,9 +7,19 @@ import GameDisplay from "@/components/Admin/GameDisplay";
 import RoomSettings from "@/components/Admin/RoomSettings";
 import TitlesAndLogoSettings from "@/components/Admin/TitlesAndLogoSettings";
 import { ERROR_CODES } from "@/i18n/errorCodes";
+import { Game } from "@/types/game";
 import { toast } from "sonner";
 
-export default function AdminPage({ ws, game, setGame, room, quitGame, playerId }) {
+interface AdminPageProps {
+  ws: React.RefObject<WebSocket>;
+  game: Game;
+  setGame: React.Dispatch<React.SetStateAction<Game | null>>;
+  room: string;
+  quitGame: () => void;
+  playerId: string;
+}
+
+export default function AdminPage({ ws, game, setGame, room, quitGame, playerId }: AdminPageProps) {
   const { i18n, t } = useTranslation();
 
   const [pointsGiven, setPointsGiven] = useState({
@@ -25,12 +35,12 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
   const [csvFileUploadText, setCsvFileUploadText] = useState(null);
   let refreshCounter = 0;
 
-  function send(data) {
+  function send(data: any) {
     console.debug("Sending", data);
     ws.current.send(JSON.stringify({ ...data, room, id: playerId }));
   }
 
-  const handleMessage = (evt) => {
+  const handleMessage = (evt: MessageEvent) => {
     var received_msg = evt.data;
     let json = JSON.parse(received_msg);
     if (json.action === "data") {
