@@ -1,7 +1,13 @@
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
+import { FinalRound, Game } from "@/types/game";
 
-function Answers({ round, finalRoundNumber }) {
+interface AnswersProps {
+  round: FinalRound[];
+  finalRoundNumber: number;
+}
+
+function Answers({ round, finalRoundNumber }: AnswersProps) {
   const { t } = useTranslation();
   return round.map((x, i) => (
     <div
@@ -41,17 +47,22 @@ function Answers({ round, finalRoundNumber }) {
   ));
 }
 
-export default function FinalPage({ game, timer }) {
+interface FinalPageProps {
+  game: Game;
+  timer: number;
+}
+
+export default function FinalPage({ game, timer }: FinalPageProps) {
   const { t } = useTranslation();
   let total = 0;
 
   game.final_round.forEach((round) => {
     console.debug("round one total: ");
-    total = total + parseInt(round.points);
+    total = total + round.points;
   });
   game.final_round_2.forEach((round) => {
     console.debug("round two total", total);
-    total = total + parseInt(round.points);
+    total = total + round.points;
   });
   return (
     <div>
