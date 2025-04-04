@@ -13,9 +13,9 @@ function ToasterWithTheme({ ...props }) {
     red: "dark",
   };
 
-  const sonnerTheme = themeMap[theme] || "light";
+  const sonnerTheme = themeMap[theme as keyof typeof themeMap] || "light";
 
-  return <Toaster theme={sonnerTheme} richColors {...props} />;
+  return <Toaster theme={sonnerTheme as "light" | "dark" | "system" | undefined} richColors {...props} />;
 }
 
 export default ToasterWithTheme;
