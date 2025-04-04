@@ -9,9 +9,7 @@ function format(value, format, lng) {
 
 function formatNumber(value, format, lng) {
   const options = toOptions(format, "number");
-  return options === null
-    ? value
-    : new Intl.NumberFormat(lng, options).format(value);
+  return options === null ? value : new Intl.NumberFormat(lng, options).format(value);
 }
 
 function formatDate(value, format, lng) {
