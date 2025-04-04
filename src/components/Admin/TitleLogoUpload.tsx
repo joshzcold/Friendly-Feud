@@ -1,11 +1,21 @@
 import { Buffer } from "buffer";
 import { ERROR_CODES } from "@/i18n/errorCodes";
+import { Game } from "@/src/types/game";
 import { FileUp } from "lucide-react";
 import Image from "next/image";
+import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-function BeforeUpload({ send, room, setGame, game, setImageUploaded }) {
+interface BeforeUploadProps {
+  send: (data: any) => void;
+  room: string;
+  setGame: Dispatch<SetStateAction<Game>>;
+  game: Game;
+  setImageUploaded: Dispatch<SetStateAction<File | null>>;
+}
+
+function BeforeUpload({ send, room, setGame, game, setImageUploaded }: BeforeUploadProps) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-row items-center space-x-2">
@@ -19,19 +29,22 @@ function BeforeUpload({ send, room, setGame, game, setImageUploaded }) {
           accept="image/png, image/jpeg, image/gif"
           id="logoUpload"
           onChange={(e) => {
-            var file = document.getElementById("logoUpload").files[0];
-
+            const logoUpload = document.getElementById("logoUpload") as HTMLInputElement;
+            const file = logoUpload.files?.[0];
             if (file) {
-              if (file.size > process.env.NEXT_PUBLIC_MAX_IMAGE_UPLOAD_SIZE_MB * 1024 * 1024) {
+              const maxSizeMB = Number(process.env.NEXT_PUBLIC_MAX_IMAGE_UPLOAD_SIZE_MB) || 2;
+              if (file.size > maxSizeMB * 1024 * 1024) {
                 console.error("Logo image is too large");
                 toast.error(t(ERROR_CODES.IMAGE_TOO_LARGE, { message: "2MB" }));
                 return;
               }
               var reader = new FileReader();
-              let rawData = new ArrayBuffer();
+              let rawData = new ArrayBuffer(0);
               reader.onload = function (evt) {
-                rawData = evt.target.result;
-                var headerarr = new Uint8Array(evt.target.result).subarray(0, 4);
+                if (!evt.target || !evt.target.result) return;
+
+                rawData = evt.target.result as ArrayBuffer;
+                var headerarr = new Uint8Array(rawData).subarray(0, 4);
                 var header = "";
                 for (var i = 0; i < headerarr.length; i++) {
                   header += headerarr[i].toString(16);
@@ -69,7 +82,7 @@ function BeforeUpload({ send, room, setGame, game, setImageUploaded }) {
               };
               reader.readAsArrayBuffer(file);
             }
-            document.getElementById("logoUpload").value = null;
+            if (logoUpload) logoUpload.value = "";
           }}
         />
       </div>
@@ -81,7 +94,16 @@ function BeforeUpload({ send, room, setGame, game, setImageUploaded }) {
   );
 }
 
-function AfterUpload({ send, room, game, setGame, setImageUploaded, imageUploaded }) {
+interface AfterUploadProps {
+  send: (data: any) => void;
+  room: string;
+  game: Game;
+  setGame: Dispatch<SetStateAction<Game>>;
+  setImageUploaded: Dispatch<SetStateAction<File | null>>;
+  imageUploaded: File;
+}
+
+function AfterUpload({ send, room, game, setGame, setImageUploaded, imageUploaded }: AfterUploadProps) {
   return (
     <div className="flex flex-row items-center space-x-2">
       <p className="capitalize text-foreground">logo:</p>
@@ -100,7 +122,7 @@ function AfterUpload({ send, room, game, setGame, setImageUploaded, imageUploade
             action: "del_logo_upload",
             room: room,
           });
-          URL.revokeObjectURL(imageUploaded);
+          URL.revokeObjectURL(URL.createObjectURL(imageUploaded));
           setImageUploaded(null);
           game.settings.logo_url = null;
           setGame((prv) => ({ ...prv }));
@@ -126,7 +148,23 @@ function AfterUpload({ send, room, game, setGame, setImageUploaded, imageUploade
   );
 }
 
-function TitleLogoUpload({ send, room, setGame, game, setImageUploaded, imageUploaded }) {
+interface TitleLogoUploadProps {
+  send: (data: any) => void;
+  room: string;
+  setGame: Dispatch<SetStateAction<Game>>;
+  game: Game;
+  setImageUploaded: Dispatch<SetStateAction<File | null>>;
+  imageUploaded: File | null;
+}
+
+export default function TitleLogoUpload({
+  send,
+  room,
+  setGame,
+  game,
+  setImageUploaded,
+  imageUploaded,
+}: TitleLogoUploadProps) {
   return imageUploaded === null ? (
     <BeforeUpload send={send} room={room} game={game} setGame={setGame} setImageUploaded={setImageUploaded} />
   ) : (
@@ -140,5 +178,3 @@ function TitleLogoUpload({ send, room, setGame, game, setImageUploaded, imageUpl
     />
   );
 }
-
-export default TitleLogoUpload;
