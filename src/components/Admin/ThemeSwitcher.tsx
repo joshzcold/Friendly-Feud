@@ -1,8 +1,16 @@
+import { Game } from "@/src/types/game";
 import { Palette } from "lucide-react";
 import { useTheme } from "next-themes";
+import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
-const ThemeSwitcher = ({ game, setGame, send }) => {
+interface ThemeSwitcherProps {
+  game: Game;
+  setGame: Dispatch<SetStateAction<Game>>;
+  send: (data: any) => void;
+}
+
+export default function ThemeSwitcher({ game, setGame, send }: ThemeSwitcherProps) {
   const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
 
@@ -34,7 +42,7 @@ const ThemeSwitcher = ({ game, setGame, send }) => {
     },
   };
 
-  const handleThemeChange = (newTheme) => {
+  const handleThemeChange = (newTheme: string) => {
     try {
       setTheme(newTheme);
 
@@ -72,16 +80,14 @@ const ThemeSwitcher = ({ game, setGame, send }) => {
             value={key}
             key={`theme-${key}`}
             style={{
-              backgroundColor: availableThemes[key].bgcolor,
+              backgroundColor: availableThemes[key as keyof typeof availableThemes].bgcolor,
             }}
-            className={`${availableThemes[key].fgcolor} capitalize`}
+            className={`${availableThemes[key as keyof typeof availableThemes].fgcolor} capitalize`}
           >
-            {availableThemes[key].title}
+            {availableThemes[key as keyof typeof availableThemes].title}
           </option>
         ))}
       </select>
     </div>
   );
-};
-
-export default ThemeSwitcher;
+}
