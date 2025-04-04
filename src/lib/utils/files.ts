@@ -1,11 +1,46 @@
+import { Answer, Game, Round } from "@/types/game";
 import { toast } from "sonner";
 
-export function handleJsonFile(file, { t, send }) {
+// Translation function type
+type TranslateFunction = (key: string, options?: Record<string, any>) => string;
+
+// HandleJsonFile props type
+interface HandleJsonFileOptions {
+  t: TranslateFunction;
+  send: (payload: { action: string; data: any }) => void;
+}
+
+// HandleCsvFile props type
+interface HandleCsvFileOptions {
+  t: TranslateFunction;
+  setCsvFileUpload: (file: File) => void;
+  setCsvFileUploadText: (text: string) => void;
+}
+
+// ValidateGameData props type
+interface ValidateGameDataOptions {
+  t: TranslateFunction;
+}
+
+// AllowedTypes interface
+interface AllowedType {
+  pattern: RegExp;
+}
+
+interface AllowedTypes {
+  [extension: string]: AllowedType;
+}
+
+export function handleJsonFile(file: File, { t, send }: HandleJsonFileOptions): void {
   var reader = new FileReader();
   reader.readAsText(file, "utf-8");
-  reader.onload = function (evt) {
+  reader.onload = function (evt: ProgressEvent<FileReader>) {
     try {
-      let data = JSON.parse(evt.target.result);
+      if (!evt.target?.result) {
+        throw new Error("Failed to read file");
+      }
+
+      let data = JSON.parse(evt.target.result as string) as Game;
       let errors = validateGameData(data, { t });
 
       if (errors.length > 0) {
@@ -19,36 +54,41 @@ export function handleJsonFile(file, { t, send }) {
       toast.error(t(`Invalid JSON file: ${e}`));
     }
   };
-  reader.onerror = function (evt) {
+  reader.onerror = function (evt: ProgressEvent<FileReader>) {
     console.error("error reading file");
     toast.error(t("error reading file"));
   };
 }
 
-export function handleCsvFile(file, { t, setCsvFileUpload, setCsvFileUploadText }) {
+export function handleCsvFile(file: File, { t, setCsvFileUpload, setCsvFileUploadText }: HandleCsvFileOptions): void {
   var reader = new FileReader();
   reader.readAsText(file, "utf-8");
-  reader.onload = function (evt) {
-    let lineCount = evt.target.result.split("\n");
+  reader.onload = function (evt: ProgressEvent<FileReader>) {
+    if (!evt.target?.result) {
+      toast.error(t("error reading file"));
+      return;
+    }
+
+    let lineCount = (evt.target.result as string).split("\n");
     if (lineCount.length > 30) {
       toast.error(t("This csv file is too large"));
     } else {
       setCsvFileUpload(file);
-      setCsvFileUploadText(evt.target.result);
+      setCsvFileUploadText(evt.target.result as string);
     }
   };
-  reader.onerror = function (evt) {
+  reader.onerror = function (evt: ProgressEvent<FileReader>) {
     console.error("error reading file");
     toast.error(t("error reading file"));
   };
 }
 
-export function validateGameData(game, { t }) {
-  let errors = [];
+export function validateGameData(game: Game, { t }: ValidateGameDataOptions): string[] {
+  let errors: string[] = [];
   if (game.rounds.length == 0) {
     errors.push(t("You need to create some rounds to save the game"));
   }
-  game.rounds.forEach((r, index) => {
+  game.rounds.forEach((r: Round, index: number) => {
     if (r.question === "") {
       errors.push(
         t("round number {{count, number}} has an empty question", {
@@ -56,7 +96,7 @@ export function validateGameData(game, { t }) {
         })
       );
     }
-    if (r.multiply === "" || r.multiply === 0 || isNaN(r.multiply)) {
+    if (r.multiply === 0 || typeof r.multiply !== "number" || isNaN(Number(r.multiply))) {
       errors.push(
         t("round number {{count, number}} has no point multipler", {
           count: index + 1,
@@ -70,7 +110,7 @@ export function validateGameData(game, { t }) {
         })
       );
     }
-    r.answers.forEach((a, aindex) => {
+    r.answers.forEach((a: Answer, aindex: number) => {
       if (a.ans === "") {
         errors.push(
           t("round item {{count, number}} has empty answer at answer number {{answernum, number}}", {
@@ -79,7 +119,7 @@ export function validateGameData(game, { t }) {
           })
         );
       }
-      if (a.pnt === 0 || a.pnt === "" || isNaN(a.pnt)) {
+      if (a.pnt === 0 || typeof a.pnt !== "number" || isNaN(Number(a.pnt))) {
         errors.push(
           t("round item {{count, number}} has {{zero, number}} points answer number {{answernum, number}}", {
             count: index + 1,
@@ -93,9 +133,9 @@ export function validateGameData(game, { t }) {
   return errors;
 }
 
-export function isValidFileType(file, allowedTypes) {
+export function isValidFileType(file: File, allowedTypes: AllowedTypes): boolean {
   const fileName = file.name.toLowerCase();
-  const fileExtension = fileName.split(".").pop();
+  const fileExtension = fileName.split(".").pop() || "";
 
   if (!allowedTypes[fileExtension]) {
     return false;
