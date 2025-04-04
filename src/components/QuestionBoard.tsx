@@ -1,7 +1,12 @@
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
+import { Round } from "@/types/game";
 
-export default function QuestionBoard({ round }) {
+interface QuestionBoardProps {
+  round: Round;
+}
+
+export default function QuestionBoard({ round }: QuestionBoardProps) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-row items-center justify-center">
