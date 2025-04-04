@@ -8,13 +8,29 @@ import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
 import { ERROR_CODES } from "@/i18n/errorCodes";
 import { toast } from "sonner";
 
-export default function LoginPage({ hostRoom, roomCode, setRoomCode, playerName, setPlayerName, joinRoom }) {
+interface LoginPageProps {
+  hostRoom: () => void;
+  roomCode: string;
+  setRoomCode: (code: string) => void;
+  playerName: string;
+  setPlayerName: (name: string) => void;
+  joinRoom: () => void;
+}
+
+export default function LoginPage({
+  hostRoom,
+  roomCode,
+  setRoomCode,
+  playerName,
+  setPlayerName,
+  joinRoom,
+}: LoginPageProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [game, setGame] = useState({ settings: { theme: theme || "default" } });
 
-  const isValidRoomCode = (code) => code.length === 4;
-  const isValidPlayerName = (name) => name.length > 0 && name.length <= 12;
+  const isValidRoomCode = (code: string) => code.length === 4;
+  const isValidPlayerName = (name: string) => name.length > 0 && name.length <= 12;
 
   const handlePlay = () => {
     if (!isValidPlayerName(playerName)) {
