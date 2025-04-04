@@ -1,6 +1,14 @@
+import { Game } from "@/src/types/game";
+import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
-function FinalRoundButtonControls({ game, send, setGame }) {
+interface FinalRoundButtonControlsProps {
+  game: Game;
+  send: (data: any) => void;
+  setGame: Dispatch<SetStateAction<Game>>;
+}
+
+export default function FinalRoundButtonControls({ game, send, setGame }: FinalRoundButtonControlsProps) {
   const { t } = useTranslation();
   const controlRound = game.is_final_second ? game.final_round_2 : game.final_round;
   return controlRound?.map((x, i) => (
@@ -34,8 +42,33 @@ function FinalRoundButtonControls({ game, send, setGame }) {
           placeholder={t("Answer")}
           value={x.input}
           onChange={(e) => {
-            x.input = e.target.value;
-            setGame((prv) => ({ ...prv }));
+            const xInput = e.target.value;
+            setGame((prevGame) => {
+              if (prevGame === null) {
+                return prevGame;
+              }
+
+              const newValue = xInput;
+              const propertyToUpdate = "input";
+
+              const updatedGame = {
+                ...prevGame,
+                final_round: prevGame.is_final_second
+                  ? prevGame.final_round
+                  : prevGame.final_round.map((round, index) =>
+                      index === i ? { ...round, [propertyToUpdate]: newValue } : round
+                    ),
+                final_round_2: prevGame.is_final_second
+                  ? prevGame.final_round_2.map((round, index) =>
+                      index === i ? { ...round, [propertyToUpdate]: newValue } : round
+                    )
+                  : prevGame.final_round_2,
+              };
+
+              send({ action: "data", data: updatedGame });
+
+              return updatedGame;
+            });
           }}
         />
 
@@ -43,10 +76,33 @@ function FinalRoundButtonControls({ game, send, setGame }) {
           id={`finalRoundAnswer${i}RevealButton`}
           className="grow rounded border-4 bg-secondary-300 p-5 text-2xl text-foreground"
           onClick={() => {
-            x.revealed = true;
-            setGame((prv) => ({ ...prv }));
-            send({ action: "data", data: game });
-            send({ action: "final_reveal" });
+            setGame((prevGame) => {
+              if (prevGame === null) {
+                return prevGame;
+              }
+
+              const newValue = true;
+              const propertyToUpdate = "revealed";
+
+              const updatedGame = {
+                ...prevGame,
+                final_round: prevGame.is_final_second
+                  ? prevGame.final_round
+                  : prevGame.final_round.map((round, index) =>
+                      index === i ? { ...round, [propertyToUpdate]: newValue } : round
+                    ),
+                final_round_2: prevGame.is_final_second
+                  ? prevGame.final_round_2
+                  : prevGame.final_round_2.map((round, index) =>
+                      index === i ? { ...round, [propertyToUpdate]: newValue } : round
+                    ),
+              };
+
+              send({ action: "data", data: updatedGame });
+              send({ action: "final_reveal" });
+
+              return updatedGame;
+            });
           }}
         >
           {t("Reveal Answer")}
@@ -59,9 +115,33 @@ function FinalRoundButtonControls({ game, send, setGame }) {
           value={x.selection}
           className="w-48 grow rounded border-4 bg-secondary-300 p-5 text-2xl text-foreground"
           onChange={(e) => {
-            x.selection = parseInt(e.target.value);
-            setGame((prv) => ({ ...prv }));
-            send({ action: "data", data: game });
+            const xSelection = parseInt(e.target.value);
+            setGame((prevGame) => {
+              if (prevGame === null) {
+                return prevGame;
+              }
+
+              const newValue = xSelection;
+              const propertyToUpdate = "selection";
+
+              const updatedGame = {
+                ...prevGame,
+                final_round: prevGame.is_final_second
+                  ? prevGame.final_round
+                  : prevGame.final_round.map((round, index) =>
+                      index === i ? { ...round, [propertyToUpdate]: newValue } : round
+                    ),
+                final_round_2: prevGame.is_final_second
+                  ? prevGame.final_round_2
+                  : prevGame.final_round_2.map((round, index) =>
+                      index === i ? { ...round, [propertyToUpdate]: newValue } : round
+                    ),
+              };
+
+              send({ action: "data", data: updatedGame });
+
+              return updatedGame;
+            });
           }}
         >
           <option value={0}>({t("No Answer")}) 0</option>
@@ -76,11 +156,35 @@ function FinalRoundButtonControls({ game, send, setGame }) {
           className="grow rounded border-4 bg-secondary-300 p-5 text-2xl text-foreground"
           id={`finalRoundAnswers${i}SubmitButton`}
           onClick={() => {
-            x.points = x.selection !== 0 ? x.answers[x.selection - 1][1] : 0;
-            setGame((prv) => ({ ...prv }));
-            send({ action: "data", data: game });
-            send({
-              action: x.selection !== 0 ? "final_submit" : "mistake",
+            const xPoints = x.selection !== 0 ? x.answers[x.selection - 1][1] : 0;
+            setGame((prevGame) => {
+              if (prevGame === null) {
+                return prevGame;
+              }
+
+              const newValue = xPoints;
+              const propertyToUpdate = "points";
+
+              const updatedGame = {
+                ...prevGame,
+                final_round: prevGame.is_final_second
+                  ? prevGame.final_round
+                  : prevGame.final_round.map((round, index) =>
+                      index === i ? { ...round, [propertyToUpdate]: newValue } : round
+                    ),
+                final_round_2: prevGame.is_final_second
+                  ? prevGame.final_round_2
+                  : prevGame.final_round_2.map((round, index) =>
+                      index === i ? { ...round, [propertyToUpdate]: newValue } : round
+                    ),
+              };
+
+              send({ action: "data", data: updatedGame });
+              send({
+                action: x.selection !== 0 ? "final_submit" : "mistake",
+              });
+
+              return updatedGame;
             });
           }}
         >
@@ -90,5 +194,3 @@ function FinalRoundButtonControls({ game, send, setGame }) {
     </div>
   ));
 }
-
-export default FinalRoundButtonControls;
