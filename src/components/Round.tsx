@@ -1,7 +1,14 @@
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
+import { Game } from "@/types/game";
 
-function RoundPointTally({ points, team, fontWeight }) {
+interface RoundPointTallyProps {
+  points: number;
+  team: number | "total";
+  fontWeight?: string;
+}
+
+function RoundPointTally({ points, team, fontWeight = "normal" }: RoundPointTallyProps) {
   const { t } = useTranslation();
   // start at font size 72 and get smaller as point values increase
   let size = 72 - `${points}`.length * 8;
@@ -25,7 +32,11 @@ function RoundPointTally({ points, team, fontWeight }) {
   );
 }
 
-export default function Round({ game }) {
+interface RoundProps {
+  game: Game;
+}
+
+export default function Round({ game }: RoundProps) {
   const { t } = useTranslation();
   let current_round = game.round;
   let round = game.rounds[current_round];
