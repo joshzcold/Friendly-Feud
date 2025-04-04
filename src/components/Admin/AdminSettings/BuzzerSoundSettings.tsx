@@ -1,8 +1,57 @@
 import ToolTipIcon from "@/components/ui/tooltip";
+import { Game } from "@/src/types/game";
+import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
-function BuzzerSoundSettings({ game, setGame, send }) {
+interface BuzzerSoundSettingsProps {
+  game: Game;
+  setGame: Dispatch<SetStateAction<Game>>;
+  send: (data: any) => void;
+}
+
+export default function BuzzerSoundSettings({ game, setGame, send }: BuzzerSoundSettingsProps) {
   const { t } = useTranslation();
+
+  const handlePlayerBuzzerSoundChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const playerBuzzerSound = e.target.checked;
+
+    setGame((prevGame) => {
+      if (prevGame === null) {
+        return prevGame;
+      }
+
+      const updatedGame = {
+        ...prevGame,
+        settings: {
+          ...prevGame.settings,
+          player_buzzer_sound: playerBuzzerSound,
+        },
+      };
+
+      send({ action: "data", data: updatedGame });
+
+      return updatedGame;
+    });
+  };
+
+  const handleFirstBuzzerSoundOnlyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const firstBuzzerSoundOnly = e.target.checked;
+
+    setGame((prevGame) => {
+      if (prevGame === null) {
+        return prevGame;
+      }
+
+      const updatedGame = {
+        ...prevGame,
+        settings: { ...prevGame.settings, first_buzzer_sound_only: firstBuzzerSoundOnly },
+      };
+
+      send({ action: "data", data: updatedGame });
+
+      return updatedGame;
+    });
+  };
 
   return (
     <div className="flex flex-col space-y-4">
@@ -15,14 +64,7 @@ function BuzzerSoundSettings({ game, setGame, send }) {
           <input
             className="size-4 rounded placeholder:text-secondary-900"
             checked={game.settings.player_buzzer_sound}
-            onChange={(e) => {
-              game.settings.player_buzzer_sound = e.target.checked;
-              if (!e.target.checked) {
-                game.settings.first_buzzer_sound_only = false;
-              }
-              setGame((prv) => ({ ...prv }));
-              send({ action: "data", data: game });
-            }}
+            onChange={handlePlayerBuzzerSoundChange}
             type="checkbox"
           ></input>
         </div>
@@ -38,11 +80,7 @@ function BuzzerSoundSettings({ game, setGame, send }) {
             className="size-4 rounded placeholder:text-secondary-900"
             checked={game.settings.first_buzzer_sound_only}
             disabled={!game.settings.player_buzzer_sound}
-            onChange={(e) => {
-              game.settings.first_buzzer_sound_only = e.target.checked;
-              setGame((prv) => ({ ...prv }));
-              send({ action: "data", data: game });
-            }}
+            onChange={handleFirstBuzzerSoundOnlyChange}
             type="checkbox"
           ></input>
         </div>
@@ -50,5 +88,3 @@ function BuzzerSoundSettings({ game, setGame, send }) {
     </div>
   );
 }
-
-export default BuzzerSoundSettings;
