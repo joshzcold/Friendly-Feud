@@ -1,9 +1,102 @@
+import { Locator, Page } from "@playwright/test";
+
 class AdminPage {
+  page: Page;
+  csv: {
+    cancelUpload: Locator;
+    errorText: Locator;
+    submit: Locator;
+    submitDisabled: Locator;
+    finalRoundTimers: {
+      first: Locator;
+      second: Locator;
+    };
+    settings: {
+      finalRoundCount: Locator;
+      noHeader: Locator;
+      roundCount: Locator;
+    };
+    rows: Locator[];
+  };
+  finalRound: {
+    button: Locator;
+    title: Locator;
+    titleInput: Locator;
+    timerLabel: Locator;
+    timerValue: Locator;
+    answers: {
+      input: Locator;
+      reveal: Locator;
+      selector: Locator;
+      submit: Locator;
+    }[];
+  };
+  players: {
+    buzzed: {
+      teamName: Locator;
+      name: Locator;
+      time: Locator;
+    }[];
+    teamQuitButtons: {
+      team1: Locator[];
+      team2: Locator[];
+    };
+    hideGameButtons: {
+      team1: Locator[];
+      team2: Locator[];
+    };
+  };
+  questions: Locator[];
+  backToRound1FinalButton: Locator;
+  clearBuzzersButton: Locator;
+  clearBuzzersButtonDisabled: Locator;
+  createNewGameButton: Locator;
+  currentRoundQuestionText: Locator;
+  currentScreenText: Locator;
+  deleteLogoButton: Locator;
+  errorText: Locator;
+  finalRoundNumberText: Locator;
+  finalRoundTotalPointsText: Locator;
+  finalRoundWinText: Locator;
+  gamePickerFileUpload: Locator;
+  gameSelector: Locator;
+  hideFirstRoundAnswersButton: Locator;
+  hideQuestionsInput: Locator;
+  logoUpload: Locator;
+  multiplierInput: Locator;
+  multiplierText: Locator;
+  nextRoundButton: Locator;
+  openGameWindowButton: Locator;
+  pointsNumberText: Locator;
+  pointsText: Locator;
+  quitButton: Locator;
+  resetMistakesButton: Locator;
+  revealFirstRoundFinalButton: Locator;
+  roomCodeText: Locator;
+  roundSelector: Locator;
+  showMistakeButton: Locator;
+  startFinalRound2Button: Locator;
+  startRoundOneButton: Locator;
+  startTimerButton: Locator;
+  resetTimerButton: Locator;
+  stopTimerButton: Locator;
+  teamOneNameInput: Locator;
+  teamOnePointsInput: Locator;
+  teamTwoNameInput: Locator;
+  teamTwoPointsInput: Locator;
+  themeSwitcherInput: Locator;
+  titleCardButton: Locator;
+  titleTextInput: Locator;
+  team0MistakeButton: Locator;
+  team1MistakeButton: Locator;
+  team0GivePointsButton: Locator;
+  team1GivePointsButton: Locator;
+
   /**
    * @param {import('playwright').Page} page
    */
   // prettier-ignore
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
 
     this.csv = {

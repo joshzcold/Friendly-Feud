@@ -1,8 +1,37 @@
+import { Locator, Page } from "@playwright/test";
+
 class GamePage {
+  page: Page;
+  answers: {
+    answered: Locator;
+    unanswered: Locator;
+  }[];
+  finalRound: {
+    points: Locator[];
+    answers: Locator[][];
+  };
+  roomCodeText: Locator;
+  roundMultiplyText: Locator;
+  roundPointsTeam1: Locator;
+  roundPointsTeam2: Locator;
+  roundPointsTeamtotal: Locator;
+  roundQuestionText: Locator;
+  teamNames: Locator;
+  getTeamNameByIndex: (index: number) => Locator;
+  titleLogoImg: Locator;
+  titleLogoUserUploaded: Locator;
+  waitingForHostText: Locator;
+  xImg: Locator;
+  team0MistakesList: Locator;
+  team1MistakesList: Locator;
+  finalRoundTimerLabel: Locator;
+  finalRoundTimerValue: Locator;
+  quitButton: Locator;
+
   /**
    * @param {import('playwright').Page} page
    */
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
 
     this.answers = Array.from({ length: 9 }, (i) => ({
@@ -40,7 +69,7 @@ class GamePage {
     this.quitButton = page.getByTestId("quitButton");
   }
 
-  async getTeamName(index) {
+  async getTeamName(index: number) {
     return this.getTeamNameByIndex(index);
   }
 }

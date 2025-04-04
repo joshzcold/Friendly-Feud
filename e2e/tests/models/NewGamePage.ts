@@ -1,10 +1,47 @@
+import { Locator, Page } from "@playwright/test";
+
 class NewGamePage {
+  page: Page;
+  errorText: Locator;
+  finalRound: {
+    timer: {
+      inputs: Locator[];
+      texts: Locator[];
+    };
+    addQuestionButton: Locator;
+    questions: {
+      input: Locator;
+      addAnswerButton: Locator;
+      removeAnswerButton: Locator;
+      removeQuestionButton: Locator;
+      answers: {
+        input: Locator;
+        points: Locator;
+      }[];
+    }[];
+  };
+  rounds: {
+    questionInput: Locator;
+    multiplierInput: Locator;
+    addAnswerButton: Locator;
+    removeAnswerButton: Locator;
+    answers: {
+      nameInput: Locator;
+      pointsInput: Locator;
+      removeButton: Locator;
+    }[];
+  }[];
+  gamePicker: Locator;
+  gamePickerSubmitButton: Locator;
+  newGameSubmitButton: Locator;
+  roundAddButton: Locator;
+
   /**
    * @param {import('playwright').Page} page
    */
 
   // prettier-ignore
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
 
     this.errorText = page.getByTestId("errorText")

@@ -1,9 +1,34 @@
+import { Locator, Page } from "@playwright/test";
+
 class BuzzerPage {
+  page: Page;
+  answers: {
+    answered: Locator;
+    unanswered: Locator;
+  }[];
+  finalRound: {
+    points: Locator[];
+    answers: Locator[][];
+  };
+  buzzerButton: Locator;
+  buzzerButtonPressed: Locator;
+  joinTeam1: Locator;
+  joinTeam2: Locator;
+  loadingText: Locator;
+  openGameWindowButton: Locator;
+  quitButton: Locator;
+  registerBuzzerButton: Locator;
+  titleLogoImg: Locator;
+  titleLogoUserUploaded: Locator;
+  waitingForHostText: Locator;
+  xImg: Locator;
+  playerBlindFoldedText: Locator;
+
   /**
    * @param {import('playwright').Page} page
    */
   // prettier-ignore
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
 
     this.answers = Array.from({length: 9}, (_, i) => ({
