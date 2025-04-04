@@ -5,10 +5,26 @@ import TitleMusic from "@/components/Admin/GameDisplay/TitleMusic";
 import HideGameQuestions from "@/components/Admin/HideGameQuestions";
 import Players from "@/components/Admin/Players";
 import BuzzerTable from "@/components/BuzzerTable";
+import { Game } from "@/src/types/game";
 import Image from "next/image";
+import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
-function GameDisplay({
+interface GameDisplayProps {
+  ws: WebSocket;
+  setGame: Dispatch<SetStateAction<Game>>;
+  game: Game;
+  room: string;
+  send: (data: any) => void;
+  setPointsGiven: Dispatch<SetStateAction<{ state: boolean; color: string; textColor: string }>>;
+  pointsGiven: { state: boolean; color: string; textColor: string };
+  timerStarted: boolean;
+  timerCompleted: boolean;
+  setTimerStarted: (timerStarted: boolean) => void;
+  setTimerCompleted: (timerCompleted: boolean) => void;
+}
+
+export default function GameDisplay({
   ws,
   setGame,
   game,
@@ -20,7 +36,7 @@ function GameDisplay({
   timerCompleted,
   setTimerStarted,
   setTimerCompleted,
-}) {
+}: GameDisplayProps) {
   const { t } = useTranslation();
 
   if (game.rounds == null) {
@@ -357,7 +373,7 @@ function GameDisplay({
           <div className="p-5">
             {/* FINAL ROUND TEXT */}
             <h2 id="finalRoundNumberText" className="py-5 text-center text-6xl text-foreground">
-              {t("Final Round")} {t("number", { count: game.is_final_second ? "2" : "1" })}
+              {t("Final Round")} {t("number", { count: game.is_final_second ? 2 : 1 })}
             </h2>
             <hr />
             <div className="flex flex-row items-center justify-evenly space-x-5 py-5">
@@ -508,5 +524,3 @@ function GameDisplay({
     </div>
   );
 }
-
-export default GameDisplay;
