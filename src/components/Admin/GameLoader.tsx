@@ -2,20 +2,27 @@ import ToolTipIcon from "@/components/ui/tooltip";
 import { ERROR_CODES } from "@/i18n/errorCodes";
 import { handleCsvFile, handleJsonFile, isValidFileType } from "@/lib/utils";
 import { FileUp } from "lucide-react";
-import { useRef, useState } from "react";
+import { Dispatch, RefObject, SetStateAction, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-const GameLoader = ({ gameSelector, send, setCsvFileUpload, setCsvFileUploadText }) => {
+interface GameLoaderProps {
+  gameSelector: string[];
+  send: (data: any) => void;
+  setCsvFileUpload: Dispatch<SetStateAction<File>>;
+  setCsvFileUploadText: Dispatch<SetStateAction<string>>;
+}
+
+const GameLoader = ({ gameSelector, send, setCsvFileUpload, setCsvFileUploadText }: GameLoaderProps) => {
   const [selectedGame, setSelectedGame] = useState("");
   const MAX_SIZE_MB = process.env.NEXT_PUBLIC_MAX_CSV_UPLOAD_SIZE_MB
     ? parseInt(process.env.NEXT_PUBLIC_MAX_CSV_UPLOAD_SIZE_MB, 10) // type safety
     : 2; // default to 2MB
   const { i18n, t } = useTranslation();
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   function handleGameUpload() {
-    let file = fileInputRef.current.files[0];
+    let file = fileInputRef.current?.files?.[0];
     if (file) {
       if (file.size > MAX_SIZE_MB * 1024 * 1024) {
         console.error("This csv file is too large");
@@ -27,7 +34,7 @@ const GameLoader = ({ gameSelector, send, setCsvFileUpload, setCsvFileUploadText
     const allowedTypes = {
       json: {
         pattern: /^application\/(json|.*\+json)$/,
-        handler: (file) =>
+        handler: (file: File) =>
           handleJsonFile(file, {
             t,
             send,
@@ -35,7 +42,7 @@ const GameLoader = ({ gameSelector, send, setCsvFileUpload, setCsvFileUploadText
       },
       csv: {
         pattern: /^(text\/csv|application\/(vnd\.ms-excel|csv|x-csv|text-csv))$/,
-        handler: (file) =>
+        handler: (file: File) =>
           handleCsvFile(file, {
             t,
             setCsvFileUpload,
@@ -45,18 +52,18 @@ const GameLoader = ({ gameSelector, send, setCsvFileUpload, setCsvFileUploadText
     };
 
     const fileType = isValidFileType(file, allowedTypes);
-    if (!fileType) {
-      setError(t(ERROR_CODES.UNKNOWN_FILE_TYPE));
+    if (!fileType || !file) {
+      toast.error(t(ERROR_CODES.UNKNOWN_FILE_TYPE));
       return;
     }
 
     const fileExtension = file.name.toLowerCase().split(".").pop();
-    allowedTypes[fileExtension].handler(file);
+    allowedTypes[fileExtension as keyof typeof allowedTypes].handler(file);
 
     console.debug(file);
 
     // allow same file to be selected again
-    fileInputRef.current.value = null;
+    fileInputRef.current!.value = "";
   }
   return (
     <div className="flex flex-col rounded  border-2">
