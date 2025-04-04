@@ -8,7 +8,7 @@ interface TitlesAndLogoSettingsProps {
   game: Game;
   send: (data: any) => void;
   room: string;
-  setGame: React.Dispatch<React.SetStateAction<Game | null>>;
+  setGame: Dispatch<SetStateAction<Game>>;
   setImageUploaded: Dispatch<SetStateAction<null>>;
   imageUploaded: string | null;
 }

@@ -13,7 +13,7 @@ import { toast } from "sonner";
 interface AdminPageProps {
   ws: React.RefObject<WebSocket>;
   game: Game;
-  setGame: React.Dispatch<React.SetStateAction<Game | null>>;
+  setGame: React.Dispatch<React.SetStateAction<Game>>;
   room: string;
   quitGame: () => void;
   playerId: string;

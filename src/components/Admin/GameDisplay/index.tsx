@@ -7,11 +7,11 @@ import Players from "@/components/Admin/Players";
 import BuzzerTable from "@/components/BuzzerTable";
 import { Game } from "@/src/types/game";
 import Image from "next/image";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, RefObject, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
 interface GameDisplayProps {
-  ws: WebSocket;
+  ws: RefObject<WebSocket>;
   setGame: Dispatch<SetStateAction<Game>>;
   game: Game;
   room: string;
