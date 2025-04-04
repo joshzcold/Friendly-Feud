@@ -8,7 +8,7 @@ interface RoomSettingsProps {
   room: string;
   gameSelector: string[];
   send: (data: any) => void;
-  setCsvFileUpload: Dispatch<SetStateAction<File>>;
+  setCsvFileUpload: Dispatch<SetStateAction<File | null>>;
   setCsvFileUploadText: Dispatch<SetStateAction<string>>;
   quitGame: (host: boolean) => void;
 }

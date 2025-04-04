@@ -9,7 +9,7 @@ import { toast } from "sonner";
 interface GameLoaderProps {
   gameSelector: string[];
   send: (data: any) => void;
-  setCsvFileUpload: Dispatch<SetStateAction<File>>;
+  setCsvFileUpload: Dispatch<SetStateAction<File | null>>;
   setCsvFileUploadText: Dispatch<SetStateAction<string>>;
 }
 

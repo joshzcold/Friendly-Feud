@@ -28,11 +28,11 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
     textColor: "text-foreground",
   });
   const [gameSelector, setGameSelector] = useState([]);
-  const [imageUploaded, setImageUploaded] = useState(null);
+  const [imageUploaded, setImageUploaded] = useState<File | null>(null);
   const [timerStarted, setTimerStarted] = useState(false);
   const [timerCompleted, setTimerCompleted] = useState(false);
-  const [csvFileUpload, setCsvFileUpload] = useState(null);
-  const [csvFileUploadText, setCsvFileUploadText] = useState(null);
+  const [csvFileUpload, setCsvFileUpload] = useState<File | null>(null);
+  const [csvFileUploadText, setCsvFileUploadText] = useState("");
   let refreshCounter = 0;
 
   function send(data: any) {
