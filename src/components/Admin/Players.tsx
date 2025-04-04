@@ -1,8 +1,20 @@
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
+import { Game, RegisteredPlayer } from "@/src/types/game";
 import { Eye, EyeOff } from "lucide-react";
+import { Dispatch, RefObject, SetStateAction } from "react";
 
-function PlayerActionButtons({ player, game, setGame, ws, room, teamNumber, index }) {
+interface PlayerActionButtonsProps {
+  player: Player;
+  game: Game;
+  setGame: Dispatch<SetStateAction<Game>>;
+  ws: RefObject<WebSocket>;
+  room: string;
+  teamNumber: number;
+  index: number;
+}
+
+function PlayerActionButtons({ player, game, setGame, ws, room, teamNumber, index }: PlayerActionButtonsProps) {
   const { t } = useTranslation();
 
   const toggleVisibility = () => {
@@ -18,14 +30,16 @@ function PlayerActionButtons({ player, game, setGame, ws, room, teamNumber, inde
   };
 
   const removePlayer = () => {
-    ws.current.send(
-      JSON.stringify({
-        action: "quit",
-        host: false,
-        id: player.id,
-        room,
-      })
-    );
+    if (ws.current?.readyState === WebSocket.OPEN) {
+      ws.current.send(
+        JSON.stringify({
+          action: "quit",
+          host: false,
+          id: player.id,
+          room,
+        })
+      );
+    }
   };
 
   return (
@@ -64,7 +78,16 @@ function PlayerActionButtons({ player, game, setGame, ws, room, teamNumber, inde
   );
 }
 
-function TeamSection({ team, teamNumber, game, setGame, ws, room }) {
+interface TeamSectionProps {
+  team: Player[];
+  teamNumber: number;
+  game: Game;
+  setGame: Dispatch<SetStateAction<Game>>;
+  ws: RefObject<WebSocket>;
+  room: string;
+}
+
+function TeamSection({ team, teamNumber, game, setGame, ws, room }: TeamSectionProps) {
   return (
     <div>
       {team.map((player, index) => (
@@ -89,10 +112,23 @@ function TeamSection({ team, teamNumber, game, setGame, ws, room }) {
   );
 }
 
-export default function Players({ game, setGame, ws, room }) {
-  const teams = [[], []];
+interface PlayersProps {
+  game: Game;
+  setGame: Dispatch<SetStateAction<Game>>;
+  ws: RefObject<WebSocket>;
+  room: string;
+}
+
+interface Player {
+  id: string;
+  name: string;
+  hidden: boolean;
+}
+
+export default function Players({ game, setGame, ws, room }: PlayersProps) {
+  const teams: Player[][] = [[], []];
   Object.entries(game.registeredPlayers || []).forEach(([id, player]) => {
-    if ("team" in player) {
+    if ("team" in player && player.team !== null) {
       teams[player.team]?.push({ id, name: player.name, hidden: player.hidden });
     }
   });
