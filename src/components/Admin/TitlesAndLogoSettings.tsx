@@ -9,8 +9,8 @@ interface TitlesAndLogoSettingsProps {
   send: (data: any) => void;
   room: string;
   setGame: Dispatch<SetStateAction<Game>>;
-  setImageUploaded: Dispatch<SetStateAction<null>>;
-  imageUploaded: string | null;
+  setImageUploaded: Dispatch<SetStateAction<File | null>>;
+  imageUploaded: File | null;
 }
 
 export default function TitlesAndLogoSettings({
