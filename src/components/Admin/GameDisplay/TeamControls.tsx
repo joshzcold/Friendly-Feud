@@ -10,9 +10,8 @@ function TeamControls({ game, setGame, team, send, setPointsGiven, pointsGiven }
         id={`team${team}GivePointsButton`}
         className={`border-4 text-2xl ${pointsGiven.color} rounded p-10 ${pointsGiven.textColor}`}
         onClick={() => {
-          game.teams[team].points =
-            game.point_tracker[game.round] + game.teams[team].points;
-            setPointsGiven({
+          game.teams[team].points = game.point_tracker[game.round] + game.teams[team].points;
+          setPointsGiven({
             state: true,
             color: "bg-secondary-500",
             textColor: "text-foreground",
