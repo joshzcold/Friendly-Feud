@@ -1,11 +1,14 @@
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
 import { ERROR_CODES } from "@/i18n/errorCodes";
+import { Answer, FinalRound, FinalRoundAnswer, Game, Round, Settings } from "@/types/game";
+import { TFunction } from "i18next";
+// @ts-expect-error papaparse is not typed
 import Papa from "papaparse";
-import { useEffect, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import CSVRow from "./CSVRow";
 
-export function csvStringToArray(data) {
+export function csvStringToArray(data: string) {
   const parsedData = Papa.parse(data, {
     header: false,
     skipEmptyLines: true,
@@ -17,7 +20,14 @@ export function csvStringToArray(data) {
  * Verify the format <Question (string), Answer (string), Points (number), ...>
  * Verify the number of rounds doesn't exceed the amount of data
  */
-function validateCsv(csvData, roundCount, roundFinalCount, noHeader, setError, t) {
+function validateCsv(
+  csvData: string[][],
+  roundCount: number,
+  roundFinalCount: number,
+  noHeader: boolean,
+  setError: Dispatch<SetStateAction<string | null>>,
+  t: TFunction
+) {
   let headerOffSet = noHeader ? 0 : 1;
   // the setting of rows is greater than the data provided
   if (roundCount + roundFinalCount + headerOffSet > csvData.length) {
@@ -26,8 +36,8 @@ function validateCsv(csvData, roundCount, roundFinalCount, noHeader, setError, t
   }
 
   for (let r in csvData) {
-    let index = parseInt(r) + parseInt(headerOffSet);
-    if (roundCount + roundFinalCount + headerOffSet < r || csvData[index] === undefined) {
+    let index = parseInt(r) + headerOffSet;
+    if (roundCount + roundFinalCount + headerOffSet < parseInt(r) || csvData[index] === undefined) {
       break;
     }
     let answer = true;
@@ -52,27 +62,49 @@ function validateCsv(csvData, roundCount, roundFinalCount, noHeader, setError, t
   }
 }
 
-function csvToColdFriendlyFeudFormat(csvData, roundCount, roundFinalCount, noHeader, timer, timer2nd, setError, send) {
+function csvToColdFriendlyFeudFormat(
+  csvData: string[][],
+  roundCount: number,
+  roundFinalCount: number,
+  noHeader: boolean,
+  timer: number,
+  timer2nd: number,
+  send: (data: any) => void
+) {
   let headerOffSet = noHeader ? 0 : 1;
-  let gameTemplate = {
-    settings: {},
+  let gameTemplate: Partial<Game> & {
+    rounds: Round[];
+    final_round: FinalRound[];
+    final_round_timers: number[];
+  } = {
+    settings: {} as Settings,
     rounds: [],
     final_round: [],
     final_round_timers: [timer, timer2nd],
   };
 
   for (let row = 0; row < csvData.length; row++) {
-    let rowPush = {
+    let rowPush: Partial<Round> & { answers: Answer[] } = {
       answers: [],
       multiply: 1,
+      question: "",
     };
-    let finalRowPush = {
+    let finalRowPush: Partial<FinalRound> & { answers: FinalRoundAnswer[] } = {
       answers: [],
+      question: "",
+      selection: 0,
+      points: 0,
+      input: "",
+      revealed: false,
     };
     let answer = true;
     let answerCount = 0;
-    let index = parseInt(row) + parseInt(headerOffSet);
-    console.debug(row, roundCount + roundFinalCount + headerOffSet);
+    let index = row + headerOffSet;
+
+    if (index >= csvData.length || index >= roundCount + roundFinalCount + headerOffSet) {
+      break;
+    }
+
     if (index < roundCount + headerOffSet) {
       colLoop: for (let col = 0; col < csvData[index].length; col++) {
         if (col === 0) {
@@ -82,31 +114,37 @@ function csvToColdFriendlyFeudFormat(csvData, roundCount, roundFinalCount, noHea
         if (answer) {
           rowPush.answers.push({
             ans: csvData[index][col],
+            pnt: 0,
+            trig: false,
           });
           answer = !answer;
         } else {
-          rowPush.answers[answerCount].pnt = parseInt(csvData[index][col]);
+          rowPush.answers[answerCount].pnt = parseInt(csvData[index][col] || "0", 10);
           answerCount++;
           answer = !answer;
         }
       }
-      gameTemplate.rounds.push(rowPush);
-    } else if (index < roundCount + roundFinalCount + headerOffSet) {
+      if (rowPush.question) {
+        gameTemplate.rounds.push(rowPush as Round);
+      }
+    } else {
       colLoop: for (let col = 0; col < csvData[index].length; col++) {
         if (col === 0) {
           finalRowPush.question = csvData[index][col];
           continue colLoop;
         }
         if (answer) {
-          finalRowPush.answers.push([csvData[index][col]]);
+          finalRowPush.answers.push([csvData[index][col], 0]);
           answer = !answer;
         } else {
-          finalRowPush.answers[answerCount][1] = parseInt(csvData[index][col]);
+          finalRowPush.answers[answerCount][1] = parseInt(csvData[index][col] || "0", 10);
           answerCount++;
           answer = !answer;
         }
       }
-      gameTemplate.final_round.push(finalRowPush);
+      if (finalRowPush.question) {
+        gameTemplate.final_round.push(finalRowPush as FinalRound);
+      }
     }
   }
   send({ action: "load_game", data: gameTemplate });
@@ -117,7 +155,14 @@ function csvToColdFriendlyFeudFormat(csvData, roundCount, roundFinalCount, noHea
  *  so that users start with a round and final round count
  *  that is less than their CSV document.
  */
-function initalizeCSVRoundCount(csvData, roundCount, setRoundCount, roundFinalCount, setRoundFinalCount, noHeader) {
+function initalizeCSVRoundCount(
+  csvData: string[][],
+  roundCount: number,
+  setRoundCount: Dispatch<SetStateAction<number>>,
+  roundFinalCount: number,
+  setRoundFinalCount: Dispatch<SetStateAction<number>>,
+  noHeader: boolean
+) {
   if (roundCount < 0 || roundFinalCount < 0) {
     let headerOffSet = noHeader ? 0 : 1;
     let _roundCount = 0;
@@ -140,13 +185,20 @@ function initalizeCSVRoundCount(csvData, roundCount, setRoundCount, roundFinalCo
   }
 }
 
-export default function CSVLoader({ csvFileUpload, csvFileUploadText, setCsvFileUpload, send }) {
+interface CSVLoaderProps {
+  csvFileUpload: File;
+  csvFileUploadText: string;
+  setCsvFileUpload: Dispatch<SetStateAction<File | null>>;
+  send: (data: any) => void;
+}
+
+export default function CSVLoader({ csvFileUpload, csvFileUploadText, setCsvFileUpload, send }: CSVLoaderProps) {
   const { t } = useTranslation();
   const csvData = useMemo(() => csvStringToArray(csvFileUploadText), [csvFileUploadText]);
   const [roundCount, setRoundCount] = useState(-1);
   const [roundFinalCount, setRoundFinalCount] = useState(-1);
   const [noHeader, setNoHeader] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [timer, setTimer] = useState(20);
   const [timer2nd, setTimer2nd] = useState(25);
   useEffect(() => {
@@ -197,7 +249,7 @@ export default function CSVLoader({ csvFileUpload, csvFileUploadText, setCsvFile
           </div>
         </div>
         <div className="flex h-96 flex-col overflow-x-scroll bg-secondary-500 p-2 ">
-          {csvData.map((row, roundCounter) => (
+          {csvData.map((row: string[], roundCounter: number) => (
             <CSVRow
               key={`csvloader-round-${roundCounter}`}
               row={row}
@@ -317,16 +369,7 @@ export default function CSVLoader({ csvFileUpload, csvFileUploadText, setCsvFile
               className="text-2xl"
               id="csvFileUploadSubmitButton"
               onClick={() => {
-                csvToColdFriendlyFeudFormat(
-                  csvData,
-                  roundCount,
-                  roundFinalCount,
-                  noHeader,
-                  timer,
-                  timer2nd,
-                  setError,
-                  send
-                );
+                csvToColdFriendlyFeudFormat(csvData, roundCount, roundFinalCount, noHeader, timer, timer2nd, send);
                 setCsvFileUpload(null);
               }}
             >
