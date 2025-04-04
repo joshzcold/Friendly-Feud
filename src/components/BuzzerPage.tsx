@@ -7,22 +7,35 @@ import QuestionBoard from "@/components/QuestionBoard";
 import Round from "@/components/Round";
 import TeamName from "@/components/TeamName";
 import { ERROR_CODES } from "@/i18n/errorCodes";
+import { Game } from "@/types/game";
+// @ts-expect-error cookie-cutter is not typed
 import cookieCutter from "cookie-cutter";
 import { EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 
-let timerInterval = null;
+let timerInterval: NodeJS.Timeout | null = null;
 
-export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setTeam, team }) {
+interface BuzzerPageProps {
+  ws: React.RefObject<WebSocket>;
+  game: Game;
+  id: string;
+  setGame: (game: Game | null) => void;
+  room: string;
+  quitGame: () => void;
+  setTeam: (team: number | null) => void;
+  team: number | null;
+}
+
+export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setTeam, team }: BuzzerPageProps) {
   const { i18n, t } = useTranslation();
   const [buzzed, setBuzzed] = useState(false);
   const [timer, setTimer] = useState(0);
   const [showMistake, setShowMistake] = useState(false);
   let refreshCounter = 0;
 
-  const send = function (data) {
+  const send = function (data: any) {
     data.room = room;
     data.id = id;
     ws.current.send(JSON.stringify(data));
@@ -71,7 +84,9 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
       } else if (json.action === "set_timer") {
         setTimer(json.data);
       } else if (json.action === "stop_timer") {
-        clearInterval(timerInterval);
+        if (timerInterval) {
+          clearInterval(timerInterval);
+        }
       } else if (json.action === "start_timer") {
         let limit = json.data;
         timerInterval = setInterval(() => {
@@ -79,7 +94,9 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
             limit = limit - 1;
             setTimer(limit);
           } else {
-            clearInterval(timerInterval);
+            if (timerInterval) {
+              clearInterval(timerInterval);
+            }
             setTimer(json.data);
           }
         }, 1000);
@@ -191,31 +208,41 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
                 </div>
                 <div className="w-full grow space-y-2 rounded border-4 text-center">
                   <div className="flex flex-col">
-                    {game.buzzed.map((x, i) => (
-                      <div
-                        key={`buzzer-${x.id}-${i}`}
-                        className="text-1xl flex flex-row space-x-2 md:text-2xl lg:text-2xl"
-                      >
-                        <div className="grow">
-                          <p id={`buzzedList${i}Name`} className="w-20 truncate text-left text-foreground">
-                            {t("number", { count: i + 1 })}. {game.registeredPlayers[x.id].name}
-                          </p>
+                    {game.buzzed.map((x, i) => {
+                      const player = game.registeredPlayers[x.id];
+                      const teamIndex = player?.team;
+
+                      let teamName = t("Team not found");
+                      if (teamIndex != null) {
+                        teamName = game.teams[teamIndex].name;
+                      }
+
+                      return (
+                        <div
+                          key={`buzzer-${x.id}-${i}`}
+                          className="text-1xl flex flex-row space-x-2 md:text-2xl lg:text-2xl"
+                        >
+                          <div className="grow">
+                            <p id={`buzzedList${i}Name`} className="w-20 truncate text-left text-foreground">
+                              {t("number", { count: i + 1 })}. {game.registeredPlayers[x.id].name}
+                            </p>
+                          </div>
+                          <div className="grow">
+                            <p id={`buzzedList${i}TeamName`} className="w-20 truncate text-left text-foreground">
+                              {teamName}
+                            </p>
+                          </div>
+                          <div className="grow">
+                            <p id={`buzzedList${i}Time`} className="w-20 truncate text-left text-foreground">
+                              {t("number", {
+                                count: Number((((x.time - game.tick) / 1000) % 60).toFixed(2)),
+                              })}{" "}
+                              {t("second")}
+                            </p>
+                          </div>
                         </div>
-                        <div className="grow">
-                          <p id={`buzzedList${i}TeamName`} className="w-20 truncate text-left text-foreground">
-                            {game.teams[game.registeredPlayers[x.id].team].name}
-                          </p>
-                        </div>
-                        <div className="grow">
-                          <p id={`buzzedList${i}Time`} className="w-20 truncate text-left text-foreground">
-                            {t("number", {
-                              count: (((x.time - game.tick) / 1000) % 60).toFixed(2),
-                            })}{" "}
-                            {t("second")}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </div>
