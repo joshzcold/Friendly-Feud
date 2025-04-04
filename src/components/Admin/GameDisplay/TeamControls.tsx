@@ -1,6 +1,17 @@
+import { Game } from "@/src/types/game";
+import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
-function TeamControls({ game, setGame, team, send, setPointsGiven, pointsGiven }) {
+interface TeamControlsProps {
+  game: Game;
+  setGame: Dispatch<SetStateAction<Game>>;
+  team: number;
+  send: (data: any) => void;
+  setPointsGiven: Dispatch<SetStateAction<{ state: boolean; color: string; textColor: string }>>;
+  pointsGiven: { state: boolean; color: string; textColor: string };
+}
+
+export default function TeamControls({ game, setGame, team, send, setPointsGiven, pointsGiven }: TeamControlsProps) {
   const { t } = useTranslation();
 
   function TeamGetsPointsButton() {
@@ -36,7 +47,6 @@ function TeamControls({ game, setGame, team, send, setPointsGiven, pointsGiven }
           send({ action: "data", data: game });
           send({
             action: "mistake",
-            data: game.teams[team].mistake,
           });
         }}
       >
@@ -52,5 +62,3 @@ function TeamControls({ game, setGame, team, send, setPointsGiven, pointsGiven }
     </>
   );
 }
-
-export default TeamControls;
