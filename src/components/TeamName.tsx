@@ -1,6 +1,12 @@
+import { Game } from "@/types/game";
 import Image from "next/image";
 
-export default function TeamName({ team, game }) {
+interface TeamNameProps {
+  team: number;
+  game: Game;
+}
+
+export default function TeamName({ team, game }: TeamNameProps) {
   return (
     <div
       className="flex flex-col space-y-2 text-center text-3xl"
