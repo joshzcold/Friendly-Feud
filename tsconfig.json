@@ -23,7 +23,8 @@
         "@/*": ["./*"],
         "@/components/*": ["src/components/*"],
         "@/lib/*": ["src/lib/*"],
-        "@/i18n/*": ["i18n/*"]
+        "@/i18n/*": ["i18n/*"],
+        "@/types/*": ["src/types/*"]
       },
       "forceConsistentCasingInFileNames": true
     },

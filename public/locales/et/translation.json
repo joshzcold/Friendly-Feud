@@ -134,6 +134,8 @@
     "Blindfold player": "Peitke mängija ekraan",
     "Remove player from game": "Eemaldage mängija mängust",
     "Game file error": "Küsimustiku vormingu viga",
+    "User not found": "Kasutajat ei leitud",
+    "Team not found": "Tiimi ei leitud",
     "errors": {
         "room_not_found": "Mängu ei leitud",
         "host_quit": "Mängu juht lahkus mängust",
