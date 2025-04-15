@@ -39,7 +39,7 @@ export class Setup {
    *  newPlayerObj {any}
    * }
    */
-  async addPlayer(isSpectator: boolean = false): Promise<{ page: Page; name: string; team: number }> {
+  async addPlayer(isSpectator: boolean = false): Promise<{ page: Page }> {
     const newPlayerContext = await this.browser.newContext();
     const newPlayerName = this.clients.players.length;
     const newPlayerObj = {

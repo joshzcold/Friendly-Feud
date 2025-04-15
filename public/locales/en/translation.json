@@ -134,8 +134,6 @@
   "Blindfold player": "Blindfold player",
   "Remove player from game": "Remove player from game",
   "Game file error": "Game file error",
-  "User not found": "User not found",
-  "Team not found": "Team not found",
   "errors": {
     "room_not_found": "Room not found",
     "host_quit": "Host quit the game",
