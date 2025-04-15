@@ -7,6 +7,23 @@ env:
   game_store: memory
 
 jobs:
+  build:
+    name: Build All in One
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta_allinone
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/joshzcold/famf-allinone
+      - name: Build and push allinone image
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: .
+          push: false
+          tags: ${{ steps.meta_allinone.outputs.tags }}
+          labels: ${{ steps.meta_allinone.outputs.labels }}
+          file: Dockerfile.allinone
   lint:
     name: Lint Check
     runs-on: ubuntu-latest
