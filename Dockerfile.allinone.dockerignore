@@ -2,10 +2,8 @@
 *
 # Allow list
 ## Frontend
-!src/components/
 !games/
 !i18n/
-!src/pages/
 !public/
 !jsconfig.json
 !tsconfig.json
@@ -14,11 +12,10 @@
 !package-lock.json
 !package.json
 !postcss.config.js
-!src/global.css
 !tailwind.config.js
 !backend/server.js
 !backend/load-game.js
-!src/lib/
+!src/
 !.env
 !docker/frontend-start.sh
 
