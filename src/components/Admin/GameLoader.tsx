@@ -23,6 +23,10 @@ const GameLoader = ({ gameSelector, send, setCsvFileUpload, setCsvFileUploadText
 
   function handleGameUpload() {
     let file = fileInputRef.current?.files?.[0];
+    if (!file) {
+      console.error("file object in handleGameUpload is undefined");
+      return;
+    }
     if (file) {
       if (file.size > MAX_SIZE_MB * 1024 * 1024) {
         console.error("This csv file is too large");
