@@ -13,10 +13,10 @@ import { toast } from "sonner";
 interface AdminPageProps {
   ws: React.RefObject<WebSocket>;
   game: Game;
-  setGame: React.Dispatch<React.SetStateAction<Game>>;
+  setGame: React.Dispatch<React.SetStateAction<Game | null>>;
   room: string;
   quitGame: () => void;
-  playerId: string;
+  playerId: string | null;
 }
 
 export default function AdminPage({ ws, game, setGame, room, quitGame, playerId }: AdminPageProps) {

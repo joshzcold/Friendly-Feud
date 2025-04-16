@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 interface BuzzerSoundSettingsProps {
   game: Game;
-  setGame: Dispatch<SetStateAction<Game>>;
+  setGame: Dispatch<SetStateAction<Game | null>>;
   send: (data: any) => void;
 }
 

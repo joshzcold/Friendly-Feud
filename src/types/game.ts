@@ -31,6 +31,10 @@ export interface Settings {
   first_buzzer_sound_only: boolean;
 }
 
+export interface SettingsTheme {
+  theme: string;
+}
+
 export interface Team {
   name: string;
   points: number;
@@ -62,6 +66,10 @@ export interface FinalRound {
   points: number;
   input: string;
   revealed: boolean;
+}
+
+export interface GameTheme {
+  settings: SettingsTheme;
 }
 
 export interface Game {

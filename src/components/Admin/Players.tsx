@@ -7,7 +7,7 @@ import { Dispatch, RefObject, SetStateAction } from "react";
 interface PlayerActionButtonsProps {
   player: Player;
   game: Game;
-  setGame: Dispatch<SetStateAction<Game>>;
+  setGame: Dispatch<SetStateAction<Game | null>>;
   ws: RefObject<WebSocket>;
   room: string;
   teamNumber: number;
@@ -19,6 +19,7 @@ function PlayerActionButtons({ player, game, setGame, ws, room, teamNumber, inde
 
   const toggleVisibility = () => {
     game.registeredPlayers[player.id].hidden = !game.registeredPlayers[player.id].hidden;
+    // @ts-expect-error: need a better way to update these values
     setGame((prev) => ({ ...prev }));
     ws.current.send(
       JSON.stringify({
@@ -82,7 +83,7 @@ interface TeamSectionProps {
   team: Player[];
   teamNumber: number;
   game: Game;
-  setGame: Dispatch<SetStateAction<Game>>;
+  setGame: Dispatch<SetStateAction<Game | null>>;
   ws: RefObject<WebSocket>;
   room: string;
 }
@@ -114,7 +115,7 @@ function TeamSection({ team, teamNumber, game, setGame, ws, room }: TeamSectionP
 
 interface PlayersProps {
   game: Game;
-  setGame: Dispatch<SetStateAction<Game>>;
+  setGame: Dispatch<SetStateAction<Game | null>>;
   ws: RefObject<WebSocket>;
   room: string;
 }

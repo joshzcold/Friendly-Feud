@@ -1,12 +1,12 @@
-import { Game } from "@/src/types/game";
+import { Game, GameTheme } from "@/src/types/game";
 import { Palette } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
 interface ThemeSwitcherProps {
-  game: Game;
-  setGame: Dispatch<SetStateAction<Game>>;
+  game: Game | GameTheme;
+  setGame: Dispatch<SetStateAction<Game | null>> | Dispatch<SetStateAction<GameTheme>>;
   send: (data: any) => void;
 }
 

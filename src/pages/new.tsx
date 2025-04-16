@@ -372,6 +372,7 @@ export default function CreateGame() {
             className="rounded-md bg-success-200 p-2 px-10 hover:shadow-md"
             onClick={() => {
               // ERROR checking
+              // @ts-expect-error: checking against a template.
               let error = validateGameData(game, { t });
               if (error.length === 0) {
                 setError("");

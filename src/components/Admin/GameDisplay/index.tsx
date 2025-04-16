@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 
 interface GameDisplayProps {
   ws: RefObject<WebSocket>;
-  setGame: Dispatch<SetStateAction<Game>>;
+  setGame: Dispatch<SetStateAction<Game | null>>;
   game: Game;
   room: string;
   send: (data: any) => void;
@@ -86,6 +86,7 @@ export default function GameDisplay({
               game.round = 0;
               game.is_final_round = false;
               game.is_final_second = false;
+              // @ts-expect-error: need a better way to update these values
               setGame((prv) => ({ ...prv }));
               send({ action: "data", data: game });
             }}
@@ -104,6 +105,7 @@ export default function GameDisplay({
                 game.title = false;
                 game.is_final_round = true;
                 game.is_final_second = false;
+                // @ts-expect-error: need a better way to update these values
                 setGame((prv) => ({ ...prv }));
                 send({ action: "data", data: game });
                 send({
@@ -128,6 +130,7 @@ export default function GameDisplay({
               game.teams[0].mistakes = 0;
               game.teams[1].mistakes = 0;
               game.title = false;
+              // @ts-expect-error: need a better way to update these values
               setGame((prv) => ({ ...prv }));
               setPointsGiven({
                 state: false,
@@ -154,6 +157,7 @@ export default function GameDisplay({
               game.is_final_round = false;
               game.is_final_second = false;
               game.round = 0;
+              // @ts-expect-error: need a better way to update these values
               setGame((prv) => ({
                 ...prv,
               }));
@@ -181,6 +185,7 @@ export default function GameDisplay({
               if (game.round < game.rounds.length - 1) {
                 game.round = game.round + 1;
               }
+              // @ts-expect-error: need a better way to update these values
               setGame((prv) => ({ ...prv }));
               setPointsGiven({
                 state: false,
@@ -209,6 +214,7 @@ export default function GameDisplay({
               for (let team in game.teams) {
                 game.teams[team].mistakes = 0;
               }
+              // @ts-expect-error: need a better way to update these values
               setGame((prv) => ({ ...prv }));
               send({ action: "data", data: game });
             }}
@@ -276,6 +282,7 @@ export default function GameDisplay({
                       value = 1;
                     }
                     current_round.multiply = value;
+                    // @ts-expect-error: need a better way to update these values
                     setGame((prv) => ({ ...prv }));
                     send({ action: "data", data: game });
                   }}
@@ -298,10 +305,12 @@ export default function GameDisplay({
                   id={`question${index}Button`}
                   onClick={() => {
                     x.trig = !x.trig;
+                    // @ts-expect-error: need a better way to update these values
                     setGame((prv) => ({ ...prv }));
 
                     if (x.trig) {
                       game.point_tracker[game.round] = game.point_tracker[game.round] + x.pnt * current_round.multiply;
+                      // @ts-expect-error: need a better way to update these values
                       setGame((prv) => ({ ...prv }));
                       send({ action: "reveal" });
                     } else {
@@ -309,6 +318,7 @@ export default function GameDisplay({
                       if (game.point_tracker[game.round] < 0) {
                         game.point_tracker[game.round] = 0;
                       }
+                      // @ts-expect-error: need a better way to update these values
                       setGame((prv) => ({ ...prv }));
                     }
                     send({ action: "data", data: game });
@@ -387,6 +397,7 @@ export default function GameDisplay({
                     console.debug(game);
                     game.is_final_second = true;
                     game.hide_first_round = true;
+                    // @ts-expect-error: need a better way to update these values
                     setGame((prv) => ({ ...prv }));
                     send({ action: "data", data: game });
                     send({
@@ -409,6 +420,7 @@ export default function GameDisplay({
                       game.is_final_round = true;
                       game.hide_first_round = false;
                       game.is_final_second = false;
+                      // @ts-expect-error: need a better way to update these values
                       setGame((prv) => ({ ...prv }));
                       send({ action: "data", data: game });
                       send({
@@ -428,6 +440,7 @@ export default function GameDisplay({
                           className="rounded border-4 bg-secondary-300 p-5 text-3xl text-foreground"
                           onClick={() => {
                             game.hide_first_round = false;
+                            // @ts-expect-error: need a better way to update these values
                             setGame((prv) => ({ ...prv }));
                             send({ action: "data", data: game });
                           }}
@@ -441,6 +454,7 @@ export default function GameDisplay({
                           className="rounded border-4 bg-secondary-300 p-5 text-3xl text-foreground"
                           onClick={() => {
                             game.hide_first_round = true;
+                            // @ts-expect-error: need a better way to update these values
                             setGame((prv) => ({ ...prv }));
                             send({ action: "data", data: game });
                           }}

@@ -10,7 +10,7 @@ import { toast } from "sonner";
 interface BeforeUploadProps {
   send: (data: any) => void;
   room: string;
-  setGame: Dispatch<SetStateAction<Game>>;
+  setGame: Dispatch<SetStateAction<Game | null>>;
   game: Game;
   setImageUploaded: Dispatch<SetStateAction<File | null>>;
 }
@@ -77,6 +77,7 @@ function BeforeUpload({ send, room, setGame, game, setImageUploaded }: BeforeUpl
                 });
                 setImageUploaded(file);
                 game.settings.logo_url = `/api/rooms/${room}/logo`;
+                // @ts-expect-error: need a better way to update these values
                 setGame((prv) => ({ ...prv }));
                 send({ action: "data", data: game });
               };
@@ -98,7 +99,7 @@ interface AfterUploadProps {
   send: (data: any) => void;
   room: string;
   game: Game;
-  setGame: Dispatch<SetStateAction<Game>>;
+  setGame: Dispatch<SetStateAction<Game | null>>;
   setImageUploaded: Dispatch<SetStateAction<File | null>>;
   imageUploaded: File;
 }
@@ -125,6 +126,7 @@ function AfterUpload({ send, room, game, setGame, setImageUploaded, imageUploade
           URL.revokeObjectURL(URL.createObjectURL(imageUploaded));
           setImageUploaded(null);
           game.settings.logo_url = null;
+          // @ts-expect-error: need a better way to update these values
           setGame((prv) => ({ ...prv }));
           send({ action: "data", data: game });
         }}
@@ -151,7 +153,7 @@ function AfterUpload({ send, room, game, setGame, setImageUploaded, imageUploade
 interface TitleLogoUploadProps {
   send: (data: any) => void;
   room: string;
-  setGame: Dispatch<SetStateAction<Game>>;
+  setGame: Dispatch<SetStateAction<Game | null>>;
   game: Game;
   setImageUploaded: Dispatch<SetStateAction<File | null>>;
   imageUploaded: File | null;

@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 interface FinalRoundButtonControlsProps {
   game: Game;
   send: (data: any) => void;
-  setGame: Dispatch<SetStateAction<Game>>;
+  setGame: Dispatch<SetStateAction<Game | null>>;
 }
 
 export default function FinalRoundButtonControls({ game, send, setGame }: FinalRoundButtonControlsProps) {

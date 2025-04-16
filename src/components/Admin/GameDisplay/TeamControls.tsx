@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 interface TeamControlsProps {
   game: Game;
-  setGame: Dispatch<SetStateAction<Game>>;
+  setGame: Dispatch<SetStateAction<Game | null>>;
   team: number;
   send: (data: any) => void;
   setPointsGiven: Dispatch<SetStateAction<{ state: boolean; color: string; textColor: string }>>;
@@ -27,6 +27,7 @@ export default function TeamControls({ game, setGame, team, send, setPointsGiven
             color: "bg-secondary-500",
             textColor: "text-foreground",
           });
+          // @ts-expect-error: need a better way to update these values
           setGame((prv) => ({ ...prv }));
           send({ action: "data", data: game });
         }}
@@ -43,6 +44,7 @@ export default function TeamControls({ game, setGame, team, send, setPointsGiven
         className="rounded border-4 bg-failure-500 p-10 text-2xl text-foreground"
         onClick={() => {
           if (game.teams[team].mistakes < 3) game.teams[team].mistakes++;
+          // @ts-expect-error: need a better way to update these values
           setGame((prv) => ({ ...prv }));
           send({ action: "data", data: game });
           send({

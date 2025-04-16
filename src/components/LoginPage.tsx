@@ -7,6 +7,7 @@ import "@/i18n/i18n";
 import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
 import { ERROR_CODES } from "@/i18n/errorCodes";
 import { toast } from "sonner";
+import { GameTheme } from "../types";
 
 interface LoginPageProps {
   hostRoom: () => void;
@@ -27,7 +28,7 @@ export default function LoginPage({
 }: LoginPageProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const [game, setGame] = useState({ settings: { theme: theme || "default" } });
+  const [game, setGame] = useState<GameTheme>({ settings: { theme: theme || "default" } });
 
   const isValidRoomCode = (code: string) => code.length === 4;
   const isValidPlayerName = (name: string) => name.length > 0 && name.length <= 12;

@@ -7,7 +7,7 @@ import FinalRoundTitleChanger from "./FinalRoundTitleChanger";
 
 interface AdminSettingsProps {
   game: Game;
-  setGame: Dispatch<SetStateAction<Game>>;
+  setGame: Dispatch<SetStateAction<Game | null>>;
   send: (data: any) => void;
 }
 

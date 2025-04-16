@@ -20,7 +20,7 @@ let timerInterval: NodeJS.Timeout | null = null;
 interface BuzzerPageProps {
   ws: React.RefObject<WebSocket>;
   game: Game;
-  id: string;
+  id: string | null;
   setGame: (game: Game | null) => void;
   room: string;
   quitGame: () => void;
@@ -127,6 +127,10 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
     });
   }, []);
 
+  if (!id) {
+    console.error("id is null in BuzzerPage");
+    return <div></div>;
+  }
   const currentPlayer = game.registeredPlayers[id];
   if (currentPlayer?.hidden)
     return (

@@ -201,11 +201,12 @@ export default function Home() {
 
   // control what to render based on if the player is hosting
   function getPage() {
-    if (registeredRoomCode !== null && host && game != null) {
+    if (ws.current != null && registeredRoomCode && host && game) {
       return (
         <div className="w-full lg:flex lg:flex-row lg:justify-center">
           <div className="sm:w-full md:w-full lg:w-3/4">
             <AdminPage
+              // @ts-expect-error: null check isn't working for typescript
               ws={ws}
               game={game}
               playerId={playerID}
@@ -216,11 +217,12 @@ export default function Home() {
           </div>
         </div>
       );
-    } else if (registeredRoomCode !== null && !host && game != null) {
+    } else if (ws && registeredRoomCode && !host && game) {
       return (
         <div className="flex w-full justify-center">
           <div className="flex w-11/12 flex-col space-y-3 pt-5 sm:w-10/12 md:w-3/4 lg:w-1/2">
             <BuzzerPage
+              // @ts-expect-error: null check isn't working for typescript
               ws={ws}
               game={game}
               id={playerID}

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 interface HideGameQuestionsProps {
   game: Game;
-  setGame: Dispatch<SetStateAction<Game>>;
+  setGame: Dispatch<SetStateAction<Game | null>>;
   send: (data: any) => void;
 }
 
