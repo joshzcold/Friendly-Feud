@@ -11,6 +11,7 @@ jobs:
     name: Build All in One
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Extract metadata (tags, labels) for Docker
         id: meta_allinone
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
