@@ -33,7 +33,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
   const [buzzed, setBuzzed] = useState(false);
   const [timer, setTimer] = useState(0);
   const [showMistake, setShowMistake] = useState(false);
-  let refreshCounter = 0;
+  const refreshCounterRef = useRef(0);
 
   const send = function (data: any) {
     data.room = room;
@@ -50,14 +50,18 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
 
   useEffect(() => {
     cookieCutter.set("session", `${room}:${id}:0`);
-    setInterval(() => {
+    const retryInterval = setInterval(() => {
       if (ws.current.readyState !== 1) {
-        toast.error(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounter}` }));
-        refreshCounter++;
-        if (refreshCounter >= 10) {
+        refreshCounterRef.current++;
+        const remainingSeconds = Math.max(0, 5 - refreshCounterRef.current);
+        toast.error(t(ERROR_CODES.CONNECTION_LOST, { message: `${remainingSeconds}` }));
+        if (refreshCounterRef.current >= 5) {
           console.debug("buzzer reload()");
+          clearInterval(retryInterval);
           location.reload();
         }
+      } else {
+        refreshCounterRef.current = 0;
       }
     }, 1000);
 
@@ -125,6 +129,10 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
         console.debug("didnt expect action in buzzer: ", json);
       }
     });
+
+    return () => {
+      clearInterval(retryInterval);
+    };
   }, []);
 
   if (!id) {
