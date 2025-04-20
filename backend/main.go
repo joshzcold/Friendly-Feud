@@ -2,59 +2,20 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/joshzcold/Cold-Friendly-Feud/api"
+	"github.com/joshzcold/Cold-Friendly-Feud/internal/config"
 )
 
-var cfg = struct {
-	addr               string
-	store              string
-	roomTimeoutSeconds int64
-	allowedOrigins     string
-}{
-	addr:               ":8080",
-	store:              "memory",
-	roomTimeoutSeconds: 86400,
-	allowedOrigins:     "*",
-}
-
-func flags() {
-	flag.StringVar(&cfg.addr, "listen_address", cfg.addr, "Address for server to bind to.")
-	flag.StringVar(&cfg.store, "game_store", cfg.store, "Choice of storage medium of the game")
-	flag.Int64Var(&cfg.roomTimeoutSeconds, "room_timeout_seconds", cfg.roomTimeoutSeconds, "Seconds before inactive rooms are cleaned up")
-	flag.StringVar(&cfg.allowedOrigins, "allowed_origins", cfg.allowedOrigins, "Comma-separated list of allowed origins for WebSocket connections or * for all")
-	flag.Parse()
-
-	if envAddr := os.Getenv("LISTEN_ADDRESS"); envAddr != "" {
-		cfg.addr = envAddr
-	}
-
-	if envGameStore := os.Getenv("GAME_STORE"); envGameStore != "" {
-		cfg.store = envGameStore
-	}
-
-	if envTimeout := os.Getenv("ROOM_TIMEOUT_SECONDS"); envTimeout != "" {
-		if timeout, err := strconv.ParseInt(envTimeout, 10, 64); err == nil {
-			cfg.roomTimeoutSeconds = timeout
-		}
-	}
-
-	if envOrigins := os.Getenv("ALLOWED_ORIGINS"); envOrigins != "" {
-		cfg.allowedOrigins = envOrigins
-	}
-}
-
 func main() {
-	flags()
-	api.SetConfig(cfg.roomTimeoutSeconds)
+	config.Flags()
+	api.SetConfig(config.Config.RoomTimeoutSeconds)
 	// Set allowed origins for WebSocket connections
-	os.Setenv("ALLOWED_ORIGINS", cfg.allowedOrigins)
-	err := api.NewGameStore(cfg.store)
+	os.Setenv("ALLOWED_ORIGINS", config.Config.AllowedOrigins)
+	err := api.NewGameStore(config.Config.Store)
 	if err != nil {
 		log.Panicf("Error: unable initalize store: %s", err)
 	}
@@ -66,7 +27,7 @@ func main() {
 	http.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		status, err := api.HealthTest(cfg.addr)
+		status, err := api.HealthTest(config.Config.Addr)
 
 		if err != nil {
 			w.WriteHeader(503)
@@ -81,8 +42,8 @@ func main() {
 		roomCode := httpRequest.PathValue("roomCode")
 		api.FetchLogo(httpWriter, roomCode)
 	})
-	log.Printf("Server listening on %s", cfg.addr)
-	err = http.ListenAndServe(cfg.addr, nil)
+	log.Printf("Server listening on %s", config.Config.Addr)
+	err = http.ListenAndServe(config.Config.Addr, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
