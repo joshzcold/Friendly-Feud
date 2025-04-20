@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
 import AdminSettings from "@/components/Admin/AdminSettings";
@@ -33,7 +33,7 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
   const [timerCompleted, setTimerCompleted] = useState(false);
   const [csvFileUpload, setCsvFileUpload] = useState<File | null>(null);
   const [csvFileUploadText, setCsvFileUploadText] = useState("");
-  let refreshCounter = 0;
+  const refreshCounterRef = useRef(0);
 
   function send(data: any) {
     console.debug("Sending", data);
@@ -66,12 +66,16 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
   useEffect(() => {
     const retryInterval = setInterval(() => {
       if (ws.current.readyState !== 1) {
-        toast.error(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounter}` }));
-        refreshCounter++;
-        if (refreshCounter >= 10) {
+        refreshCounterRef.current++;
+        const remainingSeconds = Math.max(0, 5 - refreshCounterRef.current);
+        toast.error(t(ERROR_CODES.CONNECTION_LOST, { message: `${remainingSeconds}` }));
+        if (refreshCounterRef.current >= 5) {
           console.debug("admin reload()");
+          clearInterval(retryInterval);
           location.reload();
         }
+      } else {
+        refreshCounterRef.current = 0;
       }
     }, 1000);
 

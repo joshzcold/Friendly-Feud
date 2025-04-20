@@ -227,10 +227,12 @@ export default function GamePage() {
       console.log("WebSocket connection closed:", event.code, event.reason);
     };
 
+    refreshCounterRef.current = 0;
     refreshIntervalRef.current = setInterval(() => {
       if (ws.current?.readyState !== WebSocket.OPEN) {
         refreshCounterRef.current++;
-        toast.error(t(ERROR_CODES.CONNECTION_LOST, { message: `${5 - refreshCounterRef.current}` }));
+        const remainingSeconds = Math.max(0, 5 - refreshCounterRef.current);
+        toast.error(t(ERROR_CODES.CONNECTION_LOST, { message: `${remainingSeconds}` }));
         if (refreshCounterRef.current >= 5) {
           console.debug("game reload()");
           if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
@@ -239,7 +241,7 @@ export default function GamePage() {
       } else {
         refreshCounterRef.current = 0;
       }
-    }, 3000);
+    }, 1000);
 
     return () => {
       if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
