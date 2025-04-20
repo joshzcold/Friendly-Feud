@@ -3,17 +3,19 @@ package api
 import (
 	"fmt"
 	"strings"
+
+	"github.com/joshzcold/Cold-Friendly-Feud/internal/errors"
 )
 
-func GameWindow(client *Client, event *Event) GameError {
+func GameWindow(client *Client, event *Event) errors.GameError {
 	session := strings.Split(event.Session, ":")
 	if len(session) < 2 {
-		return GameError{code: PARSE_ERROR}
+		return errors.GameError{Code: errors.PARSE_ERROR}
 	}
 
 	roomCode := session[0]
 	if roomCode == "" {
-		return GameError{code: PARSE_ERROR}
+		return errors.GameError{Code: errors.PARSE_ERROR}
 	}
 
 	s := store
@@ -24,9 +26,9 @@ func GameWindow(client *Client, event *Event) GameError {
 
 	message, err := NewSendData(room.Game)
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return errors.GameError{Code: errors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	room.Hub.register <- client
 	room.Hub.broadcast <- message
-	return GameError{}
+	return errors.GameError{}
 }

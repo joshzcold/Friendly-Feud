@@ -2,6 +2,8 @@ package api
 
 import (
 	"encoding/json"
+
+	"github.com/joshzcold/Cold-Friendly-Feud/internal/errors"
 )
 
 type sendData struct {
@@ -17,16 +19,16 @@ func NewSendData(newGameData *game) ([]byte, error) {
 }
 
 type sendError struct {
-	Action  string `json:"action"`
-	Code ErrorCode `json:"code"`
-	Message string `json:"message"`
+	Action  string           `json:"action"`
+	Code    errors.ErrorCode `json:"code"`
+	Message string           `json:"message"`
 }
 
-func NewSendError(ge GameError) ([]byte, error) {
+func NewSendError(ge errors.GameError) ([]byte, error) {
 	return json.Marshal(sendError{
 		Action:  "error",
-		Code: ge.code,
-		Message: ge.message,
+		Code:    ge.Code,
+		Message: ge.Message,
 	})
 }
 

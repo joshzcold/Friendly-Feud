@@ -3,6 +3,8 @@ package api
 import (
 	"log"
 	"time"
+
+	"github.com/joshzcold/Cold-Friendly-Feud/internal/errors"
 )
 
 type host struct {
@@ -83,7 +85,7 @@ type game struct {
 	RoundStartTime    int64                        `json:"round_start_time"`
 }
 
-func setTick(client *Client, event *Event) GameError {
+func setTick(client *Client, event *Event) errors.GameError {
 	room, storeError := store.getRoom(client, event.Room)
 	if storeError.code != "" {
 		return storeError
@@ -91,7 +93,7 @@ func setTick(client *Client, event *Event) GameError {
 	room.Game.Tick = time.Now().UTC().UnixMilli()
 	log.Println("Set tick for room", room.Game.Room, room.Game.Tick)
 	store.writeRoom(room.Game.Room, room)
-	return GameError{}
+	return errors.GameError{}
 }
 
 func NewGame(roomCode string) room {

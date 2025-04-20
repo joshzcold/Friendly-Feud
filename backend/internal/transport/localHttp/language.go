@@ -4,15 +4,16 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/joshzcold/Cold-Friendly-Feud/internal/errors"
 	"golang.org/x/text/collate"
 	"golang.org/x/text/language"
 )
 
-func ChangeLanguage(client *Client, event *Event) GameError {
+func ChangeLanguage(client *Client, event *Event) errors.GameError {
 	gamePath := filepath.Join("games", fmt.Sprint(event.Data), "**/*.json")
 	gameList, err := filepath.Glob(gamePath)
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return errors.GameError{Code: errors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	s := store
 	room, storeError := s.getRoom(client, event.Room)
@@ -31,8 +32,8 @@ func ChangeLanguage(client *Client, event *Event) GameError {
 	cull.SortStrings(gameList)
 	message, err := NewSendChangeLang(fmt.Sprint(event.Data), gameList)
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return errors.GameError{Code: errors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	room.Hub.broadcast <- message
-	return GameError{}
+	return errors.GameError{}
 }

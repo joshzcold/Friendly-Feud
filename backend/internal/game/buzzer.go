@@ -3,9 +3,11 @@ package api
 import (
 	"fmt"
 	"time"
+
+	"github.com/joshzcold/Cold-Friendly-Feud/internal/errors"
 )
 
-func ClearBuzzers(client *Client, event *Event) GameError {
+func ClearBuzzers(client *Client, event *Event) errors.GameError {
 	s := store
 	room, storeError := s.getRoom(client, event.Room)
 	if storeError.code != "" {
@@ -14,19 +16,19 @@ func ClearBuzzers(client *Client, event *Event) GameError {
 	room.Game.Buzzed = []buzzed{}
 	message, err := NewSendData(room.Game)
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return errors.GameError{Code: errors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	room.Hub.broadcast <- message
 	message, err = NewSendClearBuzzers()
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return errors.GameError{Code: errors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	room.Hub.broadcast <- message
 	s.writeRoom(room.Game.Room, room)
-	return GameError{}
+	return errors.GameError{}
 }
 
-func RegisterBuzzer(client *Client, event *Event) GameError {
+func RegisterBuzzer(client *Client, event *Event) errors.GameError {
 	s := store
 	room, storeError := s.getRoom(client, event.Room)
 	if storeError.code != "" {
@@ -34,38 +36,38 @@ func RegisterBuzzer(client *Client, event *Event) GameError {
 	}
 	player, ok := room.Game.RegisteredPlayers[event.ID]
 	if !ok {
-		return GameError{code: PLAYER_NOT_FOUND}
+		return errors.GameError{Code: errors.PLAYER_NOT_FOUND}
 	}
 	player.Team = event.Team
 	player.Start = time.Now()
 	message, err := NewSendPing(event.ID)
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return errors.GameError{Code: errors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	client.send <- message
 	message, err = NewSendRegistered(event.ID)
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return errors.GameError{Code: errors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	client.send <- message
 	message, err = NewSendData(room.Game)
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return errors.GameError{Code: errors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	room.Hub.broadcast <- message
 	s.writeRoom(room.Game.Room, room)
 
 	clientPlayer, ok := room.registeredClients[event.ID]
 	if !ok {
-		return GameError{code: PLAYER_NOT_FOUND}
+		return errors.GameError{Code: errors.PLAYER_NOT_FOUND}
 	}
 	// Set up recurring ping loop to get player latency
 	go clientPlayer.pingInterval()
 	s.writeRoom(room.Game.Room, room)
-	return GameError{}
+	return errors.GameError{}
 }
 
-func Buzz(client *Client, event *Event) GameError {
+func Buzz(client *Client, event *Event) errors.GameError {
 	s := store
 	room, storeError := s.getRoom(client, event.Room)
 	if storeError.code != "" {
@@ -73,7 +75,7 @@ func Buzz(client *Client, event *Event) GameError {
 	}
 	player, ok := room.Game.RegisteredPlayers[event.ID]
 	if !ok {
-		return GameError{code: PLAYER_NOT_FOUND}
+		return errors.GameError{Code: errors.PLAYER_NOT_FOUND}
 	}
 	latency := time.Millisecond * time.Duration(player.Latency)
 	latencyTime := time.Now().UTC().Add(-latency).UnixMilli()
@@ -101,19 +103,19 @@ func Buzz(client *Client, event *Event) GameError {
 	}
 	message, err := NewSendBuzzed()
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return errors.GameError{Code: errors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	client.send <- message
 	message, err = NewSendData(room.Game)
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return errors.GameError{Code: errors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	room.Hub.broadcast <- message
 	s.writeRoom(event.Room, room)
-	return GameError{}
+	return errors.GameError{}
 }
 
-func RegisterSpectator(client *Client, event *Event) GameError {
+func RegisterSpectator(client *Client, event *Event) errors.GameError {
 	s := store
 	room, storeError := s.getRoom(client, event.Room)
 	if storeError.code != "" {
@@ -122,9 +124,9 @@ func RegisterSpectator(client *Client, event *Event) GameError {
 	delete(room.Game.RegisteredPlayers, event.ID)
 	message, err := NewSendData(room.Game)
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return errors.GameError{Code: errors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	room.Hub.register <- client
 	room.Hub.broadcast <- message
-	return GameError{}
+	return errors.GameError{}
 }

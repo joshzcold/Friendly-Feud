@@ -1,8 +1,10 @@
-package api
+package store
 
 import (
 	"fmt"
 	"log"
+
+	"github.com/joshzcold/Cold-Friendly-Feud/internal/errors"
 )
 
 var store gameStore
@@ -13,17 +15,17 @@ type gameStore interface {
 	// List of active rooms on the server
 	currentRooms() []string
 	// Game data of room
-	getRoom(*Client, string) (room, GameError)
+	getRoom(*Client, string) (room, errors.GameError)
 	// Update game data of room
-	writeRoom(string, room) GameError
+	writeRoom(string, room) errors.GameError
 	// Erase room from server
-	deleteRoom(string) GameError
+	deleteRoom(string) errors.GameError
 	// Save an image file for the game logo
-	saveLogo(string, []byte) GameError
+	saveLogo(string, []byte) errors.GameError
 	// Load a logo image from room
-	loadLogo(string) ([]byte, GameError)
+	loadLogo(string) ([]byte, errors.GameError)
 	// Delete a logo image from room
-	deleteLogo(string) GameError
+	deleteLogo(string) errors.GameError
 	// Health check
 	isHealthy() error
 }

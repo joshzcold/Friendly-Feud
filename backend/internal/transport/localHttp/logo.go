@@ -7,6 +7,8 @@ import (
 	"math"
 	"net/http"
 	"slices"
+
+	internalErrors "github.com/joshzcold/Cold-Friendly-Feud/internal/errors"
 )
 
 const MaxFileSize = 2098
@@ -20,34 +22,34 @@ func VerifyLogo(logo []byte) error {
 	acceptedMimeTypes := []string{"image/png", "image/gif", "image/jpeg"}
 
 	if !slices.Contains(acceptedMimeTypes, mimeType) {
-		return errors.New(string(UNKNOWN_FILE_TYPE))
+		return errors.New(string(internalErrors.UNKNOWN_FILE_TYPE))
 	}
 	return nil
 }
 
-func LogoUpload(client *Client, event *Event) GameError {
+func LogoUpload(client *Client, event *Event) internalErrors.GameError {
 	s := store
 	base64DecodedLogoData, err := base64.StdEncoding.DecodeString(event.LogoData)
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return internalErrors.GameError{Code: internalErrors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	storeError := s.saveLogo(event.Room, base64DecodedLogoData)
 	if storeError.code != "" {
 		return storeError
 	}
-	return GameError{}
+	return internalErrors.GameError{}
 }
 
-func DeleteLogoUpload(client *Client, event *Event) GameError {
+func DeleteLogoUpload(client *Client, event *Event) internalErrors.GameError {
 	s := store
 	storeError := s.deleteLogo(event.Room)
 	if storeError.code != "" {
 		return storeError
 	}
-	return GameError{}
+	return internalErrors.GameError{}
 }
 
-func FetchLogo(w http.ResponseWriter, roomCode string) GameError {
+func FetchLogo(w http.ResponseWriter, roomCode string) internalErrors.GameError {
 	s := store
 	logoData, storeError := s.loadLogo(roomCode)
 	if storeError.code != "" {
@@ -56,5 +58,5 @@ func FetchLogo(w http.ResponseWriter, roomCode string) GameError {
 	}
 	w.WriteHeader(200)
 	w.Write(logoData)
-	return GameError{}
+	return internalErrors.GameError{}
 }

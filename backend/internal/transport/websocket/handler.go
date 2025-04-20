@@ -3,6 +3,8 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/joshzcold/Cold-Friendly-Feud/internal/errors"
 )
 
 type Event struct {
@@ -19,13 +21,13 @@ type Event struct {
 	Host     bool   `json:"host"`
 	ID       string `json:"id"`
 	Session  string `json:"session"`
-	Team     *int    `json:"team"`
+	Team     *int   `json:"team"`
 	MimeType string `json:"mimetype"`
 }
 
 type ActionFunc func(*Client, *Event) error
 
-var recieveActions = map[string]func(client *Client, event *Event) GameError {
+var recieveActions = map[string]func(client *Client, event *Event) errors.GameError{
 	"buzz":              Buzz,
 	"change_lang":       ChangeLanguage,
 	"clearbuzzers":      ClearBuzzers,
@@ -53,10 +55,10 @@ func parseEvent(message []byte) (*Event, error) {
 	return event, nil
 }
 
-func EventPipe(client *Client, message []byte) GameError {
+func EventPipe(client *Client, message []byte) errors.GameError {
 	event, err := parseEvent(message)
 	if err != nil {
-		return GameError{code: PARSE_ERROR, message: fmt.Sprint(err)}
+		return errors.GameError{Code: errors.PARSE_ERROR, Message: fmt.Sprint(err)}
 	}
 	if event.Action != "" {
 		if event.Action != "pong" && event.Action != "buzz" {
@@ -69,5 +71,5 @@ func EventPipe(client *Client, message []byte) GameError {
 		// Catch all for generic messages coming from admin
 		return recieveActions["unknown"](client, event)
 	}
-	return GameError{}
+	return errors.GameError{}
 }

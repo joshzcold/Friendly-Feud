@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/joshzcold/Cold-Friendly-Feud/internal/errors"
 )
 
 const ()
@@ -83,7 +84,7 @@ func (r *room) gameTimeout() error {
 					return fmt.Errorf(" %w", err)
 				}
 				r.Hub.broadcast <- message
-				message, err = NewSendError(GameError{code: GAME_CLOSED})
+				message, err = NewSendError(errors.GameError{Code: errors.GAME_CLOSED})
 				if err != nil {
 					return fmt.Errorf(" %w", err)
 				}
@@ -100,9 +101,9 @@ func (r *room) gameTimeout() error {
 }
 
 type RegisteredClient struct {
-	id       string
-	client   *Client
-	room     *room
+	id     string
+	client *Client
+	room   *room
 }
 
 type roomConnections struct {

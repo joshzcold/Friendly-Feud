@@ -6,24 +6,26 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	internalErrors "github.com/joshzcold/Cold-Friendly-Feud/internal/errors"
 )
 
 // addGameKeys Add state data to a loaded game
 func addGameKeys(game *game) error {
 	if len(game.Rounds) == 0 {
-		return errors.New(string(PARSE_ERROR))
+		return errors.New(string(internalErrors.PARSE_ERROR))
 	}
 	game.PointTracker = []int{}
 	for _, round := range game.Rounds {
 		if len(round.Answers) == 0 {
-			return errors.New(string(PARSE_ERROR))
+			return errors.New(string(internalErrors.PARSE_ERROR))
 		}
 		game.PointTracker = append(game.PointTracker, 0)
 	}
 	return nil
 }
 
-func LoadGame(client *Client, event *Event) GameError {
+func LoadGame(client *Client, event *Event) internalErrors.GameError {
 	s := store
 	room, storeError := s.getRoom(client, event.Room)
 	if storeError.code != "" {
@@ -35,13 +37,13 @@ func LoadGame(client *Client, event *Event) GameError {
 		filePath := filepath.Join(event.File)
 		_, err = os.Stat(filePath)
 		if err != nil {
-			return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+			return internalErrors.GameError{Code: internalErrors.SERVER_ERROR, Message: fmt.Sprint(err)}
 		}
 		gameBytes, err = os.ReadFile(filePath)
 	}
 	json.Unmarshal(gameBytes, &loadedGame)
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return internalErrors.GameError{Code: internalErrors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	room.Game.FinalRound = loadedGame.FinalRound
 	room.Game.FinalRound2 = loadedGame.FinalRound
@@ -50,13 +52,13 @@ func LoadGame(client *Client, event *Event) GameError {
 
 	err = addGameKeys(room.Game)
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return internalErrors.GameError{Code: internalErrors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	message, err := NewSendData(room.Game)
 	if err != nil {
-		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+		return internalErrors.GameError{Code: internalErrors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
 	room.Hub.broadcast <- message
 	s.writeRoom(event.Room, room)
-	return GameError{}
+	return internalErrors.GameError{}
 }
