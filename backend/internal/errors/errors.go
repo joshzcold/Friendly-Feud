@@ -1,8 +1,8 @@
-package api
+package errors
 
 type GameError struct {
-	code    ErrorCode
-	message string
+	Code    ErrorCode
+	Message string
 }
 
 type ErrorCode string
