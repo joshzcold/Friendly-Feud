@@ -1,4 +1,4 @@
-package api
+package shared
 
 import (
 	"encoding/json"

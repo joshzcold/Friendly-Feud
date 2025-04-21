@@ -1,4 +1,4 @@
-package api
+package game
 
 import (
 	"encoding/json"
