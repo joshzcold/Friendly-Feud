@@ -19,6 +19,11 @@ func Pong(client *Client, event *Event) errors.GameError {
 		return errors.GameError{} // Silently accept pongs from spectators
 	}
 
+	// This function modifies player data withing room.Game.RegisteredPlayers
+	// We need a write lock on the room to avoid race conditions
+	room.mu.Lock()
+	defer room.mu.Unlock()
+
 	player, ok := room.Game.RegisteredPlayers[event.ID]
 	if !ok {
 		return errors.GameError{Code: errors.PLAYER_NOT_FOUND}

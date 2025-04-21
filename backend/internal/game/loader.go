@@ -31,6 +31,11 @@ func LoadGame(client *Client, event *Event) internalErrors.GameError {
 	if storeError.code != "" {
 		return storeError
 	}
+
+	// This function modifies room.Game so we need a write lock
+	room.mu.Lock()
+	defer room.mu.Unlock()
+
 	gameBytes, err := json.Marshal(event.Data)
 	loadedGame := game{}
 	if event.File != "" {

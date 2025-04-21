@@ -13,6 +13,11 @@ func ClearBuzzers(client *Client, event *Event) errors.GameError {
 	if storeError.code != "" {
 		return storeError
 	}
+
+	// This function modifies room.Game so we need a write lock
+	room.mu.Lock()
+	defer room.mu.Unlock()
+
 	room.Game.Buzzed = []buzzed{}
 	message, err := NewSendData(room.Game)
 	if err != nil {
@@ -34,6 +39,11 @@ func RegisterBuzzer(client *Client, event *Event) errors.GameError {
 	if storeError.code != "" {
 		return storeError
 	}
+
+	// This function modifies room.Game so we need a write lock
+	room.mu.Lock()
+	defer room.mu.Unlock()
+
 	player, ok := room.Game.RegisteredPlayers[event.ID]
 	if !ok {
 		return errors.GameError{Code: errors.PLAYER_NOT_FOUND}
@@ -73,6 +83,11 @@ func Buzz(client *Client, event *Event) errors.GameError {
 	if storeError.code != "" {
 		return storeError
 	}
+
+	// This function modifies room.Game so we need a write lock
+	room.mu.Lock()
+	defer room.mu.Unlock()
+
 	player, ok := room.Game.RegisteredPlayers[event.ID]
 	if !ok {
 		return errors.GameError{Code: errors.PLAYER_NOT_FOUND}

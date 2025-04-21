@@ -15,6 +15,10 @@ func quitPlayer(room *room, client *Client, event *Event) error {
 		return fmt.Errorf("player not found")
 	}
 
+	// This function modifies room.Game so we need a write lock
+	room.mu.Lock()
+	defer room.mu.Unlock()
+
 	hostClient, hostExists := room.registeredClients[room.Game.Host.ID]
 
 	isHost := false
@@ -208,6 +212,10 @@ func GetBackIn(client *Client, event *Event) errors.GameError {
 }
 
 func registerPlayer(room *room, playerName string, client *Client) string {
+	// This function modifies room.Game so we need a write lock
+	room.mu.Lock()
+	defer room.mu.Unlock()
+
 	playerID := playerID()
 	room.Game.RegisteredPlayers[playerID] = &registeredPlayer{
 		Name: playerName,
@@ -225,6 +233,10 @@ func registerPlayer(room *room, playerName string, client *Client) string {
 
 // registerHost Set current player as host
 func registerHost(room *room, client *Client) string {
+	// This function modifies room.Game so we need a write lock
+	room.mu.Lock()
+	defer room.mu.Unlock()
+
 	hostID := playerID()
 	room.Game.Host = host{
 		ID: hostID,

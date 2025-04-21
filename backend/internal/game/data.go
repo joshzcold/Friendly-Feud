@@ -30,6 +30,11 @@ func NewData(client *Client, event *Event) errors.GameError {
 	if storeError.code != "" {
 		return storeError
 	}
+
+	// This function modifies room.Game so we need a write lock
+	room.mu.Lock()
+	defer room.mu.Unlock()
+
 	copyRound := room.Game.Round
 	copyTitle := room.Game.Title
 	newData := game{}

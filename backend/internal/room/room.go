@@ -5,6 +5,7 @@ import (
 	"log"
 	"math/rand"
 	"time"
+	"sync"
 
 	"github.com/google/uuid"
 	"github.com/joshzcold/Cold-Friendly-Feud/internal/errors"
@@ -117,4 +118,5 @@ type room struct {
 	// Assign to ws Hub when hosting room
 	roomConnections
 	cleanup chan struct{}
+	mu sync.RWMutex
 }
