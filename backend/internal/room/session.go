@@ -140,8 +140,8 @@ func InitalizeRoom(client *Client, newRoomCode string) room {
 func HostRoom(client *Client, event *Event) errors.GameError {
 	newRoomCode := roomCode()
 	s := store
-	currentRooms := s.currentRooms()
-	for slices.Contains(currentRooms, newRoomCode) {
+	listRooms := s.ListRooms()
+	for slices.Contains(listRooms, newRoomCode) {
 		newRoomCode = roomCode()
 	}
 	initRoom := InitalizeRoom(client, newRoomCode)

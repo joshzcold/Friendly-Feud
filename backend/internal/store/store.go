@@ -13,7 +13,7 @@ var store gameStore
 // defines functions required to implement the state of the game.
 type gameStore interface {
 	// List of active rooms on the server
-	currentRooms() []string
+	ListRooms() []string
 	// Game data of room
 	getRoom(*Client, string) (room, errors.GameError)
 	// Update game data of room

@@ -21,7 +21,7 @@ func NewMemoryStore() *MemoryStore {
 	}
 }
 
-func (m *MemoryStore) currentRooms() []string {
+func (m *MemoryStore) ListRooms() []string {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	keys := make([]string, len(m.rooms))

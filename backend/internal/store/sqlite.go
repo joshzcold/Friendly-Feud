@@ -48,7 +48,7 @@ func NewSQLiteStore() (*SQLiteStore, internalErrors.GameError) {
 	}, internalErrors.GameError{}
 }
 
-func (s *SQLiteStore) currentRooms() []string {
+func (s *SQLiteStore) ListRooms() []string {
 	var rooms []Room
 	var roomList []string
 	s.db.Model(&Room{}).Select("room_code").Find(&rooms)
