@@ -31,7 +31,7 @@ func (m *MemoryStore) ListRooms() []string {
 	return keys
 }
 
-func (m *MemoryStore) getRoom(client *Client, roomCode string) (room, errors.GameError) {
+func (m *MemoryStore) GetGame(roomCode string) (*game.Game, errors.GameError) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	foundGame, ok := m.rooms[roomCode]
@@ -41,21 +41,21 @@ func (m *MemoryStore) getRoom(client *Client, roomCode string) (room, errors.Gam
 	return room{}, errors.GameError{Code: errors.ROOM_NOT_FOUND}
 }
 
-func (m *MemoryStore) writeRoom(roomCode string, room room) errors.GameError {
+func (m *MemoryStore) SaveGame(roomCode string, room *game.Game) errors.GameError {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.rooms[roomCode] = room
 	return errors.GameError{}
 }
 
-func (m *MemoryStore) deleteRoom(roomCode string) errors.GameError {
+func (m *MemoryStore) DeleteGame(roomCode string) errors.GameError {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	delete(m.rooms, roomCode)
 	return errors.GameError{}
 }
 
-func (m *MemoryStore) saveLogo(roomCode string, logo []byte) errors.GameError {
+func (m *MemoryStore) SaveLogo(roomCode string, logo []byte) errors.GameError {
 	dirPath := filepath.Join(".", "public", "rooms", roomCode)
 	err := VerifyLogo(logo)
 	if err != nil {
@@ -73,7 +73,7 @@ func (m *MemoryStore) saveLogo(roomCode string, logo []byte) errors.GameError {
 	return errors.GameError{}
 }
 
-func (m *MemoryStore) loadLogo(roomCode string) ([]byte, errors.GameError) {
+func (m *MemoryStore) LoadLogo(roomCode string) ([]byte, errors.GameError) {
 	log.Println("Trying to load logo from", "./public/rooms/", roomCode, "logo")
 	logoPath := filepath.Join(".", "public", "rooms", roomCode, "logo")
 	_, err := os.Stat(logoPath)
@@ -87,7 +87,7 @@ func (m *MemoryStore) loadLogo(roomCode string) ([]byte, errors.GameError) {
 	return logo, errors.GameError{}
 }
 
-func (m *MemoryStore) deleteLogo(roomCode string) errors.GameError {
+func (m *MemoryStore) DeleteLogo(roomCode string) errors.GameError {
 	logoPath := filepath.Join(".", "public", "rooms", roomCode, "logo")
 	_, err := os.Stat(logoPath)
 	if err != nil {
@@ -100,7 +100,7 @@ func (m *MemoryStore) deleteLogo(roomCode string) errors.GameError {
 	return errors.GameError{}
 }
 
-func (m *MemoryStore) isHealthy() error {
+func (m *MemoryStore) IsHealthy() error {
 	if m.rooms == nil {
 		return fmt.Errorf("memory store is not initialized")
 	}

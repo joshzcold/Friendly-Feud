@@ -14,7 +14,6 @@ import (
 
 	internalErrors "github.com/joshzcold/Cold-Friendly-Feud/internal/errors"
 	"github.com/joshzcold/Cold-Friendly-Feud/internal/room"
-	"github.com/joshzcold/Cold-Friendly-Feud/internal/transport/websocket"
 )
 
 type SQLiteStore struct {
@@ -59,7 +58,7 @@ func (s *SQLiteStore) ListRooms() []string {
 	return roomList
 }
 
-func (s *SQLiteStore) getRoom(client *websocket.Client, roomCode string) (room.Room, internalErrors.GameError) {
+func (s *SQLiteStore) GetGame(roomCode string) (*game.Game, internalErrors.GameError) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	var foundRoomDB Room
@@ -86,13 +85,13 @@ func (s *SQLiteStore) getRoom(client *websocket.Client, roomCode string) (room.R
 	}
 	json.Unmarshal(foundRoomDB.RoomJson, &retrievedRoom.Game)
 
-	return retrievedRoom, internalErrors.errors.GameError{}
+	return retrievedRoom, internalErrors.GameError{}
 }
 
-func (s *SQLiteStore) writeRoom(roomCode string, room room.Room) internalErrors.GameError {
+func (s *SQLiteStore) SaveGame(roomCode string, room *game.Game) internalErrors.GameError {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	jsonData, err := json.Marshal(room.Game)
+	jsonData, err := json.Marshal(room)
 	if err != nil {
 		return internalErrors.GameError{Code: internalErrors.SERVER_ERROR, Message: fmt.Sprint(err)}
 	}
@@ -110,18 +109,18 @@ func (s *SQLiteStore) writeRoom(roomCode string, room room.Room) internalErrors.
 	return internalErrors.GameError{}
 }
 
-func (s *SQLiteStore) deleteRoom(roomCode string) internalErrors.GameError {
+func (s *SQLiteStore) DeleteGame(roomCode string) internalErrors.GameError {
 	log.Println("Try to delete room", roomCode)
 	s.db.Unscoped().Where("room_code = ?", roomCode).Delete(&Room{})
 	return internalErrors.GameError{}
 }
 
-func (s *SQLiteStore) saveLogo(roomCode string, logo []byte) internalErrors.GameError {
+func (s *SQLiteStore) SaveLogo(roomCode string, logo []byte) internalErrors.GameError {
 	s.db.Model(&Room{}).Where("room_code = ?", roomCode).Update("room_icon", logo)
 	return internalErrors.GameError{}
 }
 
-func (s *SQLiteStore) loadLogo(roomCode string) ([]byte, internalErrors.GameError) {
+func (s *SQLiteStore) LoadLogo(roomCode string) ([]byte, internalErrors.GameError) {
 	var foundRoomDB Room
 
 	if err := s.db.Where("room_code = ?", roomCode).First(&foundRoomDB).Error; errors.Is(err, gorm.ErrRecordNotFound) {
@@ -130,12 +129,12 @@ func (s *SQLiteStore) loadLogo(roomCode string) ([]byte, internalErrors.GameErro
 	return foundRoomDB.RoomIcon, internalErrors.GameError{}
 }
 
-func (s *SQLiteStore) deleteLogo(roomCode string) internalErrors.GameError {
+func (s *SQLiteStore) DeleteLogo(roomCode string) internalErrors.GameError {
 	s.db.Model(&Room{}).Where("room_code = ?", roomCode).Update("room_icon", nil)
 	return internalErrors.GameError{}
 }
 
-func (s *SQLiteStore) isHealthy() error {
+func (s *SQLiteStore) IsHealthy() error {
 	sqlDB, err := s.db.DB()
 	if err != nil {
 		return fmt.Errorf("failed to get database instance: %v", err)

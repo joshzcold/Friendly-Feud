@@ -5,29 +5,30 @@ import (
 	"log"
 
 	"github.com/joshzcold/Cold-Friendly-Feud/internal/errors"
+	"github.com/joshzcold/Cold-Friendly-Feud/internal/game"
 )
 
-var store gameStore
+var store GameStore
 
-// gameStore interface to implement a game store location
+// GameStore interface to implement a game store location
 // defines functions required to implement the state of the game.
-type gameStore interface {
+type GameStore interface {
 	// List of active rooms on the server
 	ListRooms() []string
 	// Game data of room
-	getRoom(*Client, string) (room, errors.GameError)
+	GetGame(string) (*game.Game, errors.GameError)
 	// Update game data of room
-	writeRoom(string, room) errors.GameError
+	SaveGame(string, *game.Game) errors.GameError
 	// Erase room from server
-	deleteRoom(string) errors.GameError
+	DeleteGame(string) errors.GameError
 	// Save an image file for the game logo
-	saveLogo(string, []byte) errors.GameError
+	SaveLogo(string, []byte) errors.GameError
 	// Load a logo image from room
-	loadLogo(string) ([]byte, errors.GameError)
+	LoadLogo(string) ([]byte, errors.GameError)
 	// Delete a logo image from room
-	deleteLogo(string) errors.GameError
+	DeleteLogo(string) errors.GameError
 	// Health check
-	isHealthy() error
+	IsHealthy() error
 }
 
 func NewGameStore(gameStore string) error {
