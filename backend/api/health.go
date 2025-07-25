@@ -29,8 +29,8 @@ func HealthTest(port string) (HealthStatus, error) {
 	status := HealthStatus{
 		Status: "up",
 		Details: HealthDetails{
-			WebSocket:   checkWebSocket(port),
-			Database:    checkDatabase(),
+			WebSocket: checkWebSocket(port),
+			Database:  checkDatabase(),
 			GameCount: activeRoomCount(),
 		},
 	}
