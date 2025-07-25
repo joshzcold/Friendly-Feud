@@ -2,7 +2,6 @@ package api
 
 import (
 	"fmt"
-	"log/slog"
 	"time"
 
 	"github.com/gorilla/websocket"
