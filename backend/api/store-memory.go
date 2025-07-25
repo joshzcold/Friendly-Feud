@@ -22,7 +22,7 @@ func NewMemoryStore() *MemoryStore {
 func (m *MemoryStore) currentRooms() []string {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	keys := make([]string, len(m.rooms))
+	keys := []string{}
 	for k := range m.rooms {
 		keys = append(keys, k)
 	}

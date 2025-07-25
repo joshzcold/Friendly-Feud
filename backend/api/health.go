@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -15,6 +16,7 @@ type HealthStatus struct {
 type HealthDetails struct {
 	WebSocket ComponentStatus `json:"websocket"`
 	Database  ComponentStatus `json:"database"`
+	GameCount int             `json:"game_count"`
 }
 
 type ComponentStatus struct {
@@ -27,8 +29,9 @@ func HealthTest(port string) (HealthStatus, error) {
 	status := HealthStatus{
 		Status: "up",
 		Details: HealthDetails{
-			WebSocket: checkWebSocket(port),
-			Database:  checkDatabase(),
+			WebSocket:   checkWebSocket(port),
+			Database:    checkDatabase(),
+			GameCount: activeRoomCount(),
 		},
 	}
 
@@ -90,4 +93,12 @@ func checkDatabase() ComponentStatus {
 	}
 
 	return status
+}
+
+func activeRoomCount() int {
+	if err := store.isHealthy(); err != nil {
+		return 0
+	}
+
+	return len(store.currentRooms())
 }
