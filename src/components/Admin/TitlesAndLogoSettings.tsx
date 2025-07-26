@@ -1,7 +1,8 @@
 import TitleLogoUpload from "@/components/Admin/TitleLogoUpload";
 import { debounce } from "@/lib/utils";
+import { GameContext } from "@/src/pages";
 import { Game } from "@/types/game";
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useContext } from "react";
 import { useTranslation } from "react-i18next";
 
 interface TitlesAndLogoSettingsProps {

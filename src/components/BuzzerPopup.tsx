@@ -23,7 +23,7 @@ export default function BuzzerPopup({ buzzed }: BuzzerPopupProps) {
 
     // Skip audio and animation if this is the initial mount with existing buzzer state
     // If we don't, on refresh this will cause errors due to needing user interaction on audio autoplay
-    if (isInitialMount.current && buzzed?.id) {
+    if (isInitialMount.current && (buzzed?.id || buzzed?.team_name)) {
       isInitialMount.current = false;
       firstPressRef.current = true;
       setIsVisible(false);
@@ -31,7 +31,8 @@ export default function BuzzerPopup({ buzzed }: BuzzerPopupProps) {
     }
 
     // Check if this is a new buzzer press (buzzed has an id and we haven't processed it yet)
-    if (buzzed?.id && !firstPressRef.current) {
+    console.log(buzzed, firstPressRef.current);
+    if ((buzzed?.id || buzzed?.team_name) && !firstPressRef.current) {
       // Set first press flag
       firstPressRef.current = true;
 
@@ -51,7 +52,7 @@ export default function BuzzerPopup({ buzzed }: BuzzerPopupProps) {
     }
 
     // Reset the first press tracking when buzzed is cleared
-    if (!buzzed || !buzzed.id) {
+    if (!buzzed || (!buzzed.id && !buzzed.team_name)) {
       firstPressRef.current = false;
       isInitialMount.current = false;
       setIsVisible(false);
@@ -68,7 +69,7 @@ export default function BuzzerPopup({ buzzed }: BuzzerPopupProps) {
   }, [buzzed, isVisible]);
 
   // Only show popup for valid buzzer press
-  if (!buzzed?.id) {
+  if (!buzzed?.id && !buzzed?.team_name) {
     return null;
   }
 
@@ -76,14 +77,15 @@ export default function BuzzerPopup({ buzzed }: BuzzerPopupProps) {
     // TODO: Figure out why this isn't getting bigger
     <div className={`fixed inset-0 z-50 flex items-center justify-center`}>
       <div
-        className={`rounded-lg border-4 border-warning-500 bg-black transition-all duration-300 ${isVisible ? "opacity-100" : "opacity-0"}`}
+        className={`rounded-lg border-4 border-white bg-warning-900 text-white transition-all duration-300 ${isVisible ? "opacity-100" : "opacity-0"}`}
       >
-        <div className="flex flex-col items-center p-8 text-warning-500">
+        <div className="flex flex-col items-center p-12">
           <div className="text-4xl font-bold">{t("First Buzzer")}</div>
           <hr className="my-2 w-full border-t-2 border-warning-500" />
-          <div className="w-full text-center text-2xl">
-            <span className="font-semibold">{buzzed.name}</span>
-            {typeof buzzed.team !== "undefined" && <span className="ml-2">| {buzzed.team}</span>}
+          <div className="w-full text-center text-4xl font-bold">
+            {buzzed.name && <span>{buzzed.name}</span>}
+            {buzzed.name && "team_name" in buzzed && <span> | </span>}
+            {"team_name" in buzzed && <span>{buzzed.team_name}</span>}
           </div>
         </div>
       </div>

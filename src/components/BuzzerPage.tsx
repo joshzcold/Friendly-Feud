@@ -7,7 +7,7 @@ import QuestionBoard from "@/components/QuestionBoard";
 import Round from "@/components/Round";
 import TeamName from "@/components/TeamName";
 import { ERROR_CODES } from "@/i18n/errorCodes";
-import { Game } from "@/types/game";
+import { Game, WSEvent } from "@/types/game";
 // @ts-expect-error cookie-cutter is not typed
 import cookieCutter from "cookie-cutter";
 import { EyeOff } from "lucide-react";
@@ -67,7 +67,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
 
     ws.current.addEventListener("message", (evt) => {
       let received_msg = evt.data;
-      let json = JSON.parse(received_msg);
+      let json: WSEvent = JSON.parse(received_msg);
       if (json.action === "ping") {
         // server gets the average latency periodically
         console.debug(id);
@@ -353,18 +353,33 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
                 {t("play")}
               </button>
             </div>
-            <div className="flex flex-row justify-center">
-              <Link href="/game">
-                <button
-                  id="openGameWindowButton"
-                  className="rounded-md bg-secondary-300 px-8 py-4 hover:shadow-md"
-                  onClick={() => {
-                    send({ action: "registerspectator", team: team });
-                  }}
-                >
-                  {t("Open Game Window")}
-                </button>
-              </Link>
+            <div className="flex flex-row justify-between">
+              <div className="flex flex-row justify-center">
+                <Link href="/game">
+                  <button
+                    id="openGameWindowButton"
+                    className="rounded-md bg-secondary-300 px-8 py-4 hover:shadow-md"
+                    onClick={() => {
+                      send({ action: "registerspectator", team: team });
+                    }}
+                  >
+                    {t("Open Game Window")}
+                  </button>
+                </Link>
+              </div>
+              <div className="flex flex-row justify-center">
+                <Link href={`/buzzers?room=${game.room}`}>
+                  <button
+                    id="openGameWindowButton"
+                    className="rounded-md bg-secondary-300 px-8 py-4 hover:shadow-md"
+                    onClick={() => {
+                      send({ action: "registerspectator", team: team });
+                    }}
+                  >
+                    {t("Host Buzzers")}
+                  </button>
+                </Link>
+              </div>
             </div>
           </>
         )}

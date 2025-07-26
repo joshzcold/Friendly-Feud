@@ -5,13 +5,14 @@ import Round from "@/components/Round";
 import TeamName from "@/components/TeamName";
 import TitlePage from "@/components/Title/TitlePage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
-import { BuzzedState, Game } from "@/types/game";
+import { BuzzedState, Game, WSEvent } from "@/types/game";
 // @ts-expect-error: not sure if cookie-cutter is typed
 import cookieCutter from "cookie-cutter";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import NoSession from "../components/ui/NoSession";
 
 let timerInterval: NodeJS.Timeout | null = null;
 
@@ -43,12 +44,13 @@ export default function GamePage() {
         console.debug("found user session", session);
         ws.current.send(JSON.stringify({ action: "game_window", session: session }));
 
+        // NOTE: ping interval is for spectator user.
         const pingInterval = setInterval(() => {
           if (ws.current?.readyState === WebSocket.OPEN) {
             console.debug("sending pong in game window");
             const sessionParts = session?.split(":");
-            if (sessionParts?.length === 2) {
-              const [room, id] = sessionParts;
+            if (sessionParts?.length >= 2) {
+              const [room, id, _] = sessionParts;
               ws.current.send(
                 JSON.stringify({
                   action: "pong",
@@ -71,7 +73,7 @@ export default function GamePage() {
 
     ws.current.onmessage = function (evt) {
       var received_msg = evt.data;
-      let json;
+      let json: WSEvent;
       try {
         json = JSON.parse(received_msg);
       } catch (error) {
@@ -86,11 +88,19 @@ export default function GamePage() {
         if (Object.keys(buzzed).length === 0 && newGameData.buzzed.length > 0) {
           const buzzerInfo = newGameData.buzzed[0];
           const user = newGameData.registeredPlayers[buzzerInfo.id];
+          console.log(user);
           if (user && newGameData.teams[user.team ?? 0]) {
             setBuzzed({
               id: buzzerInfo.id,
               name: user.name,
-              team: newGameData.teams[user.team ?? 0].name,
+              team_name: newGameData.teams[user.team ?? 0].name,
+            });
+          } else if ("team" in buzzerInfo) {
+            console.log("here");
+            setBuzzed({
+              id: "",
+              name: "",
+              team_name: newGameData.teams[buzzerInfo.team].name,
             });
           } else {
             console.warn("Buzzed user or team not found:", buzzerInfo, newGameData);
@@ -319,18 +329,6 @@ export default function GamePage() {
       </>
     );
   } else {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center space-y-10">
-        <p>{t("No game session. retry from the admin window")}</p>
-        <button
-          className="m-1 rounded-lg bg-secondary-500 p-2 font-bold uppercase shadow-md hover:bg-secondary-200"
-          onClick={() => {
-            window.location.href = "/";
-          }}
-        >
-          {t("quit")}
-        </button>
-      </div>
-    );
+    return <NoSession />;
   }
 }

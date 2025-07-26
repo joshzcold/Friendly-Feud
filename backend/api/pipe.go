@@ -10,38 +10,46 @@ type Event struct {
 	Action string `json:"action"`
 
 	// supplemental fields
-	File     string `json:"file"`
-	Lang     string `json:"lang"`
-	Data     any    `json:"data"`
-	LogoData string `json:"logoData"`
-	Room     string `json:"room"`
-	Name     string `json:"name"`
-	Host     bool   `json:"host"`
-	ID       string `json:"id"`
-	Session  string `json:"session"`
-	Team     *int    `json:"team"`
-	MimeType string `json:"mimetype"`
+	File         string `json:"file"`
+	Lang         string `json:"lang"`
+	Data         any    `json:"data"`
+	LogoData     string `json:"logoData"`
+	Room         string `json:"room"`
+	Name         string `json:"name"`
+	Host         bool   `json:"host"`
+	ID           string `json:"id"`
+	HostPassword string `json:"hostPassword"`
+	Session      string `json:"session"`
+	Team         *int   `json:"team"`
+	MimeType     string `json:"mimetype"`
 }
 
-type ActionFunc func(*Client, *Event) error
+type ActionFunc func(*Client, *Event) GameError
 
-var recieveActions = map[string]func(client *Client, event *Event) GameError {
+// Actions can be done by player and host
+var recieveActions = map[string]ActionFunc{
 	"buzz":              Buzz,
 	"change_lang":       ChangeLanguage,
-	"clearbuzzers":      ClearBuzzers,
 	"data":              NewData,
-	"del_logo_upload":   DeleteLogoUpload,
 	"game_window":       GameWindow,
 	"get_back_in":       GetBackIn,
 	"host_room":         HostRoom,
 	"join_room":         JoinRoom,
-	"load_game":         LoadGame,
-	"logo_upload":       LogoUpload,
 	"pong":              Pong,
 	"quit":              Quit,
 	"registerbuzz":      RegisterBuzzer,
 	"registerspectator": RegisterSpectator,
 	"unknown":           SendUnknown,
+}
+
+// Actions that require a host password
+var hostRecieveActions = map[string]ActionFunc{
+	"del_logo_upload":        DeleteLogoUpload,
+	"logo_upload":            LogoUpload,
+	"register_buzzer_screen": RegisterBuzzerScreen,
+	"buzzer_screen_buzz":     BuzzerScreenBuzz,
+	"load_game":              LoadGame,
+	"clearbuzzers":           ClearBuzzers,
 }
 
 func parseEvent(message []byte) (*Event, error) {
@@ -65,6 +73,10 @@ func EventPipe(client *Client, message []byte) GameError {
 		action, ok := recieveActions[event.Action]
 		if ok {
 			return action(client, event)
+		}
+		action, ok = hostRecieveActions[event.Action]
+		if ok {
+			return HostPasswordHandler(client, event, action)
 		}
 		// Catch all for generic messages coming from admin
 		return recieveActions["unknown"](client, event)

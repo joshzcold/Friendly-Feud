@@ -23,18 +23,28 @@ export default function BuzzerTable({ game }: BuzzerTableProps) {
       <tbody>
         {game.buzzed.length > 0 &&
           game.buzzed.map((buzz, index) => {
-            const player = game.registeredPlayers[buzz.id];
-            const teamIndex = player?.team;
-
+            let playerName = t("User not found");
             let teamName = t("Team not found");
-            if (player && typeof teamIndex === "number" && teamIndex >= 0 && teamIndex < 2) {
-              const team = game.teams[teamIndex];
+            if (buzz.id) {
+              // Buzz from a player
+              const player = game.registeredPlayers[buzz.id];
+              const teamIndex = player?.team;
+
+              if (player && typeof teamIndex === "number" && teamIndex >= 0 && teamIndex < 2) {
+                const team = game.teams[teamIndex];
+                if (team?.name) {
+                  teamName = team.name;
+                }
+              }
+              playerName = player?.name;
+            } else if ("team" in buzz) {
+              // Buzz from buzzers page instead of player
+              const team = game.teams[buzz.team];
               if (team?.name) {
                 teamName = team.name;
               }
+              playerName = "";
             }
-
-            const playerName = player?.name ?? t("User not found");
 
             return (
               <tr key={`buzzer-${buzz.id}-${index}`}>
@@ -51,7 +61,7 @@ export default function BuzzerTable({ game }: BuzzerTableProps) {
                 </td>
 
                 <td id={`playerBuzzer${index}BuzzerTimeText`} className="text-left text-foreground">
-                  {((buzz.time - game.round_start_time) / 1000).toFixed(2)}s
+                  {buzz.time ? <span>{((buzz.time - game.round_start_time) / 1000).toFixed(2)}s</span> : <div></div>}
                 </td>
               </tr>
             );

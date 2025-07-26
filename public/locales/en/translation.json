@@ -150,6 +150,7 @@
     "csv_invalid_format": "Invalid CSV format",
     "missing_input": "Please fill in the {{message}} field",
     "player_not_found": "Player not found in server.",
-    "forbidden": "You are not permitted to perform this operation."
+    "forbidden": "You are not permitted to perform this operation.",
+    "unauthenticated": "Invalid authentication."
   }
 }
