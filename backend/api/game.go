@@ -23,6 +23,8 @@ type registeredPlayer struct {
 type buzzed struct {
 	Time int64  `json:"time"`
 	ID   string `json:"id"`
+	// optional team value. Used in generic buzzer vs. player buzzer
+	Team *int `json:"team"`
 }
 
 type settings struct {
@@ -89,7 +91,7 @@ func setTick(client *Client, event *Event) GameError {
 		return storeError
 	}
 	room.Game.Tick = time.Now().UTC().UnixMilli()
-	log.Println("Set tick for room", room.Game.Room, room.Game.Tick)
+	log.Println("Set tick for room", room.Game.Room, room.Game.Tick, event.Action)
 	store.writeRoom(room.Game.Room, room)
 	return GameError{}
 }

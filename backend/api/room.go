@@ -35,6 +35,16 @@ func playerID() string {
 	return uuid.New().String()
 }
 
+func hostPassword() string {
+	var passwordLength = 6
+	var passwordCharacters = []rune("123456789abcdefghijklmnopqrstuvwxyz")
+	b := make([]rune, passwordLength)
+	for i := range b {
+		b[i] = passwordCharacters[rand.Intn(len(passwordCharacters))]
+	}
+	return string(b)
+}
+
 // pingInterval Send a ping message every 5 seconds on a player
 // This is to try and calcuate latency of a player when acting on buzzers
 func (p *RegisteredClient) pingInterval() error {
@@ -100,9 +110,9 @@ func (r *room) gameTimeout() error {
 }
 
 type RegisteredClient struct {
-	id       string
-	client   *Client
-	room     *room
+	id     string
+	client *Client
+	room   *room
 }
 
 type roomConnections struct {
@@ -113,6 +123,7 @@ type roomConnections struct {
 
 type room struct {
 	Game *game `json:"game"`
+	HostPassword string
 	// Assign to ws Hub when hosting room
 	roomConnections
 	cleanup chan struct{}

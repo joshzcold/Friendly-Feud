@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
 import AdminPage from "@/components/AdminPage";
@@ -7,17 +7,46 @@ import BuzzerPage from "@/components/BuzzerPage";
 import Footer from "@/components/Login/Footer";
 import LoginPage from "@/components/LoginPage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
-import { Game } from "@/types/game";
+import { Game, WSEvent } from "@/types/game";
 // @ts-expect-error: not sure if cookie-cutter is typed
 import cookieCutter from "cookie-cutter";
 import { toast } from "sonner";
 
+interface GameContextType {
+  roomCode: string;
+  // playerName: string;
+  // registeredRoomCode: string;
+  // host: boolean;
+  hostPassword: string;
+  // game: Game;
+  // team: Number;
+  // playerID: string;
+  setRoomCode: React.Dispatch<React.SetStateAction<string>>;
+  // setPlayerName: React.Dispatch<React.SetStateAction<string>>;
+  // setRegisteredRoomCode: React.Dispatch<React.SetStateAction<string>>;
+  setHostPassword: React.Dispatch<React.SetStateAction<string>>;
+  // setGame: React.Dispatch<React.SetStateAction<Game>>;
+  // setTeam: React.Dispatch<React.SetStateAction<Number>>;
+  // setPlayerID: React.Dispatch<React.SetStateAction<string>>;
+  // setHost: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const GameContext = createContext<GameContextType>({
+  roomCode: "",
+  setRoomCode: () => {},
+  hostPassword: "",
+  setHostPassword: () => {},
+});
+
 export default function Home() {
+  // TODO if I am just using GameContext do I just set these as static
+  // variables for the downstream components?
   const { t } = useTranslation();
   const [playerName, setPlayerName] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [registeredRoomCode, setRegisteredRoomCode] = useState<string | null>("");
   const [host, setHost] = useState(false);
+  const [hostPassword, setHostPassword] = useState("");
   const [game, setGame] = useState<Game | null>(null);
   const [team, setTeam] = useState<number | null>(null);
   const [playerID, setPlayerID] = useState<string | null>("");
@@ -51,14 +80,15 @@ export default function Home() {
       if (ws.current) {
         ws.current.onmessage = function (evt: MessageEvent) {
           var received_msg = evt.data;
-          let json = JSON.parse(received_msg);
+          let json: WSEvent = JSON.parse(received_msg);
           if (json.action === "host_room") {
             console.debug("registering room with host", json.room);
             setPlayerID(json.id);
             setHost(true);
             setRegisteredRoomCode(json.room);
             setGame(json.game);
-            cookieCutter.set("session", `${json.room}:${json.id}`);
+            setHostPassword(json.hostPassword);
+            cookieCutter.set("session", `${json.room}:${json.id}:${json.hostPassword}`);
           } else if (json.action === "join_room") {
             console.debug("Joining room : ", json);
             setPlayerID(json.id);
@@ -78,6 +108,7 @@ export default function Home() {
             console.debug("Getting back into room", json);
             if (json.host === true) {
               setHost(true);
+              setHostPassword(json.hostPassword);
             }
             if (Number.isInteger(json.team)) {
               setTeam(json.team);
@@ -268,15 +299,24 @@ export default function Home() {
         />
       </Head>
       <main>
-        <div
-          style={{
-            width: "100vh",
+        <GameContext.Provider
+          value={{
+            roomCode: roomCode,
+            setRoomCode: setRoomCode,
+            hostPassword: hostPassword,
+            setHostPassword: setHostPassword,
           }}
-          className={`${game?.settings?.theme ?? "default"} h-screen w-screen`}
         >
-          {/* TODO put in the theme switcher and put setting here */}
-          {getPage()}
-        </div>
+          <div
+            style={{
+              width: "100vh",
+            }}
+            className={`${game?.settings?.theme ?? "default"} h-screen w-screen`}
+          >
+            {/* TODO put in the theme switcher and put setting here */}
+            {getPage()}
+          </div>
+        </GameContext.Provider>
       </main>
     </>
   );

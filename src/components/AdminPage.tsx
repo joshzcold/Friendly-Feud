@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
 import AdminSettings from "@/components/Admin/AdminSettings";
@@ -7,8 +7,9 @@ import GameDisplay from "@/components/Admin/GameDisplay";
 import RoomSettings from "@/components/Admin/RoomSettings";
 import TitlesAndLogoSettings from "@/components/Admin/TitlesAndLogoSettings";
 import { ERROR_CODES } from "@/i18n/errorCodes";
-import { Game } from "@/types/game";
+import { Game, WSEvent } from "@/types/game";
 import { toast } from "sonner";
+import { GameContext } from "../pages";
 
 interface AdminPageProps {
   ws: React.RefObject<WebSocket>;
@@ -17,17 +18,20 @@ interface AdminPageProps {
   room: string;
   quitGame: () => void;
   playerId: string | null;
+  hostPassword: string;
 }
 
 export default function AdminPage({ ws, game, setGame, room, quitGame, playerId }: AdminPageProps) {
   const { i18n, t } = useTranslation();
+
+  const { hostPassword } = useContext(GameContext);
 
   const [pointsGiven, setPointsGiven] = useState({
     state: false,
     color: "bg-success-500",
     textColor: "text-foreground",
   });
-  const [gameSelector, setGameSelector] = useState([]);
+  const [gameSelector, setGameSelector] = useState<string[]>([]);
   const [imageUploaded, setImageUploaded] = useState<File | null>(null);
   const [timerStarted, setTimerStarted] = useState(false);
   const [timerCompleted, setTimerCompleted] = useState(false);
@@ -37,12 +41,12 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
 
   function send(data: any) {
     console.debug("Sending", data);
-    ws.current.send(JSON.stringify({ ...data, room, id: playerId }));
+    ws.current.send(JSON.stringify({ ...data, room, id: playerId, hostPassword: hostPassword }));
   }
 
   const handleMessage = (evt: MessageEvent) => {
     var received_msg = evt.data;
-    let json = JSON.parse(received_msg);
+    let json: WSEvent = JSON.parse(received_msg);
     if (json.action === "data") {
       setGame(json.data);
     } else if (json.action === "change_lang") {
@@ -121,7 +125,7 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
       />
       <hr className="my-12" />
       {/* ADMIN CONTROLS */}
-      <AdminSettings game={game} setGame={setGame} send={send} />
+      <AdminSettings game={game} setGame={setGame} send={send} hostPassword={hostPassword} />
       <GameDisplay
         ws={ws}
         setGame={setGame}
