@@ -291,94 +291,100 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
           </>
         ) : (
           <>
-            {game.settings.logo_url ? (
-              <div className="mx-auto w-full max-w-md">
-                <Image
-                  id="titleLogoUserUploaded"
-                  width={300}
-                  height={300}
-                  style={{ objectFit: "contain" }}
-                  src={`${game.settings.logo_url}?v=${Date.now()}`}
-                  alt="Game logo"
-                  priority // Load image immediately
-                  unoptimized // Skip caching
-                />
-              </div>
-            ) : (
-              <TitleLogo insert={game.title_text} />
-            )}
-            <div className="flex flex-row justify-center">
-              <h1 className="text-3xl text-foreground">
-                {t("team")}: {team != null ? game.teams[team].name : t("pick your team")}
-              </h1>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                id="joinTeam1"
-                className={`rounded-md bg-primary-200 p-5 hover:shadow-md ${
-                  team === 0 ? "border-2 border-sky-600" : ""
-                }`}
-                onClick={() => {
-                  setTeam(0);
-                }}
-              >
-                {game.teams[0].name}
-              </button>
+            <div>
+              <div className="flex flex-col space-y-6 py-12">
+                {game.settings.logo_url ? (
+                  <div className="mx-auto w-full max-w-md">
+                    <Image
+                      id="titleLogoUserUploaded"
+                      width={300}
+                      height={300}
+                      style={{ objectFit: "contain" }}
+                      src={`${game.settings.logo_url}?v=${Date.now()}`}
+                      alt="Game logo"
+                      priority // Load image immediately
+                      unoptimized // Skip caching
+                    />
+                  </div>
+                ) : (
+                  <TitleLogo insert={game.title_text} />
+                )}
+                <div className="flex flex-row justify-center">
+                  <h1 className="text-3xl text-foreground">
+                    {t("team")}: {team != null ? game.teams[team].name : t("pick your team")}
+                  </h1>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    id="joinTeam1"
+                    className={`rounded-md bg-primary-200 p-5 hover:shadow-md ${
+                      team === 0 ? "border-2 border-sky-600" : ""
+                    }`}
+                    onClick={() => {
+                      setTeam(0);
+                    }}
+                  >
+                    {game.teams[0].name}
+                  </button>
 
-              <button
-                id="joinTeam2"
-                className={`rounded-md bg-primary-200 p-5 hover:shadow-md ${
-                  team === 1 ? "border-2 border-sky-600" : ""
-                }`}
-                onClick={() => {
-                  setTeam(1);
-                }}
-              >
-                {game.teams[1].name}
-              </button>
-            </div>
-            <div className="flex flex-row justify-center">
-              <button
-                id="registerBuzzerButton"
-                disabled={team === null}
-                className={`rounded-md bg-success-200 px-16 py-8 font-bold uppercase hover:shadow-md ${
-                  team === null ? "cursor-not-allowed opacity-50 hover:shadow-none" : ""
-                }`}
-                onClick={() => {
-                  if (team != null) {
-                    send({ action: "registerbuzz", team: team });
-                  }
-                }}
-              >
-                {t("play")}
-              </button>
-            </div>
-            <div className="flex flex-row justify-between">
-              <div className="flex flex-row justify-center">
-                <Link href="/game">
                   <button
-                    id="openGameWindowButton"
-                    className="rounded-md bg-secondary-300 px-8 py-4 hover:shadow-md"
+                    id="joinTeam2"
+                    className={`rounded-md bg-primary-200 p-5 hover:shadow-md ${
+                      team === 1 ? "border-2 border-sky-600" : ""
+                    }`}
                     onClick={() => {
-                      send({ action: "registerspectator", team: team });
+                      setTeam(1);
                     }}
                   >
-                    {t("Open Game Window")}
+                    {game.teams[1].name}
                   </button>
-                </Link>
+                </div>
+                <div className="flex flex-row justify-center">
+                  <button
+                    id="registerBuzzerButton"
+                    disabled={team === null}
+                    className={`rounded-md bg-success-200 px-16 py-8 font-bold uppercase hover:shadow-md ${
+                      team === null ? "cursor-not-allowed opacity-50 hover:shadow-none" : ""
+                    }`}
+                    onClick={() => {
+                      if (team != null) {
+                        send({ action: "registerbuzz", team: team });
+                      }
+                    }}
+                  >
+                    {t("play")}
+                  </button>
+                </div>
               </div>
-              <div className="flex flex-row justify-center">
-                <Link href={`/buzzers?room=${game.room}`}>
-                  <button
-                    id="openGameWindowButton"
-                    className="rounded-md bg-secondary-300 px-8 py-4 hover:shadow-md"
-                    onClick={() => {
-                      send({ action: "registerspectator", team: team });
-                    }}
-                  >
-                    {t("Host Buzzers")}
-                  </button>
-                </Link>
+              <div className="py-12">
+                <div className="flex flex-row justify-between">
+                  <div className="flex flex-row justify-center">
+                    <Link href="/game">
+                      <button
+                        id="openGameWindowButton"
+                        className="rounded-md bg-secondary-300 px-8 py-4 hover:shadow-md"
+                        onClick={() => {
+                          send({ action: "registerspectator", team: team });
+                        }}
+                      >
+                        {t("Open Game Window")}
+                      </button>
+                    </Link>
+                  </div>
+                  <div className="flex flex-row justify-center">
+                    <Link href={`/buzzers?room=${game.room}`}>
+                      <button
+                        id="openGameWindowButton"
+                        className="rounded-md bg-secondary-300 px-8 py-4 hover:shadow-md"
+                        onClick={() => {
+                          send({ action: "registerspectator", team: team });
+                        }}
+                      >
+                        {t("Host Buzzers")}
+                      </button>
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </>
