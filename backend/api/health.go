@@ -95,6 +95,10 @@ func checkDatabase() ComponentStatus {
 }
 
 func activeRoomCount() int {
+	if store == nil {
+		return 0
+	}
+
 	if err := store.isHealthy(); err != nil {
 		return 0
 	}
