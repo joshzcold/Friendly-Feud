@@ -17,15 +17,15 @@ func NewSendData(newGameData *game) ([]byte, error) {
 }
 
 type sendError struct {
-	Action  string `json:"action"`
-	Code ErrorCode `json:"code"`
-	Message string `json:"message"`
+	Action  string    `json:"action"`
+	Code    ErrorCode `json:"code"`
+	Message string    `json:"message"`
 }
 
 func NewSendError(ge GameError) ([]byte, error) {
 	return json.Marshal(sendError{
 		Action:  "error",
-		Code: ge.code,
+		Code:    ge.code,
 		Message: ge.message,
 	})
 }
@@ -43,18 +43,20 @@ func NewSendPing(id string) ([]byte, error) {
 }
 
 type sendHostRoom struct {
-	Action string `json:"action"`
-	Room   string `json:"room"`
-	Game   *game  `json:"game"`
-	ID     string `json:"id"`
+	Action       string `json:"action"`
+	Room         string `json:"room"`
+	Game         *game  `json:"game"`
+	ID           string `json:"id"`
+	HostPassword string `json:"hostPassword"`
 }
 
-func NewSendHostRoom(room string, game *game, id string) ([]byte, error) {
+func NewSendHostRoom(room string, game *game, id string, password string) ([]byte, error) {
 	return json.Marshal(sendHostRoom{
-		Action: "host_room",
-		Room:   room,
-		Game:   game,
-		ID:     id,
+		Action:       "host_room",
+		Room:         room,
+		Game:         game,
+		ID:           id,
+		HostPassword: password,
 	})
 }
 
@@ -85,22 +87,24 @@ func NewSendQuit() ([]byte, error) {
 }
 
 type sendGetBackIn struct {
-	Action string           `json:"action"`
-	Room   string           `json:"room"`
-	Game   *game            `json:"game"`
-	ID     string           `json:"id"`
-	Player registeredPlayer `json:"player"`
-	Host   bool             `json:"host"`
+	Action       string           `json:"action"`
+	Room         string           `json:"room"`
+	Game         *game            `json:"game"`
+	ID           string           `json:"id"`
+	Player       registeredPlayer `json:"player"`
+	Host         bool             `json:"host"`
+	HostPassword string           `json:"hostPassword"`
 }
 
-func NewSendGetBackIn(room string, game *game, id string, player registeredPlayer, host bool) ([]byte, error) {
+func NewSendGetBackIn(room string, game *game, id string, player registeredPlayer, host bool, hostPassword string) ([]byte, error) {
 	return json.Marshal(sendGetBackIn{
-		Action: "get_back_in",
-		Room:   room,
-		Game:   game,
-		ID:     id,
-		Player: player,
-		Host:   host,
+		Action:       "get_back_in",
+		Room:         room,
+		Game:         game,
+		ID:           id,
+		Player:       player,
+		Host:         host,
+		HostPassword: hostPassword,
 	})
 }
 
@@ -123,6 +127,16 @@ func NewSendRegistered(id string) ([]byte, error) {
 	return json.Marshal(sendRegistered{
 		Action: "registered",
 		Id:     id,
+	})
+}
+
+type sendRegisteredBuzzerScreen struct {
+	Action string `json:"action"`
+}
+
+func NewSendRegisteredBuzzerScreen() ([]byte, error) {
+	return json.Marshal(sendRegisteredBuzzerScreen{
+		Action: "register_buzzer_screen",
 	})
 }
 

@@ -8,26 +8,26 @@ import (
 )
 
 func quitPlayer(room *room, client *Client, event *Event) error {
-    playerClient, ok := room.registeredClients[event.ID]
+	playerClient, ok := room.registeredClients[event.ID]
 	if !ok {
-        return fmt.Errorf("player not found")
-    }
+		return fmt.Errorf("player not found")
+	}
 
-    hostClient, hostExists := room.registeredClients[room.Game.Host.ID]
-    
-    isHost := false
-    if hostExists {
-        isHost = hostClient.client == client
-    }
-    isPlayer := playerClient.client == client
-	
-    // Allow quitting if:
-    // 1. Player is quitting themselves
-    // 2. Client is the host
-    // 3. No host exists (orphaned room)
-    if !isPlayer && !isHost && hostExists {
-        return fmt.Errorf("forbidden")
-    }
+	hostClient, hostExists := room.registeredClients[room.Game.Host.ID]
+
+	isHost := false
+	if hostExists {
+		isHost = hostClient.client == client
+	}
+	isPlayer := playerClient.client == client
+
+	// Allow quitting if:
+	// 1. Player is quitting themselves
+	// 2. Client is the host
+	// 3. No host exists (orphaned room)
+	if !isPlayer && !isHost && hostExists {
+		return fmt.Errorf("forbidden")
+	}
 
 	for idx, b := range room.Game.Buzzed {
 		if b.ID == event.ID {
@@ -140,7 +140,7 @@ func HostRoom(client *Client, event *Event) GameError {
 	}
 	initRoom := InitalizeRoom(client, newRoomCode)
 	hostID := registerHost(&initRoom, client)
-	message, err := NewSendHostRoom(newRoomCode, initRoom.Game, hostID)
+	message, err := NewSendHostRoom(newRoomCode, initRoom.Game, hostID, initRoom.HostPassword)
 	if err != nil {
 		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
 	}
@@ -149,9 +149,9 @@ func HostRoom(client *Client, event *Event) GameError {
 	return GameError{}
 }
 
-func getBackInHost(client *Client, room room, roomCode string, playerID string) GameError {
+func getBackInHost(client *Client, room room, roomCode string, playerID string, hostPassword string) GameError {
 	room.Hub.register <- client
-	message, err := NewSendGetBackIn(roomCode, room.Game, playerID, registeredPlayer{}, true)
+	message, err := NewSendGetBackIn(roomCode, room.Game, playerID, registeredPlayer{}, true, hostPassword)
 	if err != nil {
 		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
 	}
@@ -165,7 +165,7 @@ func getBackInPlayer(client *Client, room room, roomCode string, playerID string
 		return GameError{code: PLAYER_NOT_FOUND}
 	}
 	room.Hub.register <- client
-	message, err := NewSendGetBackIn(roomCode, room.Game, playerID, *player, false)
+	message, err := NewSendGetBackIn(roomCode, room.Game, playerID, *player, false, "")
 	if err != nil {
 		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
 	}
@@ -178,9 +178,9 @@ func getBackInPlayer(client *Client, room room, roomCode string, playerID string
 		}
 	}
 	playerClient = &RegisteredClient{
-		id:       playerID,
-		client:   client,
-		room:     &room,
+		id:     playerID,
+		client: client,
+		room:   &room,
 	}
 	go playerClient.pingInterval()
 	room.registeredClients[playerID] = playerClient
@@ -193,16 +193,36 @@ func GetBackIn(client *Client, event *Event) GameError {
 	if len(session) < 2 {
 		return GameError{code: PARSE_ERROR}
 	}
+	hostPassword := ""
 	roomCode, playerID := session[0], session[1]
+	if len(session) == 3 {
+		hostPassword = session[2]
+	}
 	s := store
 	room, storeError := s.getRoom(client, roomCode)
 	if storeError.code != "" {
 		return storeError
 	}
 	if playerID == room.Game.Host.ID {
-		return getBackInHost(client, room, roomCode, playerID)
+		return getBackInHost(client, room, roomCode, playerID, hostPassword)
 	}
 	return getBackInPlayer(client, room, roomCode, playerID)
+}
+
+func HostPasswordHandler(client *Client, event *Event, nextFunc ActionFunc) GameError {
+	room, storeError := store.getRoom(client, event.Room)
+	if storeError.code != "" {
+		return storeError
+	}
+
+	if room.HostPassword == event.HostPassword {
+		gameError := nextFunc(client, event)
+		return gameError
+	}
+	return GameError{
+		code:    UNAUTHENTICATED,
+		message: "Unauthorized",
+	}
 }
 
 func registerPlayer(room *room, playerName string, client *Client) string {
@@ -233,6 +253,8 @@ func registerHost(room *room, client *Client) string {
 		client: client,
 		room:   room,
 	}
+
+	room.HostPassword = hostPassword()
 
 	log.Println("Registered host in room: ", hostID, room.Game.Room)
 	store.writeRoom(room.Game.Room, *room)

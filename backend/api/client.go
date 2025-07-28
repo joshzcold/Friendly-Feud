@@ -53,7 +53,7 @@ var upgrader = websocket.Upgrader{
 			// No origin header, likely same-origin request
 			return true
 		}
-		
+
 		// Check if the request origin is in the list of allowed origins
 		for _, allowedOrigin := range allowedOrigins {
 			if strings.TrimSpace(allowedOrigin) == origin {

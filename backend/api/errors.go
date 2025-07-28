@@ -25,4 +25,5 @@ const (
 	UNABLE_TO_CONNECT        ErrorCode = "errors.unable_to_connect"
 	PLAYER_NOT_FOUND         ErrorCode = "errors.player_not_found"
 	FORBIDDEN                ErrorCode = "errors.forbidden"
+	UNAUTHENTICATED          ErrorCode = "errors.unauthenticated"
 )
