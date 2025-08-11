@@ -1,3 +1,4 @@
+import CreateNewGameButton from "@/components/Admin/CreateNewGameButton";
 import GameLoader from "@/components/Admin/GameLoader";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Link from "next/link";
@@ -38,13 +39,7 @@ export default function RoomSettings({
             </div>
           </button>
         </Link>
-        <Link href="/new" id="createNewGameButton">
-          <button className="text-2xl">
-            <div className="flex w-48 justify-center rounded bg-primary-200 p-2 hover:shadow-md">
-              {t("Create New Game")}
-            </div>
-          </button>
-        </Link>
+        <CreateNewGameButton />
         <button id="quitButton" className="text-2xl" onClick={() => quitGame(true)}>
           <div className="flex w-32 justify-center rounded bg-failure-200 p-2 hover:shadow-md">{t("Quit")}</div>
         </button>

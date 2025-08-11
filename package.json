@@ -3,6 +3,10 @@
   "version": "2.0.0",
   "private": true,
   "dependencies": {
+    "@mdx-js/loader": "^3.1.0",
+    "@mdx-js/react": "^3.1.0",
+    "@next/mdx": "^15.4.6",
+    "@types/mdx": "^2.0.13",
     "autoprefixer": "^10.1.0",
     "axios": "^1.8.2",
     "cookie-cutter": "^0.2.0",
@@ -21,7 +25,7 @@
     "tailwindcss": "^3.1.0"
   },
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "build": "next build",
     "start": "NODE_ENV=production next start",
     "start_local": "NODE_ENV=local next start",

@@ -1,0 +1,33 @@
+import CreateNewGameButton from "@/components/Admin/CreateNewGameButton";
+
+# Friendly Feud Help
+
+Friendly feud is a free to play, open source game meant to host your own game show with your friends and family.
+
+The source code for friendly feud is located at [Github](https://github.com/joshzcold/Friendly-Feud)
+
+## Creating Custom Games
+
+Friendly Feud has a built in game creator located at [/new](/new) or by clicking the "Create New Game" button on the admin page.
+
+<CreateNewGameButton />
+
+### Using CSV
+
+You can create games an spread sheet program in `.csv` format.
+
+The expected format of csv files is
+
+```csv
+Question, Answer, Points, Answer, Points, Answer, Points...
+```
+
+With as many `Answer, Points` needed for rounds.
+
+## Using a Separate Device as the "Game Screen"
+
+Sometimes its easier to have 1 device controlling the game via the Admin panel and another device being the "presentor" on a TV or a projector.
+
+1. On your first device. Start hosting a game
+
+2. On your second device. "Join" the game with any name (you can put in "spectator") and the room code. Instead of actually joining the game you click the button "Open Game Window"
