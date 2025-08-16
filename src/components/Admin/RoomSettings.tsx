@@ -31,11 +31,11 @@ export default function RoomSettings({
         {room}
       </p>
       <hr />
-      <div className="flex flex-row justify-evenly p-5 ">
+      <div className="flex flex-row items-center justify-evenly p-5">
         {/* ADMIN BUTTONS */}
         <Link href="/game" target="_blank" id="openGameWindowButton">
           <button className="text-2xl">
-            <div className="flex w-48 justify-center rounded bg-success-200 p-2 hover:shadow-md">
+            <div className="flex justify-center rounded bg-success-300 p-5 text-foreground hover:shadow-md">
               {t("Open Game Window")}
             </div>
           </button>
@@ -43,7 +43,9 @@ export default function RoomSettings({
         <CreateNewGameButton />
         <HelpButton doc="/help" />
         <button id="quitButton" className="text-2xl" onClick={() => quitGame(true)}>
-          <div className="flex w-32 justify-center rounded bg-failure-200 p-2 hover:shadow-md">{t("Quit")}</div>
+          <div className="flex w-32 justify-center rounded bg-failure-200 p-2 text-foreground hover:shadow-md">
+            {t("Quit")}
+          </div>
         </button>
       </div>
       <div className="m-5 flex flex-row items-center justify-evenly">

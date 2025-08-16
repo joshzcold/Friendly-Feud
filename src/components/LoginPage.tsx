@@ -50,10 +50,10 @@ export default function LoginPage({
 
   return (
     <div className={`flex min-h-screen w-full flex-col space-y-10 bg-background p-5`}>
-      <div className="flex w-full flex-col justify-between gap-2 sm:flex-row">
+      <div className="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
         <LanguageSwitcher />
         <ThemeSwitcher game={game} setGame={setGame} send={() => {}} />
-        <HelpButton doc="/help" />
+        <HelpButton doc="/help" textSize="text-lg" padding=" px-5 py-2 " />
       </div>
       <TitleLogo insert="" />
       <div className="flex flex-col">

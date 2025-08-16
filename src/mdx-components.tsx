@@ -12,7 +12,7 @@ const components: MDXComponents = {
   ),
 
   p: ({ children }) => <p className="py-4 text-foreground">{children}</p>,
-  pre: ({ children }) => <pre className="py-8 text-foreground">{children}</pre>,
+  pre: ({ children }) => <pre className="overflow-x-scroll py-8 text-foreground">{children}</pre>,
   ol: ({ children }) => <ol className="list-decimal px-4 text-foreground">{children}</ol>,
   ul: ({ children }) => <ul className="list-disc px-4 text-foreground">{children}</ul>,
 
