@@ -374,7 +374,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
                   <div className="flex flex-row justify-center">
                     <Link href={`/buzzers?room=${game.room}`}>
                       <button
-                        id="openGameWindowButton"
+                        id="hostBuzzersWindowButton"
                         className="rounded-md bg-secondary-300 px-8 py-4 hover:shadow-md"
                         onClick={() => {
                           send({ action: "registerspectator", team: team });
