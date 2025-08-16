@@ -10,7 +10,7 @@ export default function HelpButton({ doc }: HelpButtonProps) {
   return (
     <Link href={"/docs" + `/${i18n.language}` + doc} id="helpDocsButton" target="_bank">
       <button className="text-lg">
-        <div className="flex w-32 justify-center rounded bg-secondary-500 p-2 capitalize text-foreground hover:shadow-md">
+        <div className="rounded:md flex w-32 justify-center bg-secondary-500 p-2 capitalize text-foreground hover:shadow-md">
           {t("help")}
         </div>
       </button>
