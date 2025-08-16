@@ -1,4 +1,16 @@
 import CreateNewGameButton from "@/components/Admin/CreateNewGameButton";
+import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
+import BackToLoginButton from "@/components/BackToLoginButton";
+import Link from "next/link";
+
+<div className="flex justify-center w-full py-12 px-10 md:px-2 bg-background fixed">
+
+<div className="w-full">
+
+<div className="flex justify-between">
+<BackToLoginButton />
+<ThemeSwitcher setGame={() => {}} send={() => {}} game={{ settings: { theme: null } }} />
+</div>
 
 # Friendly Feud Help
 
@@ -12,15 +24,24 @@ Friendly Feud has a built in game creator located at [/new](/new) or by clicking
 
 <CreateNewGameButton />
 
-### Using CSV
+When you have filled out your game you will get a file you can load back into Friendly Feud to play your game.
 
-You can create games an spread sheet program in `.csv` format.
+### Using CSV files for games
+
+You can create games with a spread sheet program in `.csv` format.
 
 The expected format of csv files is
 
+Rounds are split up into new lines.
+
+When submitting the csv file you will get an interactive menu to choose how many rounds from the document you want to be "rounds" vs "fast money".
+
 ```csv
 Question, Answer, Points, Answer, Points, Answer, Points...
+Question, Answer, Points, Answer, Points, Answer, Points...
 ```
+
+> TODO insert picture of csv input here -->
 
 With as many `Answer, Points` needed for rounds.
 
@@ -30,4 +51,60 @@ Sometimes its easier to have 1 device controlling the game via the Admin panel a
 
 1. On your first device. Start hosting a game
 
-2. On your second device. "Join" the game with any name (you can put in "spectator") and the room code. Instead of actually joining the game you click the button "Open Game Window"
+> TODO insert screen shot of starting to host -->
+
+2. On your second device. "Join" the game with any name and the room code.
+
+> TODO insert screen shot of Joining the game -->
+
+Instead of picking a team you click the button "Open Game Window"
+
+> TODO screen shot of clicking Open Game Window -->
+
+> TODO screen shot of game window on second device -->
+
+The result is the game displayed in a fashion you can share with your contestants.
+
+## Using a separate device as the buzzer
+
+Friendly Feud has support for buzzers with players joining the game via their mobile phones.
+However if you prefer to play Friendly Feud with 1 shared set of buzzers for the game there is a feature to do so.
+
+1. On your first device. Start hosting a game.
+
+2. On your second device "Join" the game with any name and the room code.
+
+Instead of picking a team you click the button "Host Buzzers"
+
+You will be prompted for a "Host Password"
+
+> TODO screen shot of the Host password screen -->
+
+Input the password displayed on the admin page.
+
+> TODO screen shot of Host password screen on admin page -->
+
+When you hit submit you should see 2 large buttons labled "Team 1" and "Team 2".
+
+> If you put in names for your teams then the buttons will display those custom team names.
+
+This screen will act as buttons for your game. The screen will show who buzzed first.
+
+This can be done on a Tablet device on a table or some other device to act as a buzzer.
+
+### Use physical buttons on the host buzzer screen
+
+The host buzzer screen is setup to listeen on keyboard presses **`j`** and **`k`**.
+
+There are lots of physical button options available online, but you should look to purchase 2 that can send
+keyboard button presses.
+
+At this time, Friendly Feud has to official recommendation on what buttons you "should" buy.
+
+If I were to buy one, I would look at AliExpress or Adafruit's website for "Programmable Button"
+
+This tutorial from "Ruiz Brothers" on adafruit seems like a good tutorial https://learn.adafruit.com/big-key-switch/overview
+
+</div>
+
+</div>

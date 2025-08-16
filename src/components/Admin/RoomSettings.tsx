@@ -4,6 +4,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
+import HelpButton from "../HelpButton";
 
 interface RoomSettingsProps {
   room: string;
@@ -40,6 +41,7 @@ export default function RoomSettings({
           </button>
         </Link>
         <CreateNewGameButton />
+        <HelpButton doc="/help" />
         <button id="quitButton" className="text-2xl" onClick={() => quitGame(true)}>
           <div className="flex w-32 justify-center rounded bg-failure-200 p-2 hover:shadow-md">{t("Quit")}</div>
         </button>
