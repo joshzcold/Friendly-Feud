@@ -11,6 +11,8 @@ interface FinalRoundButtonControlsProps {
 export default function FinalRoundButtonControls({ game, send, setGame }: FinalRoundButtonControlsProps) {
   const { t } = useTranslation();
   const controlRound = game.is_final_second ? game.final_round_2 : game.final_round;
+  console.log("final_round", game.final_round[0]);
+  console.log("final_round_2", game.final_round_2[0]);
   return controlRound?.map((x, i) => (
     <div
       key={`${game.is_final_second ? "final-round-2" : "final-round-1"}-question-${i}`}
@@ -92,10 +94,10 @@ export default function FinalRoundButtonControls({ game, send, setGame }: FinalR
                       index === i ? { ...round, [propertyToUpdate]: newValue } : round
                     ),
                 final_round_2: prevGame.is_final_second
-                  ? prevGame.final_round_2
-                  : prevGame.final_round_2.map((round, index) =>
+                  ? prevGame.final_round_2.map((round, index) =>
                       index === i ? { ...round, [propertyToUpdate]: newValue } : round
-                    ),
+                    )
+                  : prevGame.final_round_2,
               };
 
               send({ action: "data", data: updatedGame });
@@ -132,10 +134,10 @@ export default function FinalRoundButtonControls({ game, send, setGame }: FinalR
                       index === i ? { ...round, [propertyToUpdate]: newValue } : round
                     ),
                 final_round_2: prevGame.is_final_second
-                  ? prevGame.final_round_2
-                  : prevGame.final_round_2.map((round, index) =>
+                  ? prevGame.final_round_2.map((round, index) =>
                       index === i ? { ...round, [propertyToUpdate]: newValue } : round
-                    ),
+                    )
+                  : prevGame.final_round_2,
               };
 
               send({ action: "data", data: updatedGame });
@@ -173,10 +175,10 @@ export default function FinalRoundButtonControls({ game, send, setGame }: FinalR
                       index === i ? { ...round, [propertyToUpdate]: newValue } : round
                     ),
                 final_round_2: prevGame.is_final_second
-                  ? prevGame.final_round_2
-                  : prevGame.final_round_2.map((round, index) =>
+                  ? prevGame.final_round_2.map((round, index) =>
                       index === i ? { ...round, [propertyToUpdate]: newValue } : round
-                    ),
+                    )
+                  : prevGame.final_round_2,
               };
 
               send({ action: "data", data: updatedGame });
