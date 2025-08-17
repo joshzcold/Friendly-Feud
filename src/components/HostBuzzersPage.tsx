@@ -2,13 +2,13 @@ import { Game, WSAction } from "@/types/game";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-interface BuzzersButtonsPageProps {
+interface HostBuzzerPageProps {
   game: Game | null;
   send: (data: any) => void;
   buzzed: boolean;
 }
 
-export default function BuzzersButtonsPage({ game, send, buzzed }: BuzzersButtonsPageProps) {
+export default function HostBuzzersPage({ game, send, buzzed }: HostBuzzerPageProps) {
   const { t } = useTranslation();
   let buzzColors = ["bg-failure-500", "bg-primary-500"];
   let writingDirection = ["[writing-mode:vertical-lr]", "[writing-mode:vertical-lr] rotate-180"];
@@ -37,8 +37,8 @@ export default function BuzzersButtonsPage({ game, send, buzzed }: BuzzersButton
   return (
     <>
       {buzzed ? (
-        <div id="buzzersInfo" className="absolute z-50 flex min-h-screen min-w-full items-center justify-center">
-          <div className="rounded-xl bg-warning-900 p-5 text-6xl capitalize text-white">
+        <div className="absolute z-50 flex min-h-screen min-w-full items-center justify-center">
+          <div id="buzzersInfo" className="rounded-xl bg-warning-900 p-5 text-6xl capitalize text-white">
             {game?.teams[game?.buzzed[0]?.team]?.name}
           </div>
         </div>

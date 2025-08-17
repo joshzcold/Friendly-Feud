@@ -1,3 +1,4 @@
+import HostBuzzersPage from "@/components/HostBuzzersPage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
 import { Game, WSAction, WSEvent } from "@/types/game";
 // @ts-expect-error: not sure if cookie-cutter is typed
@@ -5,7 +6,6 @@ import cookieCutter from "cookie-cutter";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import BuzzersButtonsPage from "../components/BuzzersButtonsPage";
 import NoSession from "../components/ui/NoSession";
 
 export default function BuzzersPage() {
@@ -102,7 +102,7 @@ export default function BuzzersPage() {
     return (
       <>
         {buzzerRegistered ? (
-          <BuzzersButtonsPage game={game} send={send} buzzed={buzzed} />
+          <HostBuzzersPage game={game} send={send} buzzed={buzzed} />
         ) : (
           <div>
             <div className={`${game?.settings?.theme ?? "default"} absolute flex min-w-full justify-end px-10 pt-10`}>

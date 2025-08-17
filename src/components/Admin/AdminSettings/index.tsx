@@ -25,7 +25,9 @@ export default function AdminSettings({ game, setGame, send, hostPassword }: Adm
         <div className="flex flex-row items-center space-x-2">
           <ToolTipIcon message={t("Used when setting up buzzers on an external admin device.")} />
           <p className="text-xl capitalize text-foreground">{t("host password")}:</p>
-          <p className="rounded-sm bg-secondary-500 p-2 text-xl text-foreground">{hostPassword}</p>
+          <p id="hostPassword" className="rounded-sm bg-secondary-500 p-2 text-xl text-foreground">
+            {hostPassword}
+          </p>
         </div>
       </div>
     </div>
