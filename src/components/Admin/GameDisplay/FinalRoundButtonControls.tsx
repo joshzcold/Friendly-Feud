@@ -92,10 +92,10 @@ export default function FinalRoundButtonControls({ game, send, setGame }: FinalR
                       index === i ? { ...round, [propertyToUpdate]: newValue } : round
                     ),
                 final_round_2: prevGame.is_final_second
-                  ? prevGame.final_round_2
-                  : prevGame.final_round_2.map((round, index) =>
+                  ? prevGame.final_round_2.map((round, index) =>
                       index === i ? { ...round, [propertyToUpdate]: newValue } : round
-                    ),
+                    )
+                  : prevGame.final_round_2,
               };
 
               send({ action: "data", data: updatedGame });
@@ -132,10 +132,10 @@ export default function FinalRoundButtonControls({ game, send, setGame }: FinalR
                       index === i ? { ...round, [propertyToUpdate]: newValue } : round
                     ),
                 final_round_2: prevGame.is_final_second
-                  ? prevGame.final_round_2
-                  : prevGame.final_round_2.map((round, index) =>
+                  ? prevGame.final_round_2.map((round, index) =>
                       index === i ? { ...round, [propertyToUpdate]: newValue } : round
-                    ),
+                    )
+                  : prevGame.final_round_2,
               };
 
               send({ action: "data", data: updatedGame });
@@ -173,10 +173,10 @@ export default function FinalRoundButtonControls({ game, send, setGame }: FinalR
                       index === i ? { ...round, [propertyToUpdate]: newValue } : round
                     ),
                 final_round_2: prevGame.is_final_second
-                  ? prevGame.final_round_2
-                  : prevGame.final_round_2.map((round, index) =>
+                  ? prevGame.final_round_2.map((round, index) =>
                       index === i ? { ...round, [propertyToUpdate]: newValue } : round
-                    ),
+                    )
+                  : prevGame.final_round_2,
               };
 
               send({ action: "data", data: updatedGame });
