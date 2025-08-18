@@ -99,9 +99,28 @@ func BuzzerScreenBuzz(client *Client, event *Event) GameError {
 		return GameError{code: UNAUTHENTICATED, message: "Unauthorized"}
 	}
 
-	room.Game.Buzzed = append(room.Game.Buzzed, buzzed{
-		Team:   event.Team,
-	})
+	// Accept only the first buzz per team (host buzzers). If a player from that team
+	// or a host buzz for that team already exists in this round, ignore
+	alreadyBuzzedForTeam := false
+	for _, bz := range room.Game.Buzzed {
+		if bz.Team != nil && event.Team != nil && *bz.Team == *event.Team {
+			alreadyBuzzedForTeam = true
+			break
+		}
+		if bz.ID != "" {
+			player, ok := room.Game.RegisteredPlayers[bz.ID]
+			if ok && player.Team != nil && event.Team != nil && *player.Team == *event.Team {
+				alreadyBuzzedForTeam = true
+				break
+			}
+		}
+	}
+	if !alreadyBuzzedForTeam {
+		room.Game.Buzzed = append(room.Game.Buzzed, buzzed{
+			Time: time.Now().UTC().UnixMilli(),
+			Team: event.Team,
+		})
+	}
 	message, err := NewSendBuzzed()
 	if err != nil {
 		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
