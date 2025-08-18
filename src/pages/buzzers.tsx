@@ -18,6 +18,7 @@ export default function BuzzersPage() {
   const urlParams = new URLSearchParams(queryString);
   const roomCode = urlParams.get("room");
   const [buzzed, setBuzzed] = useState<boolean>(false);
+  const hasRoom = !!roomCode;
 
   function send(data: any) {
     console.debug("Sending", data);
@@ -98,50 +99,55 @@ export default function BuzzersPage() {
   if (typeof window !== "undefined") {
     document.body.className = (game?.settings?.theme ?? "default") + " bg-background";
   }
-  if (game?.teams != null) {
-    return (
-      <>
-        {buzzerRegistered ? (
-          <HostBuzzersPage game={game} send={send} buzzed={buzzed} />
-        ) : (
-          <div>
-            <div className={`${game?.settings?.theme ?? "default"} absolute flex min-w-full justify-end px-10 pt-10`}>
-              <button
-                id="quitButton"
-                className="text-1xl z-50 w-24 self-end rounded-lg bg-secondary-900 p-2 font-bold uppercase shadow-md hover:bg-secondary-300"
-                onClick={() => {
-                  cookieCutter.set("session", "");
-                  window.location.href = "/";
-                }}
-              >
-                {t("quit")}
-              </button>
-            </div>
-            <div className="flex min-h-screen flex-col items-center justify-center space-y-10">
-              <p className="text-xl capitalize text-foreground">{t("enter in host password")}</p>
-              <input
-                id="buzzersPasswordInput"
-                onChange={(e) => {
-                  setHostPassword(e.target.value);
-                }}
-                className="rounded-md border-2 border-secondary-900 bg-secondary-300 p-3 text-foreground"
-                value={hostPassword}
-              />
-              <button
-                id="buzzersSubmitButton"
-                onClick={() => {
-                  send({ action: WSAction.REGISTER_BUZZER_SCREEN.valueOf() });
-                }}
-                className="rounded-md bg-primary-200 p-2 text-lg"
-              >
-                {t("Submit")}
-              </button>
-            </div>
-          </div>
-        )}
-      </>
-    );
-  } else {
+
+  if (!hasRoom) {
     return <NoSession />;
   }
+
+  return (
+    <>
+      {!buzzerRegistered ? (
+        <div>
+          <div className="absolute flex min-w-full justify-end px-10 pt-10">
+            <button
+              id="quitButton"
+              className="text-1xl z-50 w-24 self-end rounded-lg bg-secondary-900 p-2 font-bold uppercase shadow-md hover:bg-secondary-300"
+              onClick={() => {
+                cookieCutter.set("session", "");
+                window.location.href = "/";
+              }}
+            >
+              {t("quit")}
+            </button>
+          </div>
+          <div className="flex min-h-screen flex-col items-center justify-center space-y-10">
+            <p className="text-xl capitalize text-foreground">{t("enter in host password")}</p>
+            <input
+              id="buzzersPasswordInput"
+              onChange={(e) => {
+                setHostPassword(e.target.value);
+              }}
+              className="rounded-md border-2 border-secondary-900 bg-secondary-300 p-3 text-foreground"
+              value={hostPassword}
+            />
+            <button
+              id="buzzersSubmitButton"
+              onClick={() => {
+                send({ action: WSAction.REGISTER_BUZZER_SCREEN.valueOf() });
+              }}
+              className="rounded-md bg-primary-200 p-2 text-lg"
+            >
+              {t("Submit")}
+            </button>
+          </div>
+        </div>
+      ) : game?.teams != null ? (
+        <HostBuzzersPage game={game} send={send} buzzed={buzzed} />
+      ) : (
+        <div className="flex min-h-screen items-center justify-center">
+          <p className="text-foreground">{t("loading")}</p>
+        </div>
+      )}
+    </>
+  );
 }
