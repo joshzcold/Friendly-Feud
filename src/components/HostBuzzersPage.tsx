@@ -1,5 +1,5 @@
 import { Game, WSAction } from "@/types/game";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 interface HostBuzzerPageProps {
@@ -16,24 +16,28 @@ export default function HostBuzzersPage({ game, send, buzzed }: HostBuzzerPagePr
     buzzColors = ["bg-secondary-900", "bg-secondary-900"];
   }
 
-  const triggerBuzzKeyPress = (evt: KeyboardEvent) => {
-    if (buzzed) {
+  const triggerBuzzKeyPress = useCallback(
+    (evt: KeyboardEvent) => {
+      if (buzzed) {
+        return;
+      }
+      if (evt.key == "j") {
+        send({ action: WSAction.BUZZER_SCREEN_BUZZ.valueOf(), team: 0 });
+        return;
+      }
+      if (evt.key == "k") {
+        send({ action: WSAction.BUZZER_SCREEN_BUZZ.valueOf(), team: 1 });
+        return;
+      }
       return;
-    }
-    if (evt.key == "j") {
-      send({ action: WSAction.BUZZER_SCREEN_BUZZ.valueOf(), team: 0 });
-      return;
-    }
-    if (evt.key == "k") {
-      send({ action: WSAction.BUZZER_SCREEN_BUZZ.valueOf(), team: 1 });
-      return;
-    }
-    return;
-  };
+    },
+    [buzzed, send]
+  );
 
   useEffect(() => {
     window.addEventListener("keydown", triggerBuzzKeyPress, false);
-  }, []);
+    return () => window.removeEventListener("keydown", triggerBuzzKeyPress, false);
+  }, [triggerBuzzKeyPress]);
   return (
     <>
       {buzzed ? (
