@@ -7,6 +7,7 @@ export default function NoSession() {
       <p>{t("No game session. retry from the admin window")}</p>
       <button
         className="m-1 rounded-lg bg-secondary-500 p-2 font-bold uppercase shadow-md hover:bg-secondary-200"
+        id="quitButton"
         onClick={() => {
           window.location.href = "/";
         }}
