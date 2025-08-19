@@ -109,12 +109,6 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
         if (json.data.title_text === "Change Me") {
           json.data.title_text = t("Change Me");
         }
-        if (json.data.teams[0].name === "Team 1") {
-          json.data.teams[0].name = `${t("Team 1")}`;
-        }
-        if (json.data.teams[1].name === "Team 2") {
-          json.data.teams[1].name = `${t("Team 2")}`;
-        }
         setGame(json.data);
       } else if (json.action === "buzzed") {
         setBuzzed(true);
