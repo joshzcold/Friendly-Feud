@@ -114,14 +114,10 @@ export default function GamePage() {
           newGameData.title_text = t("Change Me");
         }
         if (newGameData.teams[0]?.name === "Team 1") {
-          newGameData.teams[0].name = `${t("team")} ${t("number", {
-            count: 1,
-          })}`;
+          newGameData.teams[0].name = `${t("Team 1")}`;
         }
         if (newGameData.teams[1]?.name === "Team 2") {
-          newGameData.teams[1].name = `${t("team")} ${t("number", {
-            count: 2,
-          })}`;
+          newGameData.teams[1].name = `${t("Team 2")}`;
         }
 
         setGame(newGameData);

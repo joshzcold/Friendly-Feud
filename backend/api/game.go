@@ -114,12 +114,12 @@ func NewGame(roomCode string) room {
 			},
 			Teams: []team{
 				{
-					Name:     "Team 1",
+					Name:     "Alpha",
 					Points:   0,
 					Mistakes: 0,
 				},
 				{
-					Name:     "Team 2",
+					Name:     "Bravo",
 					Points:   0,
 					Mistakes: 0,
 				},

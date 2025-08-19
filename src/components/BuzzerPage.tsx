@@ -7,6 +7,7 @@ import QuestionBoard from "@/components/QuestionBoard";
 import Round from "@/components/Round";
 import TeamName from "@/components/TeamName";
 import { ERROR_CODES } from "@/i18n/errorCodes";
+import { getTeamDisplayName } from "@/lib/utils";
 import { Game, WSEvent } from "@/types/game";
 // @ts-expect-error cookie-cutter is not typed
 import cookieCutter from "cookie-cutter";
@@ -109,10 +110,10 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
           json.data.title_text = t("Change Me");
         }
         if (json.data.teams[0].name === "Team 1") {
-          json.data.teams[0].name = `${t("team")} ${t("number", { count: 1 })}`;
+          json.data.teams[0].name = `${t("Team 1")}`;
         }
         if (json.data.teams[1].name === "Team 2") {
-          json.data.teams[1].name = `${t("team")} ${t("number", { count: 2 })}`;
+          json.data.teams[1].name = `${t("Team 2")}`;
         }
         setGame(json.data);
       } else if (json.action === "buzzed") {
@@ -311,7 +312,8 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
                 )}
                 <div className="flex flex-row justify-center">
                   <h1 className="text-3xl text-foreground">
-                    {t("team")}: {team != null ? game.teams[team].name : t("pick your team")}
+                    {t("team")}:{" "}
+                    {team != null ? getTeamDisplayName(game.teams[team].name, team, t) : t("pick your team")}
                   </h1>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -324,7 +326,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
                       setTeam(0);
                     }}
                   >
-                    {game.teams[0].name}
+                    {getTeamDisplayName(game.teams[0].name, 0, t)}
                   </button>
 
                   <button
@@ -336,7 +338,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
                       setTeam(1);
                     }}
                   >
-                    {game.teams[1].name}
+                    {getTeamDisplayName(game.teams[1].name, 1, t)}
                   </button>
                 </div>
                 <div className="flex flex-row justify-center">

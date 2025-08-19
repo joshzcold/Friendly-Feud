@@ -1,3 +1,4 @@
+import { getTeamDisplayName } from "@/src/lib/utils";
 import { Game } from "@/src/types/game";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
@@ -32,7 +33,7 @@ export default function TeamControls({ game, setGame, team, send, setPointsGiven
           send({ action: "data", data: game });
         }}
       >
-        {t("team")} {t("number", { count: team + 1 })}: {game.teams[team].name} {t("Gets Points")}
+        {getTeamDisplayName(game.teams[team].name, team, t)}: {t("Gets Points")}
       </button>
     );
   }
@@ -52,7 +53,7 @@ export default function TeamControls({ game, setGame, team, send, setPointsGiven
           });
         }}
       >
-        {t("team")} {t("number", { count: team + 1 })}: {game.teams[team].name} {t("mistake")}
+        {getTeamDisplayName(game.teams[team].name, team, t)}: {t("mistake")}
       </button>
     );
   }
