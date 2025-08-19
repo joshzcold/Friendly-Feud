@@ -1,8 +1,6 @@
+import { TranslateFunction } from "@/src/types";
 import { Answer, Game, Round } from "@/types/game";
 import { toast } from "sonner";
-
-// Translation function type
-type TranslateFunction = (key: string, options?: Record<string, any>) => string;
 
 // HandleJsonFile props type
 interface HandleJsonFileOptions {
