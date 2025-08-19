@@ -1,6 +1,6 @@
 import { PATHS } from "@/e2e/utils/constants";
 import { expect, test } from "@playwright/test";
-import { Setup } from "../lib/Setup";
+import { PlayerType, Setup } from "../lib/Setup";
 import { AdminPage } from "../models/AdminPage";
 import { GamePage } from "../models/GamePage";
 
@@ -14,7 +14,7 @@ test.beforeEach(async ({ browser }) => {
   s = new Setup(browser);
   host = await s.host();
   adminPage = new AdminPage(host.page);
-  spectator = await s.addPlayer(true);
+  spectator = await s.addPlayer(PlayerType.SPECTATOR);
   gamePage = new GamePage(spectator.page);
 
   const fileChooserPromise = host.page.waitForEvent("filechooser");

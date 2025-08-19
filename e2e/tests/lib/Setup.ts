@@ -3,6 +3,12 @@ import { AdminPage } from "../models/AdminPage.js";
 import { BuzzerPage } from "../models/BuzzerPage.js";
 import { LoginPage } from "../models/LoginPage.js";
 
+export enum PlayerType {
+  BUZZER = 1,
+  SPECTATOR = 2,
+  HOST_BUZZER = 3,
+}
+
 export class Setup {
   private browser: Browser;
   private clients: { host: { context: any; page: any }; players: any[] };
@@ -39,7 +45,7 @@ export class Setup {
    *  newPlayerObj {any}
    * }
    */
-  async addPlayer(isSpectator: boolean = false): Promise<{ page: Page; name: string; team: number }> {
+  async addPlayer(playerType: PlayerType = PlayerType.BUZZER): Promise<{ page: Page; name: string; team: number }> {
     const newPlayerContext = await this.browser.newContext();
     const newPlayerName = this.clients.players.length;
     const newPlayerObj = {
@@ -53,11 +59,14 @@ export class Setup {
     // flip the current team.
     this.currentTeam = 1 - this.currentTeam;
     await newPlayerObj.page.goto("/", { waitUntil: "domcontentloaded", timeout: 10000 });
-    if (isSpectator) {
+    if (playerType == PlayerType.SPECTATOR) {
       await this.joinRoomSpectator(newPlayerObj.page, newPlayerObj.name);
-    } else {
+    } else if (playerType === PlayerType.BUZZER) {
       await this.joinRoom(newPlayerObj.page, newPlayerObj.team, newPlayerObj.name);
+    } else if (playerType === PlayerType.HOST_BUZZER) {
+      await this.joinRoomHostBuzzer(newPlayerObj.page, newPlayerObj.name);
     }
+
     return newPlayerObj;
   }
 
@@ -107,5 +116,13 @@ export class Setup {
     await loginPage.playerNameInput.fill(playerName);
     await loginPage.joinRoomButton.click();
     await bp.openGameWindowButton.click();
+  }
+  async joinRoomHostBuzzer(page: Page, playerName: string) {
+    const bp = new BuzzerPage(page);
+    const loginPage = new LoginPage(page);
+    await loginPage.roomCodeInput.fill(this.roomCode as string);
+    await loginPage.playerNameInput.fill(playerName);
+    await loginPage.joinRoomButton.click();
+    await bp.hostBuzzersWindowButton.click();
   }
 }

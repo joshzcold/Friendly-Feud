@@ -1,6 +1,6 @@
 import { PATHS } from "@/e2e/utils/constants";
 import { expect, test } from "@playwright/test";
-import { Setup } from "../lib/Setup";
+import { PlayerType, Setup } from "../lib/Setup";
 import { AdminPage } from "../models/AdminPage";
 import { BuzzerPage } from "../models/BuzzerPage";
 import { GamePage } from "../models/GamePage";
@@ -87,7 +87,7 @@ test("can hide game board from player", async ({ browser }) => {
 });
 
 test("can answer final round questions", async ({ browser }) => {
-  const spectator = await s.addPlayer(true);
+  const spectator = await s.addPlayer(PlayerType.SPECTATOR);
   const gamePage = new GamePage(spectator.page);
 
   await adminPage.gameSelector.selectOption({ index: 1 });

@@ -91,6 +91,7 @@ class AdminPage {
   team1MistakeButton: Locator;
   team0GivePointsButton: Locator;
   team1GivePointsButton: Locator;
+  hostPassword: Locator;
 
   /**
    * @param {import('playwright').Page} page
@@ -113,7 +114,7 @@ class AdminPage {
         noHeader: page.getByTestId("csvSetNoHeaderInput"),
         roundCount: page.getByTestId("csvSetRoundCountInput")
       },
-      rows: Array.from({length: 8}, (_, i) => page.getByTestId(`csvRow${i}`))
+      rows: Array.from({ length: 8 }, (_, i) => page.getByTestId(`csvRow${i}`))
     };
 
     this.finalRound = {
@@ -122,7 +123,7 @@ class AdminPage {
       titleInput: page.getByTestId("finalRoundTitleChangerInput"),
       timerLabel: page.getByTestId("finalRoundTimerLabel"),
       timerValue: page.getByTestId("finalRoundTimerValue"),
-      answers: Array.from({length: 10}, (_, i) => ({
+      answers: Array.from({ length: 10 }, (_, i) => ({
         input: page.getByTestId(`finalRoundAnswer${i}Input`),
         reveal: page.getByTestId(`finalRoundAnswer${i}RevealButton`),
         selector: page.getByTestId(`finalRoundAnswer${i}Selector`),
@@ -131,22 +132,22 @@ class AdminPage {
     };
 
     this.players = {
-      buzzed: Array.from({length: 5}, (_, i) => ({
+      buzzed: Array.from({ length: 5 }, (_, i) => ({
         teamName: page.getByTestId(`playerBuzzed${i}TeamNameText`),
         name: page.getByTestId(`playerBuzzed${i}NameText`),
         time: page.getByTestId(`playerBuzzed${i}BuzzerTimeText`)
       })),
       teamQuitButtons: {
-        team1: Array.from({length: 4}, (_, i) => page.getByTestId(`player${i}Team1QuitButton`)),
-        team2: Array.from({length: 4}, (_, i) => page.getByTestId(`player${i}Team2QuitButton`))
+        team1: Array.from({ length: 4 }, (_, i) => page.getByTestId(`player${i}Team1QuitButton`)),
+        team2: Array.from({ length: 4 }, (_, i) => page.getByTestId(`player${i}Team2QuitButton`))
       },
       hideGameButtons: {
-        team1: Array.from({length: 4}, (_, i) => page.getByTestId(`player${i}Team1HideGameButton`)),
-        team2: Array.from({length: 4}, (_, i) => page.getByTestId(`player${i}Team2HideGameButton`))
+        team1: Array.from({ length: 4 }, (_, i) => page.getByTestId(`player${i}Team1HideGameButton`)),
+        team2: Array.from({ length: 4 }, (_, i) => page.getByTestId(`player${i}Team2HideGameButton`))
       }
     };
 
-    this.questions = Array.from({length: 10}, (_, i) => 
+    this.questions = Array.from({ length: 10 }, (_, i) =>
       page.getByTestId(`question${i}Button`)
     );
 
@@ -195,6 +196,7 @@ class AdminPage {
     this.team1MistakeButton = page.getByTestId("team1MistakeButton")
     this.team0GivePointsButton = page.getByTestId("team0GivePointsButton")
     this.team1GivePointsButton = page.getByTestId("team1GivePointsButton")
+    this.hostPassword = page.getByTestId("hostPassword")
   }
 }
 

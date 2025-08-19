@@ -15,4 +15,5 @@ export const ERROR_CODES = {
   MISSING_INPUT: "errors.missing_input",
   UNABLE_TO_CONNECT: "errors.unable_to_connect",
   PLAYER_NOT_FOUND: "errors.player_not_found",
+  UNAUTHENTICATED: "errors.unauthenticated",
 };

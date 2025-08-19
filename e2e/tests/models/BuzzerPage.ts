@@ -16,6 +16,7 @@ class BuzzerPage {
   joinTeam2: Locator;
   loadingText: Locator;
   openGameWindowButton: Locator;
+  hostBuzzersWindowButton: Locator;
   quitButton: Locator;
   registerBuzzerButton: Locator;
   titleLogoImg: Locator;
@@ -53,6 +54,7 @@ class BuzzerPage {
     this.joinTeam2 = page.getByTestId("joinTeam2");
     this.loadingText = page.getByTestId("loadingText");
     this.openGameWindowButton = page.getByTestId("openGameWindowButton");
+    this.hostBuzzersWindowButton = page.getByTestId("hostBuzzersWindowButton");
     this.quitButton = page.getByTestId("quitButton");
     this.registerBuzzerButton = page.getByTestId("registerBuzzerButton");
     this.titleLogoImg = page.getByTestId("titleLogoImg");
