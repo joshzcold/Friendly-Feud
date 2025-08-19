@@ -1,9 +1,7 @@
 module.exports = {
   important: true,
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
-  darkMode: 'media',
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  darkMode: "media",
   theme: {
     extend: {},
   },
@@ -13,10 +11,7 @@ module.exports = {
   plugins: [
     require("tailwindcss-themer")({
       defaultTheme: {
-        // put the default values of any config you want themed
-        // just as if you were to extend tailwind's theme like normal https://tailwindcss.com/docs/theme#extending-the-default-theme
         extend: {
-          // colors is used here for demonstration purposes
           colors: {
             background: "white",
             success: {
@@ -64,11 +59,7 @@ module.exports = {
       },
       themes: [
         {
-          // name your theme anything that could be a valid css class name
-          // remember what you named your theme because you will use it as a class to enable the theme
           name: "darkTheme",
-          // put any overrides your theme has here
-          // just as if you were to extend tailwind's theme like normal https://tailwindcss.com/docs/theme#extending-the-default-theme
           extend: {
             colors: {
               background: "#18181B",
@@ -116,11 +107,7 @@ module.exports = {
           },
         },
         {
-          // name your theme anything that could be a valid css class name
-          // remember what you named your theme because you will use it as a class to enable the theme
           name: "slate",
-          // put any overrides your theme has here
-          // just as if you were to extend tailwind's theme like normal https://tailwindcss.com/docs/theme#extending-the-default-theme
           extend: {
             colors: {
               background: "#18181B",
@@ -169,11 +156,7 @@ module.exports = {
           },
         },
         {
-          // name your theme anything that could be a valid css class name
-          // remember what you named your theme because you will use it as a class to enable the theme
           name: "educational",
-          // put any overrides your theme has here
-          // just as if you were to extend tailwind's theme like normal https://tailwindcss.com/docs/theme#extending-the-default-theme
           extend: {
             colors: {
               background: "#fffbf0",
