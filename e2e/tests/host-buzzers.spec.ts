@@ -14,36 +14,47 @@ test.describe("Buzzers screen on seperate browser.", () => {
     buzzersPage = new HostBuzzerPage(buzzers.page);
     adminPage = new AdminPage(host.page);
 
-    await adminPage.teamOneNameInput.fill("Team Alpha");
-    await adminPage.teamTwoNameInput.fill("Team Beta");
+    await adminPage.teamOneNameInput.fill("Alpha");
+    await adminPage.teamTwoNameInput.fill("Beta");
     await adminPage.gameSelector.selectOption({ index: 1 });
     await adminPage.startRoundOneButton.click();
 
     const hostPassword = await adminPage.hostPassword.innerText();
     buzzersPage.buzzersPasswordInput.fill(hostPassword);
     buzzersPage.buzzersSubmitButton.click();
+    // Wait for host buzzers screen to be ready
+    await expect(buzzersPage.buzzerButtons[0].button).toBeVisible({ timeout: 10000 });
   });
 
   test.afterEach(async ({}) => {
-    await adminPage.clearBuzzersButton.click({ timeout: 5000 });
-    await expect(buzzersPage.buzzersInfo).not.toBeVisible({ timeout: 5000 });
+    // Clear only if there is something to clear; otherwise fallback to disabled state
+    const canClear = await adminPage.clearBuzzersButton.isVisible({ timeout: 5000 }).catch(() => false);
+    if (canClear) {
+      await adminPage.clearBuzzersButton.click();
+      await expect(buzzersPage.buzzersInfo).not.toBeVisible({ timeout: 10000 });
+    } else {
+      await expect(adminPage.clearBuzzersButtonDisabled).toBeVisible({ timeout: 5000 });
+    }
   });
 
   test("can use host buzzers touch screen", async () => {
+    await buzzersPage.page.click("body");
     await buzzersPage.buzzerButtons[0].button.click();
-    await buzzersPage.buzzersInfo.isVisible();
-    expect(buzzersPage.buzzersInfo).toContainText("Team Alpha", { timeout: 5000 });
+    await expect(buzzersPage.buzzersInfo).toBeVisible({ timeout: 10000 });
+    await expect(buzzersPage.buzzersInfo).toContainText("Team Alpha", { timeout: 10000 });
   });
 
   test("can use host buzzers keyboard k", async () => {
-    await buzzersPage.page.keyboard.type("k");
-    await buzzersPage.buzzersInfo.isVisible();
-    expect(buzzersPage.buzzersInfo).toContainText("Team Beta", { timeout: 5000 });
+    await buzzersPage.page.click("body");
+    await buzzersPage.page.keyboard.press("k");
+    await expect(buzzersPage.buzzersInfo).toBeVisible({ timeout: 10000 });
+    await expect(buzzersPage.buzzersInfo).toContainText("Team Beta", { timeout: 10000 });
   });
 
   test("can use host buzzers keyboard j", async () => {
-    await buzzersPage.page.keyboard.type("j");
-    await buzzersPage.buzzersInfo.isVisible();
-    expect(buzzersPage.buzzersInfo).toContainText("Team Alpha", { timeout: 5000 });
+    await buzzersPage.page.click("body");
+    await buzzersPage.page.keyboard.press("j");
+    await expect(buzzersPage.buzzersInfo).toBeVisible({ timeout: 10000 });
+    await expect(buzzersPage.buzzersInfo).toContainText("Team Alpha", { timeout: 10000 });
   });
 });

@@ -28,15 +28,15 @@ test("can edit title text", async ({ browser }: { browser: Browser }) => {
 test("can edit first team name text", async ({ browser }: { browser: Browser }) => {
   const gamePage = new GamePage(spectator.page);
 
-  await adminPage.teamOneNameInput.fill("Team Alpha");
-  await expect(gamePage.getTeamNameByIndex(0)).toHaveText("Team Alpha");
+  await adminPage.teamOneNameInput.fill("Alpha");
+  await expect(gamePage.getTeamNameByIndex(0)).toHaveText("Alpha");
 });
 
 test("can edit second team name text", async ({ browser }: { browser: Browser }) => {
   const gamePage = new GamePage(spectator.page);
 
-  await adminPage.teamTwoNameInput.fill("Team Beta");
-  await expect(gamePage.getTeamNameByIndex(1)).toHaveText("Team Beta");
+  await adminPage.teamTwoNameInput.fill("Beta");
+  await expect(gamePage.getTeamNameByIndex(1)).toHaveText("Beta");
 });
 
 test("can switch themes", async ({ browser }: { browser: Browser }) => {

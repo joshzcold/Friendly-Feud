@@ -1,3 +1,4 @@
+import { getTeamDisplayName } from "@/lib/utils";
 import { Game, WSAction } from "@/types/game";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -43,7 +44,9 @@ export default function HostBuzzersPage({ game, send, buzzed }: HostBuzzerPagePr
       {buzzed ? (
         <div className="absolute z-50 flex min-h-screen min-w-full items-center justify-center">
           <div id="buzzersInfo" className="rounded-xl bg-warning-900 p-5 text-6xl capitalize text-white">
-            {game?.teams[game?.buzzed[0]?.team]?.name}
+            {game && game.buzzed[0]?.team !== undefined
+              ? getTeamDisplayName(game.teams[game.buzzed[0].team].name, game.buzzed[0].team, t)
+              : ""}
           </div>
         </div>
       ) : null}
@@ -61,6 +64,7 @@ export default function HostBuzzersPage({ game, send, buzzed }: HostBuzzerPagePr
                   rounded-full
                   text-6xl
                   font-extrabold
+                  capitalize
                   text-white
               `}
               onClick={() => {
@@ -70,7 +74,7 @@ export default function HostBuzzersPage({ game, send, buzzed }: HostBuzzerPagePr
                 send({ action: WSAction.BUZZER_SCREEN_BUZZ.valueOf(), team: i });
               }}
             >
-              {game?.teams[i].name}
+              {game ? getTeamDisplayName(game.teams[i].name, i, t) : ""}
             </button>
           ))}
       </div>

@@ -65,8 +65,8 @@
   "host": "Tuan Rumah",
   "No game session. retry from the admin window": "Tidak ada sesi permainan. Coba lagi dari jendela admin",
   "Gets Points": "Mendapatkan Poin",
-  "Team 1": "Tim 1",
-  "Team 2": "Tim 2",
+  "Team 1": "Alpha",
+  "Team 2": "Bravo",
   "Current Screen": "Layar saat ini",
   "Points": "Jumlah Poin",
   "Buzzer Order": "Urutan Buzzer",
@@ -110,7 +110,7 @@
   "donate": "menyumbangkan",
   "email": "surel",
   "source code": "Kode sumber",
-  "Remove player's blindfold": "Lepaskan penutup mata dari pemain", 
+  "Remove player's blindfold": "Lepaskan penutup mata dari pemain",
   "Blindfold player": "Tutup mata pemain",
   "Remove player from game": "Hapus pemain dari permainan",
   "errors": {
@@ -125,5 +125,5 @@
     "connection_lost": "Koneksi ke server terputus, mencoba lagi dalam {{message}}s",
     "csv_invalid_format": "Format CSV tidak valid",
     "missing_input": "Silakan isi kolom {{message}}"
-    }
+  }
 }
