@@ -23,6 +23,7 @@ type SQLiteStore struct {
 type Room struct {
 	gorm.Model
 	RoomCode string `gorm:"primaryKey"`
+	HostPassword string
 	RoomJson datatypes.JSON
 	RoomIcon []byte
 }
@@ -74,6 +75,7 @@ func (s *SQLiteStore) getRoom(client *Client, roomCode string) (room, GameError)
 
 	foundRoom := s.rooms[roomCode]
 	retrievedRoom := room{
+		HostPassword: foundRoomDB.HostPassword,
 		Game: &game{},
 		roomConnections: roomConnections{
 			Hub:               foundRoom.Hub,
@@ -95,6 +97,7 @@ func (s *SQLiteStore) writeRoom(roomCode string, room room) GameError {
 	if err := s.db.Where("room_code = ?", roomCode).First(&Room{}).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		newRoom := Room{
 			RoomCode: roomCode,
+			HostPassword: room.HostPassword,
 			RoomJson: jsonData,
 		}
 		s.db.Create(&newRoom)
