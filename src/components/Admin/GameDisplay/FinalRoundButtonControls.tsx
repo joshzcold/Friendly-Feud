@@ -1,3 +1,4 @@
+import { debounce } from "@/lib/utils";
 import { Game } from "@/src/types/game";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
@@ -40,8 +41,8 @@ export default function FinalRoundButtonControls({ game, send, setGame }: FinalR
           id={`finalRoundAnswer${i}Input`}
           className="w-48 grow rounded border-4 bg-secondary-300 p-5 text-2xl text-foreground placeholder:text-secondary-900"
           placeholder={t("Answer")}
-          value={x.input}
-          onChange={(e) => {
+          defaultValue={x.input}
+          onChange={debounce((e: React.ChangeEvent<HTMLInputElement>) => {
             const xInput = e.target.value;
             setGame((prevGame) => {
               if (prevGame === null) {
@@ -69,7 +70,7 @@ export default function FinalRoundButtonControls({ game, send, setGame }: FinalR
 
               return updatedGame;
             });
-          }}
+          })}
         />
 
         <button
