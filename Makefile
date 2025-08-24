@@ -62,10 +62,12 @@ e2e: dev-background
 	$(MAKE) dev-down
 
 e2e-ui: dev-background
+	trap 'make dev-down' EXIT
 	npm install
-	cd e2e	
-	npx playwright test --ui
-	cd -
+	(
+		cd e2e
+		npx playwright test --ui
+	)
 	$(MAKE) dev-down
 
 e2e-prod:
