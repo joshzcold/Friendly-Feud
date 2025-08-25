@@ -58,8 +58,10 @@ test("can select final round answers", async ({ browser }) => {
   await adminPage.finalRound.answers[1].reveal.click();
   await adminPage.finalRound.answers[1].submit.click();
 
-  expect(await buzzerPage.finalRound.answers[0][0].innerText()).toBe("TEST 1");
-  expect(await buzzerPage.finalRound.answers[0][1].innerText()).toBe("TEST 2");
+  await expect(async () => {
+    expect(await buzzerPage.finalRound.answers[0][0].innerText()).toBe("TEST 1");
+    expect(await buzzerPage.finalRound.answers[0][1].innerText()).toBe("TEST 2");
+  }).toPass({ timeout: 5000 });
 
   await adminPage.startFinalRound2Button.click();
 
@@ -70,9 +72,11 @@ test("can select final round answers", async ({ browser }) => {
 
   await adminPage.revealFirstRoundFinalButton.click();
 
-  expect(await buzzerPage.finalRound.answers[0][0].innerText()).toBe("TEST 1");
-  expect(await buzzerPage.finalRound.answers[0][1].innerText()).toBe("TEST 2");
-  expect(await buzzerPage.finalRound.answers[1][1].innerText()).toBe("TEST 3");
+  await expect(async () => {
+    expect(await buzzerPage.finalRound.answers[0][0].innerText()).toBe("TEST 1");
+    expect(await buzzerPage.finalRound.answers[0][1].innerText()).toBe("TEST 2");
+    expect(await buzzerPage.finalRound.answers[1][1].innerText()).toBe("TEST 3");
+  }).toPass({ timeout: 5000 });
 });
 
 test("can hide game board from player", async ({ browser }) => {
