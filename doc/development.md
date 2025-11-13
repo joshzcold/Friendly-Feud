@@ -47,8 +47,6 @@
 - [Go](https://go.dev/doc/install)
 - [Make](https://www.gnu.org/software/make/)
 
-> Note: Required versions are not updated, but newest versions should work 😅
-
 ## Setup Instructions
 
 ### Windows Setup
