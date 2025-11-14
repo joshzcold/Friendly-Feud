@@ -31,6 +31,7 @@
     "start_windows": "set NODE_ENV=local && next start",
     "parse-locales": "i18next-scanner --config ./i18n/i18next-scanner.config.js",
     "lint": "eslint .",
+    "fix": "eslint --fix .",
     "test": "",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\"",
     "prepare": "husky"
