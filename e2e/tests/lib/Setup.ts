@@ -79,8 +79,8 @@ export class Setup {
   async hostRoom(page: Page) {
     const loginPage = new LoginPage(page);
     await loginPage.hostRoomButton.click();
-    let adminPage = new AdminPage(page);
-    let roomCode = await adminPage.roomCodeText.innerText();
+    const adminPage = new AdminPage(page);
+    const roomCode = await adminPage.roomCodeText.innerText();
     // Type in lowercase to make sure client/server handles case correctly
     return roomCode;
   }

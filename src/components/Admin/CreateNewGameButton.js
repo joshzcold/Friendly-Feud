@@ -1,8 +1,11 @@
-import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
-export default function CreateNewGameButton() {
-  const { t } = useTranslation();
+Object.defineProperty(exports, "__esModule", { value: true });
+const _default = CreateNewGameButton;
+export { _default as default };
+
+function CreateNewGameButton() {
+  var t = (0, useTranslation)().t;
   return (
     <Link href="/new" id="createNewGameButton" target="_blank">
       <button className="text-2xl">

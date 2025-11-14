@@ -26,7 +26,7 @@ test.describe("Buzzers screen on seperate browser.", () => {
     await expect(buzzersPage.buzzerButtons[0].button).toBeVisible({ timeout: 10000 });
   });
 
-  test.afterEach(async ({}) => {
+  test.afterEach(async () => {
     // Clear only if there is something to clear; otherwise fallback to disabled state
     const canClear = await adminPage.clearBuzzersButton.isVisible({ timeout: 5000 }).catch(() => false);
     if (canClear) {

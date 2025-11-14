@@ -36,7 +36,7 @@ export default function TitlePage({ game }: TitlePageProps) {
   }, [game.settings.logo_url]);
 
   function returnTeamMates(team: number) {
-    let players: string[] = [];
+    const players: string[] = [];
     console.debug(game);
     Object.keys(game.registeredPlayers).forEach((k) => {
       console.debug(k);

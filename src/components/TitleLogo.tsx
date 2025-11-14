@@ -28,14 +28,14 @@ export default function TitleLogo({ insert }: TitleLogoProps) {
     setIsMounted(true);
   }, []);
 
-  let hasTitle = insert.length > 0 ? true : false;
+  const hasTitle = insert.length > 0 ? true : false;
   const { t } = useTranslation();
 
   if (!isMounted) {
     return <div className="w-full" />;
   }
 
-  let logo = `
+  const logo = `
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
   xmlns:dc="http://purl.org/dc/elements/1.1/"

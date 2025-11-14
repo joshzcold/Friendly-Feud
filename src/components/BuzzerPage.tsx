@@ -24,12 +24,11 @@ interface BuzzerPageProps {
   id: string | null;
   setGame: (game: Game | null) => void;
   room: string;
-  quitGame: () => void;
   setTeam: (team: number | null) => void;
   team: number | null;
 }
 
-export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setTeam, team }: BuzzerPageProps) {
+export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team }: BuzzerPageProps) {
   const { i18n, t } = useTranslation();
   const [buzzed, setBuzzed] = useState(false);
   const [timer, setTimer] = useState(0);
@@ -67,14 +66,14 @@ export default function BuzzerPage({ ws, game, id, setGame, room, quitGame, setT
     }, 1000);
 
     ws.current.addEventListener("message", (evt) => {
-      let received_msg = evt.data;
-      let json: WSEvent = JSON.parse(received_msg);
+      const received_msg = evt.data;
+      const json: WSEvent = JSON.parse(received_msg);
       if (json.action === "ping") {
         // server gets the average latency periodically
         console.debug(id);
         send({ action: "pong", id: id });
       } else if (json.action === "mistake" || json.action === "show_mistake") {
-        var audio = new Audio("wrong.mp3");
+        const audio = new Audio("wrong.mp3");
         audio.play();
         if (json.action === "mistake" || json.action === "show_mistake") {
           setShowMistake(true);

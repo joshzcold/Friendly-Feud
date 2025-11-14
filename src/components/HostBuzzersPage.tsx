@@ -12,7 +12,7 @@ interface HostBuzzerPageProps {
 export default function HostBuzzersPage({ game, send, buzzed }: HostBuzzerPageProps) {
   const { t } = useTranslation();
   let buzzColors = ["bg-failure-500", "bg-primary-500"];
-  let writingDirection = ["[writing-mode:vertical-lr]", "[writing-mode:vertical-lr] rotate-180"];
+  const writingDirection = ["[writing-mode:vertical-lr]", "[writing-mode:vertical-lr] rotate-180"];
   if (buzzed) {
     buzzColors = ["bg-secondary-900", "bg-secondary-900"];
   }

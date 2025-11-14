@@ -34,7 +34,7 @@ export default function BuzzersPage() {
     ws.current = new WebSocket(`wss://${window.location.host}/api/ws`);
     ws.current.onopen = function () {
       console.log("game connected to server");
-      let session = cookieCutter.get("session");
+      const session = cookieCutter.get("session");
       console.debug(session);
       if (session != null && ws.current) {
         ws.current.send(JSON.stringify({ action: "game_window", session: session }));
@@ -42,7 +42,7 @@ export default function BuzzersPage() {
     };
 
     ws.current.onmessage = function (evt) {
-      var received_msg = evt.data;
+      const received_msg = evt.data;
       let json: WSEvent;
       try {
         json = JSON.parse(received_msg);

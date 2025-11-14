@@ -11,11 +11,11 @@ interface AdminSettingsProps {
   game: Game;
   setGame: Dispatch<SetStateAction<Game | null>>;
   send: (data: any) => void;
-  hostPassword: String;
+  hostPassword: string;
 }
 
 export default function AdminSettings({ game, setGame, send, hostPassword }: AdminSettingsProps) {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center">
       <div className="grid grid-cols-2 gap-x-48 gap-y-10">

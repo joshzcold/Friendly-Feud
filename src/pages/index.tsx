@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
 import AdminPage from "@/components/AdminPage";
@@ -79,8 +79,8 @@ export default function Home() {
       console.debug("game connected to server", ws.current);
       if (ws.current) {
         ws.current.onmessage = function (evt: MessageEvent) {
-          var received_msg = evt.data;
-          let json: WSEvent = JSON.parse(received_msg);
+          const received_msg = evt.data;
+          const json: WSEvent = JSON.parse(received_msg);
           if (json.action === "host_room") {
             console.debug("registering room with host", json.room);
             setPlayerID(json.id);
@@ -189,7 +189,7 @@ export default function Home() {
    * the game object
    */
   useEffect(() => {
-    let session = cookieCutter.get("session");
+    const session = cookieCutter.get("session");
     console.debug("user session", session);
     if (session != "" && session != null) {
       send(JSON.stringify({ action: "get_back_in", session: session }));
@@ -259,7 +259,6 @@ export default function Home() {
               id={playerID}
               setGame={setGame}
               room={registeredRoomCode}
-              quitGame={quitGame}
               setTeam={setTeam}
               team={team}
             />

@@ -45,8 +45,8 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
   }
 
   const handleMessage = (evt: MessageEvent) => {
-    var received_msg = evt.data;
-    let json: WSEvent = JSON.parse(received_msg);
+    const received_msg = evt.data;
+    const json: WSEvent = JSON.parse(received_msg);
     if (json.action === "data") {
       setGame(json.data);
     } else if (json.action === "change_lang") {

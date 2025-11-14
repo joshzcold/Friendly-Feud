@@ -38,7 +38,7 @@ export default function GamePage() {
     ws.current = new WebSocket(`wss://${window.location.host}/api/ws`);
     ws.current.onopen = function () {
       console.log("game connected to server");
-      let session = cookieCutter.get("session");
+      const session = cookieCutter.get("session");
       console.debug(session);
       if (session != null && ws.current) {
         console.debug("found user session", session);
@@ -72,7 +72,7 @@ export default function GamePage() {
     };
 
     ws.current.onmessage = function (evt) {
-      var received_msg = evt.data;
+      const received_msg = evt.data;
       let json: WSEvent;
       try {
         json = JSON.parse(received_msg);
@@ -116,7 +116,7 @@ export default function GamePage() {
 
         setGame(newGameData);
 
-        let session = cookieCutter.get("session");
+        const session = cookieCutter.get("session");
         let sessionParts;
         if (session) {
           sessionParts = session.split(":");
@@ -129,7 +129,7 @@ export default function GamePage() {
           setIsHost(newGameData.host.id === id);
         }
       } else if (json.action === "mistake" || json.action === "show_mistake") {
-        var audio = new Audio("wrong.mp3");
+        const audio = new Audio("wrong.mp3");
         audio.play();
         setShowMistake(true);
         setTimeout(() => {
@@ -139,19 +139,19 @@ export default function GamePage() {
         setGame(null);
         window.close();
       } else if (json.action === "reveal") {
-        var audio = new Audio("good-answer.mp3");
+        const audio = new Audio("good-answer.mp3");
         audio.play();
       } else if (json.action === "final_reveal") {
-        var audio = new Audio("fm-answer-reveal.mp3");
+        const audio = new Audio("fm-answer-reveal.mp3");
         audio.play();
       } else if (json.action === "duplicate") {
-        var audio = new Audio("duplicate.mp3");
+        const audio = new Audio("duplicate.mp3");
         audio.play();
       } else if (json.action === "final_submit") {
-        var audio = new Audio("good-answer.mp3");
+        const audio = new Audio("good-answer.mp3");
         audio.play();
       } else if (json.action === "final_wrong") {
-        var audio = new Audio("try-again.mp3");
+        const audio = new Audio("try-again.mp3");
         audio.play();
       } else if (json.action === "set_timer") {
         setTimer(json.data);
@@ -165,7 +165,7 @@ export default function GamePage() {
             if (prevTimer > 0) {
               return prevTimer - 1;
             } else {
-              var audio = new Audio("try-again.mp3");
+              const audio = new Audio("try-again.mp3");
               audio.play();
 
               if (timerInterval) {
@@ -174,8 +174,8 @@ export default function GamePage() {
 
               // Send timer stop to admin.js
               try {
-                let session = cookieCutter.get("session");
-                let [room, id] = session.split(":");
+                const session = cookieCutter.get("session");
+                const [room, id] = session.split(":");
 
                 if (!session) {
                   console.error("No session cookie found");

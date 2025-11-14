@@ -11,7 +11,7 @@ interface RoundPointTallyProps {
 function RoundPointTally({ points, team, fontWeight = "normal" }: RoundPointTallyProps) {
   const { t } = useTranslation();
   // start at font size 72 and get smaller as point values increase
-  let size = 72 - `${points}`.length * 8;
+  const size = 72 - `${points}`.length * 8;
   return (
     <div style={{ borderWidth: 12 }} className="border-black bg-gradient-to-tr from-primary-900 to-primary-500 p-1">
       {/* text within svg can resize the text based on container*/}
@@ -38,8 +38,8 @@ interface RoundProps {
 
 export default function Round({ game }: RoundProps) {
   const { t } = useTranslation();
-  let current_round = game.round;
-  let round = game.rounds[current_round];
+  const current_round = game.round;
+  const round = game.rounds[current_round];
   return (
     <div className="flex w-auto flex-col items-center space-y-1">
       <div className="flex h-28 flex-row justify-around space-x-2">

@@ -28,15 +28,15 @@ function validateCsv(
   setError: Dispatch<SetStateAction<string | null>>,
   t: TFunction
 ) {
-  let headerOffSet = noHeader ? 0 : 1;
+  const headerOffSet = noHeader ? 0 : 1;
   // the setting of rows is greater than the data provided
   if (roundCount + roundFinalCount + headerOffSet > csvData.length) {
     setError(t("Error: round and final round is greater than document has available."));
     return;
   }
 
-  for (let r in csvData) {
-    let index = parseInt(r) + headerOffSet;
+  for (const r in csvData) {
+    const index = parseInt(r) + headerOffSet;
     if (roundCount + roundFinalCount + headerOffSet < parseInt(r) || csvData[index] === undefined) {
       break;
     }
@@ -71,8 +71,8 @@ function csvToColdFriendlyFeudFormat(
   timer2nd: number,
   send: (data: any) => void
 ) {
-  let headerOffSet = noHeader ? 0 : 1;
-  let gameTemplate: Partial<Game> & {
+  const headerOffSet = noHeader ? 0 : 1;
+  const gameTemplate: Partial<Game> & {
     rounds: Round[];
     final_round: FinalRound[];
     final_round_timers: number[];
@@ -84,12 +84,12 @@ function csvToColdFriendlyFeudFormat(
   };
 
   for (let row = 0; row < csvData.length; row++) {
-    let rowPush: Partial<Round> & { answers: Answer[] } = {
+    const rowPush: Partial<Round> & { answers: Answer[] } = {
       answers: [],
       multiply: 1,
       question: "",
     };
-    let finalRowPush: Partial<FinalRound> & { answers: FinalRoundAnswer[] } = {
+    const finalRowPush: Partial<FinalRound> & { answers: FinalRoundAnswer[] } = {
       answers: [],
       question: "",
       selection: 0,
@@ -99,7 +99,7 @@ function csvToColdFriendlyFeudFormat(
     };
     let answer = true;
     let answerCount = 0;
-    let index = row + headerOffSet;
+    const index = row + headerOffSet;
 
     if (index >= csvData.length || index >= roundCount + roundFinalCount + headerOffSet) {
       break;
@@ -164,12 +164,12 @@ function initalizeCSVRoundCount(
   noHeader: boolean
 ) {
   if (roundCount < 0 || roundFinalCount < 0) {
-    let headerOffSet = noHeader ? 0 : 1;
+    const headerOffSet = noHeader ? 0 : 1;
     let _roundCount = 0;
-    let _roundCountDefaultLimit = 6;
+    const _roundCountDefaultLimit = 6;
     let _finalRoundCount = 0;
-    let _finalRoundCountDefaultLimit = 4;
-    for (let _ in csvData) {
+    const _finalRoundCountDefaultLimit = 4;
+    for (const _ in csvData) {
       if (_roundCount < _roundCountDefaultLimit && _roundCount + headerOffSet < csvData.length) {
         _roundCount++;
       } else if (
@@ -206,7 +206,7 @@ export default function CSVLoader({ csvFileUpload, csvFileUploadText, setCsvFile
     initalizeCSVRoundCount(csvData, roundCount, setRoundCount, roundFinalCount, setRoundFinalCount, noHeader);
     validateCsv(csvData, roundCount, roundFinalCount, noHeader, setError, t);
   }, [csvData, roundCount, roundFinalCount, noHeader, t]);
-  let headerOffSet = noHeader ? 0 : 1;
+  const headerOffSet = noHeader ? 0 : 1;
   return (
     <div className="bg-opacity/50 fixed inset-0 size-full overflow-y-auto bg-gray-600">
       <div className="relative top-20 mx-auto flex w-3/4 flex-col space-y-5 rounded-md border bg-background p-5 shadow-lg">
@@ -307,7 +307,7 @@ export default function CSVLoader({ csvFileUpload, csvFileUploadText, setCsvFile
               id="csvSetFinalRoundCountInput"
               className="w-24 rounded bg-secondary-300 p-2 text-foreground"
               onChange={(e) => {
-                let value = parseInt(e.target.value);
+                const value = parseInt(e.target.value);
                 // Don't allow more rounds than available data
                 if (value + roundCount + headerOffSet > csvData.length) {
                   return;
@@ -327,7 +327,7 @@ export default function CSVLoader({ csvFileUpload, csvFileUploadText, setCsvFile
               id="csvFinalRoundTimerInput"
               className="w-24 rounded bg-secondary-300 p-2 text-foreground"
               onChange={(e) => {
-                let value = parseInt(e.target.value);
+                const value = parseInt(e.target.value);
                 setTimer(value);
               }}
               value={timer}
@@ -343,7 +343,7 @@ export default function CSVLoader({ csvFileUpload, csvFileUploadText, setCsvFile
               id="csvFinalRound2ndTimerInput"
               className="w-24 rounded bg-secondary-300 p-2 text-foreground"
               onChange={(e) => {
-                let value = parseInt(e.target.value);
+                const value = parseInt(e.target.value);
                 setTimer2nd(value);
               }}
               value={timer2nd}

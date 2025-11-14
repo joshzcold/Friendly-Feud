@@ -60,7 +60,7 @@ export default function GameDisplay({
   }
 
   // var put it into function scope
-  var current_round = game.rounds[game.round];
+  const current_round = game.rounds[game.round];
   console.debug("Current round:", current_round);
 
   return (
@@ -211,7 +211,7 @@ export default function GameDisplay({
             id="resetMistakesButton"
             className="grow rounded border-4 bg-secondary-300 p-10 text-2xl text-foreground"
             onClick={() => {
-              for (let team in game.teams) {
+              for (const team in game.teams) {
                 game.teams[team].mistakes = 0;
               }
               // @ts-expect-error: need a better way to update these values
