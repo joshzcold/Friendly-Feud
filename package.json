@@ -11,7 +11,6 @@
     "autoprefixer": "^10.4.22",
     "axios": "^1.13.2",
     "cookie-cutter": "^0.2.0",
-    "eslint": "^9.39.1",
     "i18next": "^25.6.2",
     "i18next-browser-languagedetector": "^8.2.0",
     "lucide-react": "^0.553.0",
@@ -31,7 +30,7 @@
     "start_local": "NODE_ENV=local next start",
     "start_windows": "set NODE_ENV=local && next start",
     "parse-locales": "i18next-scanner --config ./i18n/i18next-scanner.config.js",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\"",
     "prepare": "husky"
@@ -43,14 +42,18 @@
     ]
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
     "@playwright/test": "^1.56.1",
+    "@stylistic/eslint-plugin": "^5.5.0",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.4",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/parser": "^8.46.4",
+    "eslint": "^9.39.1",
     "eslint-config-next": "^16.0.2",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-config-xo": "^0.46.0",
     "eslint-plugin-tailwindcss": "^3.18.2",
     "husky": "^9.1.7",
     "i18next-scanner": "^4.6.0",
@@ -58,6 +61,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.7.1",
     "tailwindcss-themer": "^4.1.1",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.4"
   }
 }
