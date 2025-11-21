@@ -25,7 +25,7 @@ interface BuzzerPageProps {
   setGame: (game: Game | null) => void;
   room: string;
   setTeam: (team: number | null) => void;
-  team: number;
+  team: number | null;
 }
 
 export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team }: BuzzerPageProps) {
@@ -359,7 +359,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
                         id="openGameWindowButton"
                         className="rounded-md bg-secondary-300 px-8 py-4 hover:shadow-md"
                         onClick={() => {
-                          send({ action: "registerspectator", team: team });
+                          send({ action: "registerspectator" });
                         }}
                       >
                         {t("Open Game Window")}
@@ -372,7 +372,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
                         id="hostBuzzersWindowButton"
                         className="rounded-md bg-secondary-300 px-8 py-4 hover:shadow-md"
                         onClick={() => {
-                          send({ action: "registerspectator", team: team });
+                          send({ action: "registerspectator" });
                         }}
                       >
                         {t("Host Buzzers")}

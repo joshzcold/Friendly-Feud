@@ -82,7 +82,12 @@ export default function Home() {
           const received_msg = evt.data;
           const json: WSEvent = JSON.parse(received_msg);
           if (json.action === "host_room") {
-            if(!json.id || !json.game || !json.room || !json.hostPassword)  {
+            if(
+              json.id === undefined ||
+              json.game === undefined ||
+              json.room === undefined ||
+              json.hostPassword === undefined
+            )  {
               console.error("Undefined fields in action host_room")
               return
             }
@@ -94,11 +99,11 @@ export default function Home() {
             setHostPassword(json.hostPassword);
             cookieCutter.set("session", `${json.room}:${json.id}:${json.hostPassword}`);
           } else if (json.action === "join_room") {
-            if(!json.id || !json.game || !json.room)  {
+            if(json.id === undefined || json.game === undefined || json.room === undefined)  {
               console.error("Undefined fields in action join_room")
               return
             }
-            console.debug("Joining room : ", json);
+            console.debug("Joining room: ", json);
             setPlayerID(json.id);
             setRegisteredRoomCode(json.room);
             setGame(json.game);
@@ -113,27 +118,32 @@ export default function Home() {
             setGame(null);
             setHost(false);
           } else if (json.action === "get_back_in") {
-            if(!json.id || !json.game || !json.room || !json.hostPassword || !json.team)  {
+            console.debug("Getting back into room", json);
+            if(
+              json.id === undefined ||
+              json.game === undefined ||
+              json.room === undefined ||
+              json.hostPassword === undefined
+            )  {
               console.error("Undefined fields in action get_back_in")
               return
             }
-            console.debug("Getting back into room", json);
             if (json.host === true) {
               setHost(true);
               setHostPassword(json.hostPassword);
             }
-            if (Number.isInteger(json.team)) {
+            if (json.team !== undefined && Number.isInteger(json.team)) {
               setTeam(json.team);
             }
             setPlayerID(json.id);
             setRegisteredRoomCode(json.room);
             setGame(json.game);
           } else if (json.action === "error") {
-            if(!json.code || !json.message)  {
+            console.error(json);
+            if(!json.code )  {
               console.error("Undefined fields in action error")
               return
             }
-            console.error(json);
             toast.error(t(json.code, { message: json.message }));
             if (json.code === "errors.room_not_found") {
               // Clear stale session data so that the user isn't continuously reconnected using an invalid session
@@ -264,7 +274,7 @@ export default function Home() {
           </div>
         </div>
       );
-    } else if (ws && registeredRoomCode && !host && game && playerID && team) {
+    } else if (ws && registeredRoomCode && !host && game && playerID) {
       return (
         <div className="flex w-full justify-center">
           <div className="flex w-11/12 flex-col space-y-3 pt-5 sm:w-10/12 md:w-3/4 lg:w-1/2">
