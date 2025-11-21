@@ -1,11 +1,11 @@
 import { TranslateFunction } from "@/src/types";
-import { Answer, Game, Round } from "@/types/game";
+import { Answer, Game, Round, WSAction, WSEvent } from "@/types/game";
 import { toast } from "sonner";
 
 // HandleJsonFile props type
 interface HandleJsonFileOptions {
   t: TranslateFunction;
-  send: (payload: { action: string; data: any }) => void;
+  send: (payload: WSEvent) => void;
 }
 
 // HandleCsvFile props type
@@ -46,7 +46,7 @@ export function handleJsonFile(file: File, { t, send }: HandleJsonFileOptions): 
         return;
       }
       console.debug(data);
-      send({ action: "load_game", data: data });
+      send({ action: WSAction.LOAD_GAME, data: data });
     } catch (e) {
       console.error("Invalid JSON file", e);
       toast.error(t(`Invalid JSON file: ${e}`));

@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 import { ERROR_CODES } from "@/i18n/errorCodes";
-import { Game } from "@/src/types/game";
+import { Game, WSEvent } from "@/src/types/game";
 import { FileUp } from "lucide-react";
 import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 interface BeforeUploadProps {
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   room: string;
   setGame: Dispatch<SetStateAction<Game | null>>;
   game: Game;
@@ -96,7 +96,7 @@ function BeforeUpload({ send, room, setGame, game, setImageUploaded }: BeforeUpl
 }
 
 interface AfterUploadProps {
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   room: string;
   game: Game;
   setGame: Dispatch<SetStateAction<Game | null>>;
@@ -151,7 +151,7 @@ function AfterUpload({ send, room, game, setGame, setImageUploaded, imageUploade
 }
 
 interface TitleLogoUploadProps {
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   room: string;
   setGame: Dispatch<SetStateAction<Game | null>>;
   game: Game;

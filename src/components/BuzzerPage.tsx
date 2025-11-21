@@ -21,7 +21,7 @@ let timerInterval: NodeJS.Timeout | null = null;
 interface BuzzerPageProps {
   ws: React.RefObject<WebSocket>;
   game: Game;
-  id: string | null;
+  id: string;
   setGame: (game: Game | null) => void;
   room: string;
   setTeam: (team: number | null) => void;
@@ -35,7 +35,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
   const [showMistake, setShowMistake] = useState(false);
   const refreshCounterRef = useRef(0);
 
-  const send = function (data: any) {
+  const send = function (data: WSEvent) {
     data.room = room;
     data.id = id;
     ws.current.send(JSON.stringify(data));

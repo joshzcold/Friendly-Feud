@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
 import { ERROR_CODES } from "@/i18n/errorCodes";
-import { Answer, FinalRound, FinalRoundAnswer, Game, Round, Settings } from "@/types/game";
+import { Answer, FinalRound, FinalRoundAnswer, Game, Round, Settings, WSEvent } from "@/types/game";
 import { TFunction } from "i18next";
 // @ts-expect-error papaparse is not typed
 import Papa from "papaparse";
@@ -69,7 +69,7 @@ function csvToColdFriendlyFeudFormat(
   noHeader: boolean,
   timer: number,
   timer2nd: number,
-  send: (data: any) => void
+  send: (data: WSEvent) => void
 ) {
   const headerOffSet = noHeader ? 0 : 1;
   const gameTemplate: Partial<Game> & {
@@ -189,7 +189,7 @@ interface CSVLoaderProps {
   csvFileUpload: File;
   csvFileUploadText: string;
   setCsvFileUpload: Dispatch<SetStateAction<File | null>>;
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
 }
 
 export default function CSVLoader({ csvFileUpload, csvFileUploadText, setCsvFileUpload, send }: CSVLoaderProps) {

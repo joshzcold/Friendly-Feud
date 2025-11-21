@@ -1,5 +1,4 @@
 import { expect, test } from "@playwright/test";
-import type { Browser } from "@playwright/test";
 import { PlayerType, Setup } from "../lib/Setup.js";
 import { AdminPage } from "../models/AdminPage.js";
 import { GamePage } from "../models/GamePage.js";

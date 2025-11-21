@@ -1,12 +1,12 @@
 import ToolTipIcon from "@/components/ui/tooltip";
-import { Game } from "@/src/types/game";
+import { Game, WSAction, WSEvent } from "@/src/types/game";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
 interface BuzzerSoundSettingsProps {
   game: Game;
   setGame: Dispatch<SetStateAction<Game | null>>;
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
 }
 
 export default function BuzzerSoundSettings({ game, setGame, send }: BuzzerSoundSettingsProps) {
@@ -28,7 +28,7 @@ export default function BuzzerSoundSettings({ game, setGame, send }: BuzzerSound
         },
       };
 
-      send({ action: "data", data: updatedGame });
+      send({ action: WSAction.DATA, data: updatedGame });
 
       return updatedGame;
     });

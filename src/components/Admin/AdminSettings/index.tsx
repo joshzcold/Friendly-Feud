@@ -1,6 +1,6 @@
 import "@/i18n/i18n";
 import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
-import { Game } from "@/src/types/game";
+import { Game, WSEvent } from "@/src/types/game";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 import ToolTipIcon from "../../ui/tooltip";
@@ -10,7 +10,7 @@ import FinalRoundTitleChanger from "./FinalRoundTitleChanger";
 interface AdminSettingsProps {
   game: Game;
   setGame: Dispatch<SetStateAction<Game | null>>;
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   hostPassword: string;
 }
 

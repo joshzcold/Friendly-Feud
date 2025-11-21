@@ -20,7 +20,7 @@ export default function BuzzersPage() {
   const [buzzed, setBuzzed] = useState<boolean>(false);
   const hasRoom = !!roomCode;
 
-  function send(data: any) {
+  function send(data: WSEvent) {
     console.debug("Sending", data);
 
     if (ws.current) {
@@ -133,7 +133,7 @@ export default function BuzzersPage() {
             <button
               id="buzzersSubmitButton"
               onClick={() => {
-                send({ action: WSAction.REGISTER_BUZZER_SCREEN.valueOf() });
+                send({ action: WSAction.REGISTER_BUZZER_SCREEN });
               }}
               className="rounded-md bg-primary-200 p-2 text-lg"
             >

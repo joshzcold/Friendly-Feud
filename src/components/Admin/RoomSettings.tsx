@@ -5,11 +5,12 @@ import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 import HelpButton from "../HelpButton";
+import { WSEvent } from "@/src/types";
 
 interface RoomSettingsProps {
   room: string;
   gameSelector: string[];
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   setCsvFileUpload: Dispatch<SetStateAction<File | null>>;
   setCsvFileUploadText: Dispatch<SetStateAction<string>>;
   quitGame: (host: boolean) => void;

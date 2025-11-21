@@ -5,7 +5,7 @@ import TitleMusic from "@/components/Admin/GameDisplay/TitleMusic";
 import HideGameQuestions from "@/components/Admin/HideGameQuestions";
 import Players from "@/components/Admin/Players";
 import BuzzerTable from "@/components/BuzzerTable";
-import { Game } from "@/src/types/game";
+import { Game, WSEvent } from "@/src/types/game";
 import Image from "next/image";
 import { Dispatch, RefObject, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,7 +15,7 @@ interface GameDisplayProps {
   setGame: Dispatch<SetStateAction<Game | null>>;
   game: Game;
   room: string;
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   setPointsGiven: Dispatch<SetStateAction<{ state: boolean; color: string; textColor: string }>>;
   pointsGiven: { state: boolean; color: string; textColor: string };
   timerStarted: boolean;

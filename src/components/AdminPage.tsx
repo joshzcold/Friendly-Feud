@@ -39,7 +39,7 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
   const [csvFileUploadText, setCsvFileUploadText] = useState("");
   const refreshCounterRef = useRef(0);
 
-  function send(data: any) {
+  function send(data: WSEvent) {
     console.debug("Sending", data);
     ws.current.send(JSON.stringify({ ...data, room, id: playerId, hostPassword: hostPassword }));
   }

@@ -1,12 +1,12 @@
 import TitleLogoUpload from "@/components/Admin/TitleLogoUpload";
 import { debounce } from "@/lib/utils";
-import { Game } from "@/types/game";
+import { Game, WSEvent } from "@/types/game";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
 interface TitlesAndLogoSettingsProps {
   game: Game;
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   room: string;
   setGame: Dispatch<SetStateAction<Game | null>>;
   setImageUploaded: Dispatch<SetStateAction<File | null>>;

@@ -1,11 +1,11 @@
 import { debounce } from "@/lib/utils";
-import { Game } from "@/src/types/game";
+import { Game, WSEvent } from "@/src/types/game";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
 interface FinalRoundButtonControlsProps {
   game: Game;
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   setGame: Dispatch<SetStateAction<Game | null>>;
 }
 
