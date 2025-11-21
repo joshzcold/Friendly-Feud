@@ -51,7 +51,6 @@ export default function BuzzersPage() {
         return;
       }
 
-      console.log(json);
       switch (json.action) {
         case WSAction.DATA:
           setGame(json.data);
@@ -77,6 +76,10 @@ export default function BuzzersPage() {
           break;
 
         case WSAction.ERROR:
+          if (!json.code){
+            console.error("Error code is undefined")
+            return
+          }
           setHostPassword("");
           toast.error(t(json.code, { message: json.message }));
           break;

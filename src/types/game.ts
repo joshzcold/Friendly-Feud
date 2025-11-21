@@ -36,7 +36,13 @@ export const WSAction = {
   REGISTERED: "registered",
   REGISTER_BUZZER_SCREEN: "register_buzzer_screen",
   BUZZER_SCREEN_BUZZ: "buzzer_screen_buzz",
-  LOAD_GAME: "load_game"
+  LOAD_GAME: "load_game",
+  LOGO_UPLOAD: "logo_upload",
+  DEL_LOGO_UPLOAD: "del_logo_upload",
+  PONG: "pong",
+  BUZZ: "buzz",
+  REGISTER_BUZZ: "registerbuzz",
+  REGISTER_SPECTATOR: "registerspectator",
 } as const
 
 type WSActionKey = keyof typeof WSAction
@@ -46,6 +52,7 @@ export interface WSEvent {
   action: WSActionValue;
   message?: string;
   file?: string;
+  lang?: string;
   // TODO: current data and game can mean the same thing to
   // different actions. This would be good to cleanup.
 

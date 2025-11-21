@@ -56,7 +56,7 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
       } else {
         setGameSelector([]);
       }
-    } else if (json.action === "error") {
+    } else if (json.action === "error" && json.code) {
       console.error(json.code);
       toast.error(t(json.code, { message: json.message }));
     } else if (json.action === "timer_complete") {

@@ -82,6 +82,10 @@ export default function Home() {
           const received_msg = evt.data;
           const json: WSEvent = JSON.parse(received_msg);
           if (json.action === "host_room") {
+            if(!json.id || !json.game || !json.room || !json.hostPassword)  {
+              console.error("Undefined fields in action host_room")
+              return
+            }
             console.debug("registering room with host", json.room);
             setPlayerID(json.id);
             setHost(true);
@@ -90,6 +94,10 @@ export default function Home() {
             setHostPassword(json.hostPassword);
             cookieCutter.set("session", `${json.room}:${json.id}:${json.hostPassword}`);
           } else if (json.action === "join_room") {
+            if(!json.id || !json.game || !json.room)  {
+              console.error("Undefined fields in action join_room")
+              return
+            }
             console.debug("Joining room : ", json);
             setPlayerID(json.id);
             setRegisteredRoomCode(json.room);
@@ -105,6 +113,10 @@ export default function Home() {
             setGame(null);
             setHost(false);
           } else if (json.action === "get_back_in") {
+            if(!json.id || !json.game || !json.room || !json.hostPassword || !json.team)  {
+              console.error("Undefined fields in action get_back_in")
+              return
+            }
             console.debug("Getting back into room", json);
             if (json.host === true) {
               setHost(true);
@@ -117,6 +129,10 @@ export default function Home() {
             setRegisteredRoomCode(json.room);
             setGame(json.game);
           } else if (json.action === "error") {
+            if(!json.code || !json.message)  {
+              console.error("Undefined fields in action error")
+              return
+            }
             console.error(json);
             toast.error(t(json.code, { message: json.message }));
             if (json.code === "errors.room_not_found") {
@@ -248,7 +264,7 @@ export default function Home() {
           </div>
         </div>
       );
-    } else if (ws && registeredRoomCode && !host && game) {
+    } else if (ws && registeredRoomCode && !host && game && playerID && team) {
       return (
         <div className="flex w-full justify-center">
           <div className="flex w-11/12 flex-col space-y-3 pt-5 sm:w-10/12 md:w-3/4 lg:w-1/2">

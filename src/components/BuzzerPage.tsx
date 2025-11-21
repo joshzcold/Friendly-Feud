@@ -25,7 +25,7 @@ interface BuzzerPageProps {
   setGame: (game: Game | null) => void;
   room: string;
   setTeam: (team: number | null) => void;
-  team: number | null;
+  team: number;
 }
 
 export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team }: BuzzerPageProps) {
