@@ -19,7 +19,7 @@ class Player {
 
 export class Setup {
   private browser: Browser;
-  private clients!: { host: { context: BrowserContext; page: Page }; players: Player[] };
+  private clients: { host: { context?: BrowserContext; page?: Page }; players: Player[] };
   private currentTeam: number;
   public roomCode: string | null;
 
@@ -30,17 +30,22 @@ export class Setup {
     this.browser = browser;
     this.currentTeam = 0;
     this.roomCode = null;
+    this.clients = {
+      host: {
+        context: undefined,
+        page: undefined
+      },
+      players: []
+    }
   }
 
-  async host(): Promise<{ page: Page }> {
+  async host(): Promise<{ context: BrowserContext, page: Page }> {
     const hostContext = await this.browser.newContext();
-    this.clients.host = {
-      context: hostContext,
-      page: await hostContext.newPage(),
-    };
+    this.clients.host.context = hostContext
+    this.clients.host.page = await hostContext.newPage()
     await this.clients.host.page.goto("/", { waitUntil: "domcontentloaded", timeout: 10000 });
     this.roomCode = await this.hostRoom(this.clients.host.page);
-    return this.clients.host;
+    return {context: this.clients.host.context, page: this.clients.host.page};
   }
 
   /**
