@@ -8,7 +8,7 @@ import type { FinalRoundAnswer } from "@/types/game";
 
 export default function CreateGame() {
   const { t } = useTranslation();
-  let gameTemplate = {
+  const gameTemplate = {
     settings: {
       theme: "default",
     },
@@ -79,23 +79,30 @@ export default function CreateGame() {
                     const fileInput = document.getElementById("gamePicker") as HTMLInputElement;
                     const file = fileInput?.files?.[0];
                     if (file) {
-                      var reader = new FileReader();
+                      const reader = new FileReader();
                       reader.readAsText(file, "utf-8");
                       reader.onload = function (evt) {
                         if (evt.target?.result) {
-                          let data = JSON.parse(evt.target.result as string);
+                          const data = JSON.parse(evt.target.result as string);
                           console.debug(data);
 
-                          data.final_round == null ? (data.final_round = gameTemplate.final_round) : null;
-                          data.rounds == null ? (data.rounds = gameTemplate.rounds) : null;
-                          data.final_round_timers == null
-                            ? (data.final_round_timers = gameTemplate.final_round_timers)
-                            : null;
-                          data.settings == null ? (data.settings = gameTemplate.settings) : null;
+                          if (data.final_round == null) {
+                            data.final_round = gameTemplate.final_round
+                          }
+
+                          if (data.rounds == null) {
+                            data.rounds = gameTemplate.rounds
+                          }
+                          if (data.final_round_timers == null) {
+                            data.final_round_timers = gameTemplate.final_round_timers
+                          }
+                          if (data.settings == null) {
+                            data.settings = gameTemplate.settings
+                          }
                           setGame(data);
                         }
                       };
-                      reader.onerror = function (evt) {
+                      reader.onerror = function () {
                         console.error("error reading file");
                       };
                     }
@@ -373,7 +380,7 @@ export default function CreateGame() {
             onClick={() => {
               // ERROR checking
               // @ts-expect-error: checking against a template.
-              let error = validateGameData(game, { t });
+              const error = validateGameData(game, { t });
               if (error.length === 0) {
                 setError("");
                 downloadToFile(JSON.stringify(game), `${t("new-cold-feud")}.json`, "text/json");

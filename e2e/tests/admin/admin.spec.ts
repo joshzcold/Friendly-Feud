@@ -15,7 +15,7 @@ test.beforeEach(async ({ browser }) => {
   adminPage = new AdminPage(host.page);
 });
 
-test("has correct room code", async ({ browser, baseURL }) => {
+test("has correct room code", async ({ baseURL }) => {
   const gamePage = new GamePage(host.page);
   const gameUrl = await adminPage.openGameWindowButton.getAttribute("href");
   await host.page.goto(gameUrl as string);
@@ -23,14 +23,14 @@ test("has correct room code", async ({ browser, baseURL }) => {
   expect(await gamePage.roomCodeText.innerText()).toEqual(s.roomCode);
 });
 
-test("can join game", async ({ browser }) => {
+test("can join game", async () => {
   const player = await s.addPlayer();
   const buzzerPagePlayer = new BuzzerPage(player.page);
   expect(buzzerPagePlayer.titleLogoImg).toBeVisible();
   expect(await buzzerPagePlayer.waitingForHostText.innerText()).toEqual("Waiting for host to start");
 });
 
-test("can pick game", async ({ browser }) => {
+test("can pick game", async () => {
   const player = await s.addPlayer();
   await adminPage.gameSelector.selectOption({ index: 1 });
   await adminPage.startRoundOneButton.click();
@@ -38,7 +38,7 @@ test("can pick game", async ({ browser }) => {
   await expect(buzzerPage.answers[0].unanswered).toBeVisible();
 });
 
-test("can select final round answers", async ({ browser }) => {
+test("can select final round answers", async () => {
   const player = await s.addPlayer();
   const fileChooserPromise = host.page.waitForEvent("filechooser");
   await adminPage.gamePickerFileUpload.click();
@@ -79,7 +79,7 @@ test("can select final round answers", async ({ browser }) => {
   }).toPass({ timeout: 5000 });
 });
 
-test("can hide game board from player", async ({ browser }) => {
+test("can hide game board from player", async () => {
   const player1 = await s.addPlayer();
   const buzzerPage1 = new BuzzerPage(player1.page);
 
@@ -90,7 +90,7 @@ test("can hide game board from player", async ({ browser }) => {
   await expect(buzzerPage1.playerBlindFoldedText).toBeVisible({ timeout: 2000 });
 });
 
-test("can answer final round questions", async ({ browser }) => {
+test("can answer final round questions", async () => {
   const spectator = await s.addPlayer(PlayerType.SPECTATOR);
   const gamePage = new GamePage(spectator.page);
 
@@ -115,7 +115,7 @@ test("can answer final round questions", async ({ browser }) => {
   }).toPass({ timeout: 5000 });
 });
 
-test("quit button should quit game and return to home page", async ({ browser }) => {
+test("quit button should quit game and return to home page", async () => {
   await host.page.goto("/");
   await adminPage.quitButton.click();
   await expect(host.page).toHaveURL("/");

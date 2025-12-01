@@ -2,9 +2,9 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
 interface HelpButtonProps {
-  doc: String;
-  textSize?: String;
-  padding?: String;
+  doc: string;
+  textSize?: string;
+  padding?: string;
 }
 
 export default function HelpButton({ doc, textSize, padding }: HelpButtonProps) {

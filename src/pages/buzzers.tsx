@@ -20,7 +20,7 @@ export default function BuzzersPage() {
   const [buzzed, setBuzzed] = useState<boolean>(false);
   const hasRoom = !!roomCode;
 
-  function send(data: any) {
+  function send(data: WSEvent) {
     console.debug("Sending", data);
 
     if (ws.current) {
@@ -34,7 +34,7 @@ export default function BuzzersPage() {
     ws.current = new WebSocket(`wss://${window.location.host}/api/ws`);
     ws.current.onopen = function () {
       console.log("game connected to server");
-      let session = cookieCutter.get("session");
+      const session = cookieCutter.get("session");
       console.debug(session);
       if (session != null && ws.current) {
         ws.current.send(JSON.stringify({ action: "game_window", session: session }));
@@ -42,7 +42,7 @@ export default function BuzzersPage() {
     };
 
     ws.current.onmessage = function (evt) {
-      var received_msg = evt.data;
+      const received_msg = evt.data;
       let json: WSEvent;
       try {
         json = JSON.parse(received_msg);
@@ -51,7 +51,6 @@ export default function BuzzersPage() {
         return;
       }
 
-      console.log(json);
       switch (json.action) {
         case WSAction.DATA:
           setGame(json.data);
@@ -77,6 +76,10 @@ export default function BuzzersPage() {
           break;
 
         case WSAction.ERROR:
+          if (!json.code){
+            console.error("Error code is undefined")
+            return
+          }
           setHostPassword("");
           toast.error(t(json.code, { message: json.message }));
           break;
@@ -133,7 +136,7 @@ export default function BuzzersPage() {
             <button
               id="buzzersSubmitButton"
               onClick={() => {
-                send({ action: WSAction.REGISTER_BUZZER_SCREEN.valueOf() });
+                send({ action: WSAction.REGISTER_BUZZER_SCREEN });
               }}
               className="rounded-md bg-primary-200 p-2 text-lg"
             >

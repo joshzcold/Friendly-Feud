@@ -1,11 +1,11 @@
 import { TranslateFunction } from "@/src/types";
-import { Answer, Game, Round } from "@/types/game";
+import { Answer, Game, Round, WSAction, WSEvent } from "@/types/game";
 import { toast } from "sonner";
 
 // HandleJsonFile props type
 interface HandleJsonFileOptions {
   t: TranslateFunction;
-  send: (payload: { action: string; data: any }) => void;
+  send: (payload: WSEvent) => void;
 }
 
 // HandleCsvFile props type
@@ -30,7 +30,7 @@ interface AllowedTypes {
 }
 
 export function handleJsonFile(file: File, { t, send }: HandleJsonFileOptions): void {
-  var reader = new FileReader();
+  const reader = new FileReader();
   reader.readAsText(file, "utf-8");
   reader.onload = function (evt: ProgressEvent<FileReader>) {
     try {
@@ -38,28 +38,28 @@ export function handleJsonFile(file: File, { t, send }: HandleJsonFileOptions): 
         throw new Error("Failed to read file");
       }
 
-      let data = JSON.parse(evt.target.result as string) as Game;
-      let errors = validateGameData(data, { t });
+      const data = JSON.parse(evt.target.result as string) as Game;
+      const errors = validateGameData(data, { t });
 
       if (errors.length > 0) {
         toast.error(t("Game file error") + ":\n" + errors.join("\n"));
         return;
       }
       console.debug(data);
-      send({ action: "load_game", data: data });
+      send({ action: WSAction.LOAD_GAME, data: data });
     } catch (e) {
       console.error("Invalid JSON file", e);
       toast.error(t(`Invalid JSON file: ${e}`));
     }
   };
-  reader.onerror = function (evt: ProgressEvent<FileReader>) {
+  reader.onerror = function (_: ProgressEvent<FileReader>) {
     console.error("error reading file");
     toast.error(t("error reading file"));
   };
 }
 
 export function handleCsvFile(file: File, { t, setCsvFileUpload, setCsvFileUploadText }: HandleCsvFileOptions): void {
-  var reader = new FileReader();
+  const reader = new FileReader();
   reader.readAsText(file, "utf-8");
   reader.onload = function (evt: ProgressEvent<FileReader>) {
     if (!evt.target?.result) {
@@ -67,7 +67,7 @@ export function handleCsvFile(file: File, { t, setCsvFileUpload, setCsvFileUploa
       return;
     }
 
-    let lineCount = (evt.target.result as string).split("\n");
+    const lineCount = (evt.target.result as string).split("\n");
     if (lineCount.length > 30) {
       toast.error(t("This csv file is too large"));
     } else {
@@ -75,14 +75,14 @@ export function handleCsvFile(file: File, { t, setCsvFileUpload, setCsvFileUploa
       setCsvFileUploadText(evt.target.result as string);
     }
   };
-  reader.onerror = function (evt: ProgressEvent<FileReader>) {
+  reader.onerror = function (_: ProgressEvent<FileReader>) {
     console.error("error reading file");
     toast.error(t("error reading file"));
   };
 }
 
 export function validateGameData(game: Game, { t }: ValidateGameDataOptions): string[] {
-  let errors: string[] = [];
+  const errors: string[] = [];
   if (game.rounds.length == 0) {
     errors.push(t("You need to create some rounds to save the game"));
   }

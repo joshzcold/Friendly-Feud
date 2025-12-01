@@ -1,12 +1,12 @@
 import { debounce } from "@/lib/utils";
-import { Game } from "@/types/game";
+import { Game, WSEvent } from "@/types/game";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
 interface FinalRoundTitleChangerProps {
   game: Game;
   setGame: Dispatch<SetStateAction<Game | null>>;
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
 }
 
 export default function FinalRoundTitleChanger({ game, setGame, send }: FinalRoundTitleChangerProps) {

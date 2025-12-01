@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 import { ERROR_CODES } from "@/i18n/errorCodes";
-import { Game } from "@/src/types/game";
+import { Game, WSEvent } from "@/src/types/game";
 import { FileUp } from "lucide-react";
 import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 interface BeforeUploadProps {
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   room: string;
   setGame: Dispatch<SetStateAction<Game | null>>;
   game: Game;
@@ -28,7 +28,7 @@ function BeforeUpload({ send, room, setGame, game, setImageUploaded }: BeforeUpl
           type="file"
           accept="image/png, image/jpeg, image/gif"
           id="logoUpload"
-          onChange={(e) => {
+          onChange={() => {
             const logoUpload = document.getElementById("logoUpload") as HTMLInputElement;
             const file = logoUpload.files?.[0];
             if (file) {
@@ -38,15 +38,15 @@ function BeforeUpload({ send, room, setGame, game, setImageUploaded }: BeforeUpl
                 toast.error(t(ERROR_CODES.IMAGE_TOO_LARGE, { message: "2MB" }));
                 return;
               }
-              var reader = new FileReader();
+              const reader = new FileReader();
               let rawData = new ArrayBuffer(0);
               reader.onload = function (evt) {
                 if (!evt.target || !evt.target.result) return;
 
                 rawData = evt.target.result as ArrayBuffer;
-                var headerarr = new Uint8Array(rawData).subarray(0, 4);
-                var header = "";
-                for (var i = 0; i < headerarr.length; i++) {
+                const headerarr = new Uint8Array(rawData).subarray(0, 4);
+                let header = "";
+                for (let i = 0; i < headerarr.length; i++) {
                   header += headerarr[i].toString(16);
                 }
                 let mimetype = "";
@@ -96,7 +96,7 @@ function BeforeUpload({ send, room, setGame, game, setImageUploaded }: BeforeUpl
 }
 
 interface AfterUploadProps {
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   room: string;
   game: Game;
   setGame: Dispatch<SetStateAction<Game | null>>;
@@ -118,7 +118,7 @@ function AfterUpload({ send, room, game, setGame, setImageUploaded, imageUploade
       <button
         className="rounded-lg border-2 bg-secondary-500 p-1 hover:bg-secondary-700"
         id="deleteLogoButton"
-        onClick={(e) => {
+        onClick={() => {
           send({
             action: "del_logo_upload",
             room: room,
@@ -151,7 +151,7 @@ function AfterUpload({ send, room, game, setGame, setImageUploaded, imageUploade
 }
 
 interface TitleLogoUploadProps {
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   room: string;
   setGame: Dispatch<SetStateAction<Game | null>>;
   game: Game;

@@ -11,7 +11,7 @@ interface CSVRowProps {
 const CSVRow: React.FC<CSVRowProps> = ({ row, roundCounter, noHeader, roundCount, roundFinalCount }) => {
   let rowBackgroundColor = "bg-secondary-500";
   let rowTextColor = "text-foreground";
-  let roundOffSet = noHeader ? -1 : 0;
+  const roundOffSet = noHeader ? -1 : 0;
 
   if (roundCounter === 0 && !noHeader) {
     rowTextColor = "text-secondary-900";

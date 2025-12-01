@@ -1,20 +1,20 @@
-import { Game } from "@/src/types/game";
+import { Game, WSEvent } from "@/src/types/game";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
 interface HideGameQuestionsProps {
   game: Game;
   setGame: Dispatch<SetStateAction<Game | null>>;
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
 }
 
 export default function HideGameQuestions({ game, setGame, send }: HideGameQuestionsProps) {
   const { t } = useTranslation();
 
-  let textColor = game.settings.hide_questions ? "text-foreground" : "text-foreground";
-  let buttonColor = game.settings.hide_questions ? "bg-secondary-500" : "bg-secondary-300";
-  let textContent = game.settings.hide_questions ? t("Show questions") : t("Hide questions");
-  let disabledOpacity = game.is_final_round ? "opacity-50" : "";
+  const textColor = game.settings.hide_questions ? "text-foreground" : "text-foreground";
+  const buttonColor = game.settings.hide_questions ? "bg-secondary-500" : "bg-secondary-300";
+  const textContent = game.settings.hide_questions ? t("Show questions") : t("Hide questions");
+  const disabledOpacity = game.is_final_round ? "opacity-50" : "";
 
   return (
     <button

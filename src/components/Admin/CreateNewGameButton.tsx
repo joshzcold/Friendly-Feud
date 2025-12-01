@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
 export default function CreateNewGameButton() {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   return (
     <Link href="/new" id="createNewGameButton" target="_blank">
       <button className="text-2xl">

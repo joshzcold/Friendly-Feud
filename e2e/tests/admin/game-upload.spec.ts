@@ -14,7 +14,7 @@ test.beforeEach(async ({ browser }) => {
   adminPage = new AdminPage(host.page);
 });
 
-test("can upload json game", async ({ browser }) => {
+test("can upload json game", async () => {
   const player = await s.addPlayer();
 
   await uploadGameFile(PATHS.GAME_JSON);
@@ -28,7 +28,7 @@ test("can upload json game", async ({ browser }) => {
   await expect(adminPage.currentRoundQuestionText).toHaveText("Name Something That People Could Watch For Hours.");
 });
 
-test("can upload csv game", async ({ browser }) => {
+test("can upload csv game", async () => {
   await uploadGameFile(PATHS.GAME_CSV);
 
   expect(adminPage.csv.errorText).not.toBeVisible();

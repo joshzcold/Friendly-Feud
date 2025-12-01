@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
 import AdminPage from "@/components/AdminPage";
@@ -79,9 +79,18 @@ export default function Home() {
       console.debug("game connected to server", ws.current);
       if (ws.current) {
         ws.current.onmessage = function (evt: MessageEvent) {
-          var received_msg = evt.data;
-          let json: WSEvent = JSON.parse(received_msg);
+          const received_msg = evt.data;
+          const json: WSEvent = JSON.parse(received_msg);
           if (json.action === "host_room") {
+            if(
+              json.id === undefined ||
+              json.game === undefined ||
+              json.room === undefined ||
+              json.hostPassword === undefined
+            )  {
+              console.error("Undefined fields in action host_room")
+              return
+            }
             console.debug("registering room with host", json.room);
             setPlayerID(json.id);
             setHost(true);
@@ -90,7 +99,11 @@ export default function Home() {
             setHostPassword(json.hostPassword);
             cookieCutter.set("session", `${json.room}:${json.id}:${json.hostPassword}`);
           } else if (json.action === "join_room") {
-            console.debug("Joining room : ", json);
+            if(json.id === undefined || json.game === undefined || json.room === undefined)  {
+              console.error("Undefined fields in action join_room")
+              return
+            }
+            console.debug("Joining room: ", json);
             setPlayerID(json.id);
             setRegisteredRoomCode(json.room);
             setGame(json.game);
@@ -106,11 +119,20 @@ export default function Home() {
             setHost(false);
           } else if (json.action === "get_back_in") {
             console.debug("Getting back into room", json);
+            if(
+              json.id === undefined ||
+              json.game === undefined ||
+              json.room === undefined ||
+              json.hostPassword === undefined
+            )  {
+              console.error("Undefined fields in action get_back_in")
+              return
+            }
             if (json.host === true) {
               setHost(true);
               setHostPassword(json.hostPassword);
             }
-            if (Number.isInteger(json.team)) {
+            if (json.team !== undefined && Number.isInteger(json.team)) {
               setTeam(json.team);
             }
             setPlayerID(json.id);
@@ -118,6 +140,10 @@ export default function Home() {
             setGame(json.game);
           } else if (json.action === "error") {
             console.error(json);
+            if(!json.code )  {
+              console.error("Undefined fields in action error")
+              return
+            }
             toast.error(t(json.code, { message: json.message }));
             if (json.code === "errors.room_not_found") {
               // Clear stale session data so that the user isn't continuously reconnected using an invalid session
@@ -189,7 +215,7 @@ export default function Home() {
    * the game object
    */
   useEffect(() => {
-    let session = cookieCutter.get("session");
+    const session = cookieCutter.get("session");
     console.debug("user session", session);
     if (session != "" && session != null) {
       send(JSON.stringify({ action: "get_back_in", session: session }));
@@ -248,7 +274,7 @@ export default function Home() {
           </div>
         </div>
       );
-    } else if (ws && registeredRoomCode && !host && game) {
+    } else if (ws && registeredRoomCode && !host && game && playerID) {
       return (
         <div className="flex w-full justify-center">
           <div className="flex w-11/12 flex-col space-y-3 pt-5 sm:w-10/12 md:w-3/4 lg:w-1/2">
@@ -259,7 +285,6 @@ export default function Home() {
               id={playerID}
               setGame={setGame}
               room={registeredRoomCode}
-              quitGame={quitGame}
               setTeam={setTeam}
               team={team}
             />

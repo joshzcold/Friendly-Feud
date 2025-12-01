@@ -1,14 +1,15 @@
 import ToolTipIcon from "@/components/ui/tooltip";
 import { ERROR_CODES } from "@/i18n/errorCodes";
 import { handleCsvFile, handleJsonFile, isValidFileType } from "@/lib/utils";
+import { WSEvent } from "@/src/types";
 import { FileUp } from "lucide-react";
-import { Dispatch, RefObject, SetStateAction, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 interface GameLoaderProps {
   gameSelector: string[];
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   setCsvFileUpload: Dispatch<SetStateAction<File | null>>;
   setCsvFileUploadText: Dispatch<SetStateAction<string>>;
 }
@@ -22,7 +23,7 @@ const GameLoader = ({ gameSelector, send, setCsvFileUpload, setCsvFileUploadText
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   function handleGameUpload() {
-    let file = fileInputRef.current?.files?.[0];
+    const file = fileInputRef.current?.files?.[0];
     if (!file) {
       console.error("file object in handleGameUpload is undefined");
       return;

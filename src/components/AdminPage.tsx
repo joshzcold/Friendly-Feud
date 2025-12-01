@@ -39,14 +39,14 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
   const [csvFileUploadText, setCsvFileUploadText] = useState("");
   const refreshCounterRef = useRef(0);
 
-  function send(data: any) {
+  function send(data: WSEvent) {
     console.debug("Sending", data);
     ws.current.send(JSON.stringify({ ...data, room, id: playerId, hostPassword: hostPassword }));
   }
 
   const handleMessage = (evt: MessageEvent) => {
-    var received_msg = evt.data;
-    let json: WSEvent = JSON.parse(received_msg);
+    const received_msg = evt.data;
+    const json: WSEvent = JSON.parse(received_msg);
     if (json.action === "data") {
       setGame(json.data);
     } else if (json.action === "change_lang") {
@@ -56,7 +56,7 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
       } else {
         setGameSelector([]);
       }
-    } else if (json.action === "error") {
+    } else if (json.action === "error" && json.code) {
       console.error(json.code);
       toast.error(t(json.code, { message: json.message }));
     } else if (json.action === "timer_complete") {

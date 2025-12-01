@@ -1,5 +1,4 @@
 import { expect, test } from "@playwright/test";
-import type { Browser } from "@playwright/test";
 import { PlayerType, Setup } from "../lib/Setup.js";
 import { AdminPage } from "../models/AdminPage.js";
 import { GamePage } from "../models/GamePage.js";
@@ -18,28 +17,28 @@ test.beforeAll(async ({ browser }) => {
   await adminPage.gameSelector.selectOption({ index: 1 });
 });
 
-test("can edit title text", async ({ browser }: { browser: Browser }) => {
+test("can edit title text", async () => {
   const gamePage = new GamePage(spectator.page);
 
   await adminPage.titleTextInput.fill("New Game Title");
   await expect(gamePage.titleLogoImg).toContainText("New Game Title");
 });
 
-test("can edit first team name text", async ({ browser }: { browser: Browser }) => {
+test("can edit first team name text", async () => {
   const gamePage = new GamePage(spectator.page);
 
   await adminPage.teamOneNameInput.fill("Alpha");
   await expect(gamePage.getTeamNameByIndex(0)).toHaveText("Alpha");
 });
 
-test("can edit second team name text", async ({ browser }: { browser: Browser }) => {
+test("can edit second team name text", async () => {
   const gamePage = new GamePage(spectator.page);
 
   await adminPage.teamTwoNameInput.fill("Beta");
   await expect(gamePage.getTeamNameByIndex(1)).toHaveText("Beta");
 });
 
-test("can switch themes", async ({ browser }: { browser: Browser }) => {
+test("can switch themes", async () => {
   const themeChanged = spectator.page.waitForFunction(() => document.body.classList.contains("darkTheme"), {
     timeout: 10000,
   });
@@ -48,7 +47,7 @@ test("can switch themes", async ({ browser }: { browser: Browser }) => {
   await expect(spectator.page.locator("body")).toHaveClass("darkTheme bg-background");
 });
 
-test("can hide questions", async ({ browser }: { browser: Browser }) => {
+test("can hide questions", async () => {
   const gamePage = new GamePage(spectator.page);
 
   await adminPage.startRoundOneButton.click();

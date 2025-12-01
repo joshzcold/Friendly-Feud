@@ -1,13 +1,12 @@
 import TitleLogoUpload from "@/components/Admin/TitleLogoUpload";
 import { debounce } from "@/lib/utils";
-import { GameContext } from "@/src/pages";
-import { Game } from "@/types/game";
-import React, { Dispatch, SetStateAction, useContext } from "react";
+import { Game, WSEvent } from "@/types/game";
+import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
 interface TitlesAndLogoSettingsProps {
   game: Game;
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   room: string;
   setGame: Dispatch<SetStateAction<Game | null>>;
   setImageUploaded: Dispatch<SetStateAction<File | null>>;
@@ -106,7 +105,9 @@ export default function TitlesAndLogoSettings({
             onChange={(e) => {
               let number = parseInt(e.target.value);
               console.debug(number);
-              isNaN(number) ? (number = 0) : null;
+              if (isNaN(number)) {
+                number = 0
+              }
               setGame((prevGame) => {
                 if (prevGame === null) {
                   return prevGame;
@@ -174,7 +175,9 @@ export default function TitlesAndLogoSettings({
             className="w-20 rounded border-4 bg-secondary-500 p-1 text-center text-3xl text-foreground placeholder:text-secondary-900"
             onChange={(e) => {
               let number = parseInt(e.target.value);
-              isNaN(number) ? (number = 0) : null;
+              if (isNaN(number)) {
+                number = 0
+              }
 
               setGame((prevGame) => {
                 if (prevGame === null) {

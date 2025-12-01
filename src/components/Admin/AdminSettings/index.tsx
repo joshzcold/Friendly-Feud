@@ -1,6 +1,6 @@
 import "@/i18n/i18n";
 import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
-import { Game } from "@/src/types/game";
+import { Game, WSEvent } from "@/src/types/game";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 import ToolTipIcon from "../../ui/tooltip";
@@ -10,12 +10,12 @@ import FinalRoundTitleChanger from "./FinalRoundTitleChanger";
 interface AdminSettingsProps {
   game: Game;
   setGame: Dispatch<SetStateAction<Game | null>>;
-  send: (data: any) => void;
-  hostPassword: String;
+  send: (data: WSEvent) => void;
+  hostPassword: string;
 }
 
 export default function AdminSettings({ game, setGame, send, hostPassword }: AdminSettingsProps) {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center">
       <div className="grid grid-cols-2 gap-x-48 gap-y-10">

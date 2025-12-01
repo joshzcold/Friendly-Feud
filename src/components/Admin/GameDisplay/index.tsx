@@ -5,7 +5,7 @@ import TitleMusic from "@/components/Admin/GameDisplay/TitleMusic";
 import HideGameQuestions from "@/components/Admin/HideGameQuestions";
 import Players from "@/components/Admin/Players";
 import BuzzerTable from "@/components/BuzzerTable";
-import { Game } from "@/src/types/game";
+import { Game, WSEvent } from "@/src/types/game";
 import Image from "next/image";
 import { Dispatch, RefObject, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,7 +15,7 @@ interface GameDisplayProps {
   setGame: Dispatch<SetStateAction<Game | null>>;
   game: Game;
   room: string;
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   setPointsGiven: Dispatch<SetStateAction<{ state: boolean; color: string; textColor: string }>>;
   pointsGiven: { state: boolean; color: string; textColor: string };
   timerStarted: boolean;
@@ -60,7 +60,7 @@ export default function GameDisplay({
   }
 
   // var put it into function scope
-  var current_round = game.rounds[game.round];
+  const current_round = game.rounds[game.round];
   console.debug("Current round:", current_round);
 
   return (
@@ -211,7 +211,7 @@ export default function GameDisplay({
             id="resetMistakesButton"
             className="grow rounded border-4 bg-secondary-300 p-10 text-2xl text-foreground"
             onClick={() => {
-              for (let team in game.teams) {
+              for (const team in game.teams) {
                 game.teams[team].mistakes = 0;
               }
               // @ts-expect-error: need a better way to update these values

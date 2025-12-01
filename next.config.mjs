@@ -1,4 +1,5 @@
 import createMDX from "@next/mdx";
+import process from "process";
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {

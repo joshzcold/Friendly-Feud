@@ -1,18 +1,18 @@
 import { getTeamDisplayName } from "@/lib/utils";
-import { Game, WSAction } from "@/types/game";
+import { Game, WSAction, WSEvent } from "@/types/game";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 interface HostBuzzerPageProps {
   game: Game | null;
-  send: (data: any) => void;
+  send: (data: WSEvent) => void;
   buzzed: boolean;
 }
 
 export default function HostBuzzersPage({ game, send, buzzed }: HostBuzzerPageProps) {
   const { t } = useTranslation();
   let buzzColors = ["bg-failure-500", "bg-primary-500"];
-  let writingDirection = ["[writing-mode:vertical-lr]", "[writing-mode:vertical-lr] rotate-180"];
+  const writingDirection = ["[writing-mode:vertical-lr]", "[writing-mode:vertical-lr] rotate-180"];
   if (buzzed) {
     buzzColors = ["bg-secondary-900", "bg-secondary-900"];
   }
@@ -23,11 +23,11 @@ export default function HostBuzzersPage({ game, send, buzzed }: HostBuzzerPagePr
         return;
       }
       if (evt.key == "j") {
-        send({ action: WSAction.BUZZER_SCREEN_BUZZ.valueOf(), team: 0 });
+        send({ action: WSAction.BUZZER_SCREEN_BUZZ, team: 0 });
         return;
       }
       if (evt.key == "k") {
-        send({ action: WSAction.BUZZER_SCREEN_BUZZ.valueOf(), team: 1 });
+        send({ action: WSAction.BUZZER_SCREEN_BUZZ, team: 1 });
         return;
       }
       return;
@@ -71,7 +71,7 @@ export default function HostBuzzersPage({ game, send, buzzed }: HostBuzzerPagePr
                 if (buzzed) {
                   return;
                 }
-                send({ action: WSAction.BUZZER_SCREEN_BUZZ.valueOf(), team: i });
+                send({ action: WSAction.BUZZER_SCREEN_BUZZ, team: i });
               }}
             >
               {game ? getTeamDisplayName(game.teams[i].name, i, t) : ""}

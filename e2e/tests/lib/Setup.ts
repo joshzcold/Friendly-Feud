@@ -1,4 +1,4 @@
-import type { Browser, Page } from "@playwright/test";
+import type { Browser, BrowserContext, Page } from "@playwright/test";
 import { AdminPage } from "../models/AdminPage.js";
 import { BuzzerPage } from "../models/BuzzerPage.js";
 import { LoginPage } from "../models/LoginPage.js";
@@ -9,9 +9,17 @@ export enum PlayerType {
   HOST_BUZZER = 3,
 }
 
+
+class Player {
+  context!: BrowserContext;
+  page!: Page;
+  name!: string;
+  team!: number
+}
+
 export class Setup {
   private browser: Browser;
-  private clients: { host: { context: any; page: any }; players: any[] };
+  private clients: { host: { context?: BrowserContext; page?: Page }; players: Player[] };
   private currentTeam: number;
   public roomCode: string | null;
 
@@ -20,24 +28,24 @@ export class Setup {
    */
   constructor(browser: Browser) {
     this.browser = browser;
-    this.clients = {
-      host: { context: null, page: null } as { context: any; page: any },
-      players: [],
-    };
-    // swap team between players
     this.currentTeam = 0;
     this.roomCode = null;
+    this.clients = {
+      host: {
+        context: undefined,
+        page: undefined
+      },
+      players: []
+    }
   }
 
-  async host(): Promise<{ page: Page }> {
+  async host(): Promise<{ context: BrowserContext, page: Page }> {
     const hostContext = await this.browser.newContext();
-    this.clients.host = {
-      context: hostContext,
-      page: await hostContext.newPage(),
-    };
+    this.clients.host.context = hostContext
+    this.clients.host.page = await hostContext.newPage()
     await this.clients.host.page.goto("/", { waitUntil: "domcontentloaded", timeout: 10000 });
     this.roomCode = await this.hostRoom(this.clients.host.page);
-    return this.clients.host;
+    return {context: this.clients.host.context, page: this.clients.host.page};
   }
 
   /**
@@ -70,27 +78,15 @@ export class Setup {
     return newPlayerObj;
   }
 
-  /**
-   * @param {import('playwright').Page} page
-   * @returns {
-   *  roomCode {string}
-   * }
-   */
-  async hostRoom(page: Page) {
+  async hostRoom(page: Page): Promise<string> {
     const loginPage = new LoginPage(page);
     await loginPage.hostRoomButton.click();
-    let adminPage = new AdminPage(page);
-    let roomCode = await adminPage.roomCodeText.innerText();
+    const adminPage = new AdminPage(page);
+    const roomCode = await adminPage.roomCodeText.innerText();
     // Type in lowercase to make sure client/server handles case correctly
     return roomCode;
   }
 
-  /**
-   * @param {import('playwright').Page} page
-   * @param {string} roomCode
-   * @param {int} teamNumber
-   * @param {string} playerName
-   */
   async joinRoom(page: Page, teamNumber: number, playerName: string) {
     const bp = new BuzzerPage(page);
     const loginPage = new LoginPage(page);

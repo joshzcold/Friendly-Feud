@@ -11,57 +11,69 @@ export interface RegisteredPlayer {
   hidden: boolean;
 }
 
-export enum WSAction {
-  ERROR = "error",
-  PING = "ping",
-  GET_BACK_IN = "get_back_in",
-  QUIT = "quit",
-  HOST_ROOM = "host_room",
-  JOIN_ROOM = "join_room",
-  DATA = "data",
-  REVEAL = "reveal",
-  FINAL_REVEAL = "final_reveal",
-  DUPLICATE = "duplicate",
-  FINAL_SUBMIT = "final_submit",
-  FINAL_WRONG = "final_wrong",
-  SET_TIMER = "set_timer",
-  STOP_TIMER = "stop_timer",
-  START_TIMER = "start_timer",
-  CHANGE_LANG = "change_lang",
-  TIMER_COMPLETE = "timer_complete",
-  CLEARBUZZERS = "clearbuzzers",
-  MISTAKE = "mistake",
-  SHOW_MISTAKE = "show_mistake",
-  BUZZED = "buzzed",
-  REGISTERED = "registered",
-  REGISTER_BUZZER_SCREEN = "register_buzzer_screen",
-  BUZZER_SCREEN_BUZZ = "buzzer_screen_buzz",
-}
+export const WSAction = {
+  ERROR: "error",
+  PING: "ping",
+  GET_BACK_IN: "get_back_in",
+  QUIT: "quit",
+  HOST_ROOM: "host_room",
+  JOIN_ROOM: "join_room",
+  DATA: "data",
+  REVEAL: "reveal",
+  FINAL_REVEAL: "final_reveal",
+  DUPLICATE: "duplicate",
+  FINAL_SUBMIT: "final_submit",
+  FINAL_WRONG: "final_wrong",
+  SET_TIMER: "set_timer",
+  STOP_TIMER: "stop_timer",
+  START_TIMER: "start_timer",
+  CHANGE_LANG: "change_lang",
+  TIMER_COMPLETE: "timer_complete",
+  CLEARBUZZERS: "clearbuzzers",
+  MISTAKE: "mistake",
+  SHOW_MISTAKE: "show_mistake",
+  BUZZED: "buzzed",
+  REGISTERED: "registered",
+  REGISTER_BUZZER_SCREEN: "register_buzzer_screen",
+  BUZZER_SCREEN_BUZZ: "buzzer_screen_buzz",
+  LOAD_GAME: "load_game",
+  LOGO_UPLOAD: "logo_upload",
+  DEL_LOGO_UPLOAD: "del_logo_upload",
+  PONG: "pong",
+  BUZZ: "buzz",
+  REGISTER_BUZZ: "registerbuzz",
+  REGISTER_SPECTATOR: "registerspectator",
+} as const
+
+type WSActionKey = keyof typeof WSAction
+type WSActionValue = (typeof WSAction)[WSActionKey]
 
 export interface WSEvent {
-  action: WSAction;
-  message: string;
-  file: string;
+  action: WSActionValue;
+  message?: string;
+  file?: string;
+  lang?: string;
   // TODO: current data and game can mean the same thing to
   // different actions. This would be good to cleanup.
-  data: any;
-  game: any;
-  logoData: string;
-  room: string;
-  name: string;
-  host: boolean;
-  id: string;
-  hostPassword: string;
-  session: string;
-  team: number;
-  mimetype: string;
+
+  data?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  game?: Game;
+  logoData?: string;
+  room?: string;
+  name?: string;
+  host?: boolean;
+  id?: string;
+  hostPassword?: string;
+  session?: string;
+  team?: number;
+  mimetype?: string;
 
   // on WSAction.CHANGE_LANG we get a list of game files back
   // from the server to select for the user.
-  games: string[];
+  games?: string[];
 
   // Error code
-  code: string;
+  code?: string;
 }
 
 export interface Buzzed {
