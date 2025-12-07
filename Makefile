@@ -49,7 +49,7 @@ dev: build-dev
 	docker compose -p famf -f ./docker/docker-compose-dev.yaml up
 
 dev-background: build-dev
-	docker compose -p famf -f ./docker/docker-compose-dev.yaml up -d --wait --wait-timeout 240 || {
+	docker compose -p famf -f ./docker/docker-compose-dev.yaml up -d --wait --wait-timeout 120 || {
 		docker compose -p famf logs
 		exit 1
 	}
