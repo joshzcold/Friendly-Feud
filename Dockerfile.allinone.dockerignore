@@ -8,7 +8,7 @@
 !jsconfig.json
 !tsconfig.json
 !LICENSE
-!next.config.js
+!next.config.mjs
 !package-lock.json
 !package.json
 !postcss.config.js

@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 const withMDX = createMDX({
-  extension: /\.(md|mdx)$/,
+  extension: /\.mdx?$/,
 });
 
 // Merge MDX config with Next.js config
