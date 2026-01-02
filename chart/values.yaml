@@ -4,7 +4,7 @@ backend:
   repository: ghcr.io/joshzcold/famf-server
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "1.1.1-joshua-test.4"
   securityContext: {}
   # capabilities:
   #   drop:
@@ -38,7 +38,7 @@ frontend:
   repository: ghcr.io/joshzcold/famf-web
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "1.1.1-joshua-test.4"
   securityContext: {}
   # capabilities:
   #   drop:
