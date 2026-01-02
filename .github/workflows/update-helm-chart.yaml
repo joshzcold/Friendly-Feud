@@ -19,17 +19,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Update Image Version in the related HelmChart values.yaml
-        uses: fjogeleit/yaml-update-action@main
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Update values file
+        run: |
+          ./scripts/kubernetes/update-helm.py --tag "${{ github.ref_name }}"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
         with:
-          valueFile: 'chart/values.yaml'
-          changes: |
-            {
-              "backend.tag": "${{ github.ref_name }}",
-              "frontend.tag": "${{ github.ref_name }}"
-            }
-          branch: deployment/${{ github.ref_name }}
-          targetBranch: master
-          createPR: true
-          message: 'Update Image Version to ${{ github.ref_name }}'
           token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Update Chart Image Version to ${{ github.ref_name }}
+          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: deployment/${{ github.ref_name }}
+          delete-branch: true
+          title: 'Update Chart Image Version to ${{ github.ref_name }}'
+          body: ""
+          labels: |
+            deployment
+          assignees: joshzcold
+          reviewers: joshzcold
+          draft: false
