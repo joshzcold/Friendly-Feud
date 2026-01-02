@@ -35,6 +35,7 @@ jobs:
           author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
           signoff: false
           branch: deployment/${{ github.ref_name }}
+          base: master
           delete-branch: true
           title: 'Update Chart Image Version to ${{ github.ref_name }}'
           body: ""
