@@ -1,98 +1,39 @@
 replicaCount: 1
-
 backend:
   repository: ghcr.io/joshzcold/famf-server
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: 1.1.1-joshua-test.2
   securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
   resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
   service:
     type: ClusterIP
     port: 8080
   volumeMounts: {}
-  # NOTE Example: Sqlite store instead of default memory store
-  # volumeMounts:
-  #   - name: famf-data
-  #     mountPath: /data
   env: {}
-  # NOTE Example: Sqlite store instead of default memory store
-  # env:
-  #   - name: GAME_STORE
-  #     value: "sqlite"
-  #   - name: GAME_STORE_SQLITE_PATH
-  #     value: "/data/famf.db"
 frontend:
   repository: ghcr.io/joshzcold/famf-web
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: 1.1.1-joshua-test.2
   securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
   service:
     type: ClusterIP
     port: 3000
   volumeMounts: {}
-  # WARNING: env vars are available to the browser, don't but in secrets.
   env: {}
-  # env:
-  #   # NOTE display the "join at" url to the players on the game window
-  #   - name: NEXT_PUBLIC_TITLE_URL
-  #     value: "famf.app"
-  #   - name: NEXT_PUBLIC_MAX_IMAGE_UPLOAD_SIZE_MB
-  #     value: "2"
-  #   - name: NEXT_PUBLIC_MAX_CSV_UPLOAD_SIZE_MB
-  #     value: "2"
-
 volumes: {}
-# Example: Sqlite store
-# volumes:
-#   - name: famf-data
-#     hostPath:
-#       path: /var/lib/famf/
-#       type: Directory
-
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-
+nameOverride: ''
+fullnameOverride: ''
 podAnnotations: {}
-
 podSecurityContext: {}
-
 ingress:
   enabled: true
-  className: ""
+  className: ''
   annotations: {}
-  # kubernetes.io/ingress.class: nginx
-  # kubernetes.io/tls-acme: "true"
   hosts:
     - host: www.famf.app
     - host: famf.app
   tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
 nodeSelector: {}
-
 tolerations: []
-
 affinity: {}
