@@ -1,0 +1,35 @@
+name: Create and publish a Docker image
+on:
+  push:
+    tags: ["*"]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  update-helm-chart:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update Image Version in the related HelmChart values.yaml
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'chart/values.yaml'
+          changes: |
+            {
+              "backend.tag": "${{ github.ref_name }}",
+              "frontend.tag": "${{ github.ref_name }}"
+            }
+          branch: deployment/${{ github.ref_name }}
+          targetBranch: master
+          createPR: true
+          message: 'Update Image Version to ${{ github.ref_name }}'
+          token: ${{ secrets.GITHUB_TOKEN }}
