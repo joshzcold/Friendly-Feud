@@ -261,15 +261,14 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
                 ) : (
                   <div>
                     {game.settings.logo_url ? (
-                      <div className="flex justify-center">
+                      <div className="relative mx-auto w-full" style={{ maxHeight: "30vh", aspectRatio: "16/9" }}>
                         <Image
-                          width={300}
-                          height={300}
+                          fill
                           style={{ objectFit: "contain" }}
                           src={`${game.settings.logo_url}?v=${Date.now()}`}
                           alt="Game logo"
-                          priority // Load image immediately
-                          unoptimized // Skip caching
+                          priority
+                          unoptimized
                         />
                       </div>
                     ) : (
@@ -288,16 +287,15 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
             <div>
               <div className="flex flex-col space-y-6 py-12">
                 {game.settings.logo_url ? (
-                  <div className="mx-auto w-full max-w-md">
+                  <div className="relative mx-auto w-full max-w-md" style={{ maxHeight: "30vh", aspectRatio: "16/9" }}>
                     <Image
                       id="titleLogoUserUploaded"
-                      width={300}
-                      height={300}
+                      fill
                       style={{ objectFit: "contain" }}
                       src={`${game.settings.logo_url}?v=${Date.now()}`}
                       alt="Game logo"
-                      priority // Load image immediately
-                      unoptimized // Skip caching
+                      priority
+                      unoptimized
                     />
                   </div>
                 ) : (
