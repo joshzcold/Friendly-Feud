@@ -13,6 +13,7 @@ type avatar struct {
 	Hat  int `json:"hat"`
 	Hair int `json:"hair"`
 	Face int `json:"face"`
+	Skin int `json:"skin"`
 	Body int `json:"body"`
 }
 

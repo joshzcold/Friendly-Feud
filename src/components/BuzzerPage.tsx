@@ -36,7 +36,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
   const [timer, setTimer] = useState(0);
   const [showMistake, setShowMistake] = useState(false);
   const [showAvatarEditor, setShowAvatarEditor] = useState(false);
-  const [playerAvatar, setPlayerAvatar] = useState<Avatar>({ hat: 0, hair: 0, face: 0, body: 0 });
+  const [playerAvatar, setPlayerAvatar] = useState<Avatar>({ hat: -1, hair: -1, face: 0, skin: 13, body: 0 });
   const refreshCounterRef = useRef(0);
 
   const send = function (data: WSEvent) {

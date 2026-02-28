@@ -6,6 +6,7 @@ export interface Avatar {
   hat: number;
   hair: number;
   face: number;
+  skin: number;
   body: number;
 }
 

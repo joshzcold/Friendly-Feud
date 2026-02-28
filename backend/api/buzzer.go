@@ -41,10 +41,11 @@ func RegisterBuzzer(client *Client, event *Event) GameError {
 
 	// Update avatar if provided and validate IDs
 	if event.Avatar != nil {
-		if event.Avatar.Hat >= 0 && event.Avatar.Hat <= 9 &&
-			event.Avatar.Hair >= 0 && event.Avatar.Hair <= 9 &&
+		if event.Avatar.Hat >= -1 && event.Avatar.Hat <= 11 &&
+			event.Avatar.Hair >= -1 && event.Avatar.Hair <= 9 &&
 			event.Avatar.Face >= 0 && event.Avatar.Face <= 9 &&
-			event.Avatar.Body >= 0 && event.Avatar.Body <= 9 {
+			event.Avatar.Skin >= 0 && event.Avatar.Skin <= 14 &&
+			event.Avatar.Body >= 0 && event.Avatar.Body <= 5 {
 			player.Avatar = event.Avatar
 		}
 	}

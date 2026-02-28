@@ -231,9 +231,10 @@ func registerPlayer(room *room, playerName string, client *Client) string {
 		Name: playerName,
 		Team: nil,
 		Avatar: &avatar{
-			Hat:  0,
-			Hair: 0,
+			Hat:  -1,
+			Hair: -1,
 			Face: 0,
+			Skin: 13,
 			Body: 0,
 		},
 	}
