@@ -230,6 +230,12 @@ func registerPlayer(room *room, playerName string, client *Client) string {
 	room.Game.RegisteredPlayers[playerID] = &registeredPlayer{
 		Name: playerName,
 		Team: nil,
+		Avatar: &avatar{
+			Hat:  0,
+			Hair: 0,
+			Face: 0,
+			Body: 0,
+		},
 	}
 	room.registeredClients[playerID] = &RegisteredClient{
 		id:     playerID,

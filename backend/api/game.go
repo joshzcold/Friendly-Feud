@@ -9,6 +9,13 @@ type host struct {
 	ID string `json:"id"`
 }
 
+type avatar struct {
+	Hat  int `json:"hat"`
+	Hair int `json:"hair"`
+	Face int `json:"face"`
+	Body int `json:"body"`
+}
+
 // TODO put any client or goroutine data outside of game data.
 type registeredPlayer struct {
 	Start     time.Time `json:"start"`
@@ -18,6 +25,7 @@ type registeredPlayer struct {
 	Latency float64 `json:"latency"`
 	Name    string  `json:"name"`
 	Hidden  bool    `json:"hidden"`
+	Avatar  *avatar `json:"avatar"`
 }
 
 type buzzed struct {

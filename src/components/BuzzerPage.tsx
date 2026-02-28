@@ -2,13 +2,15 @@ import TitleLogo from "@/components/TitleLogo";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
+import AvatarDisplay from "@/components/AvatarDisplay";
+import AvatarEditor from "@/components/AvatarEditor";
 import FinalPage from "@/components/FinalPage";
 import QuestionBoard from "@/components/QuestionBoard";
 import Round from "@/components/Round";
 import TeamName from "@/components/TeamName";
 import { ERROR_CODES } from "@/i18n/errorCodes";
 import { getTeamDisplayName } from "@/lib/utils";
-import { Game, WSEvent } from "@/types/game";
+import { Avatar, Game, WSEvent } from "@/types/game";
 // @ts-expect-error cookie-cutter is not typed
 import cookieCutter from "cookie-cutter";
 import { EyeOff } from "lucide-react";
@@ -33,6 +35,8 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
   const [buzzed, setBuzzed] = useState(false);
   const [timer, setTimer] = useState(0);
   const [showMistake, setShowMistake] = useState(false);
+  const [showAvatarEditor, setShowAvatarEditor] = useState(false);
+  const [playerAvatar, setPlayerAvatar] = useState<Avatar>({ hat: 0, hair: 0, face: 0, body: 0 });
   const refreshCounterRef = useRef(0);
 
   const send = function (data: WSEvent) {
@@ -226,8 +230,11 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
                       return (
                         <div
                           key={`buzzer-${x.id}-${i}`}
-                          className="text-1xl flex flex-row space-x-2 md:text-2xl lg:text-2xl"
+                          className="text-1xl flex flex-row items-center space-x-2 md:text-2xl lg:text-2xl p-2"
                         >
+                          <div className="flex-shrink-0">
+                            <AvatarDisplay avatar={player?.avatar} size="small" />
+                          </div>
                           <div className="grow">
                             <p id={`buzzedList${i}Name`} className="w-20 truncate text-left text-foreground">
                               {t("number", { count: i + 1 })}. {game.registeredPlayers[x.id].name}
@@ -309,6 +316,19 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
                     {team != null ? getTeamDisplayName(game.teams[team].name, team, t) : t("pick your team")}
                   </h1>
                 </div>
+
+                {/* Avatar Preview */}
+                <div className="flex flex-col items-center space-y-3">
+                  <p className="text-lg text-foreground">{t("Your Avatar")}</p>
+                  <AvatarDisplay avatar={playerAvatar} size="large" />
+                  <button
+                    className="rounded-md bg-secondary-300 px-6 py-2 text-foreground hover:bg-secondary-400 transition-colors"
+                    onClick={() => setShowAvatarEditor(true)}
+                  >
+                    {t("Customize Avatar")}
+                  </button>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     id="joinTeam1"
@@ -343,7 +363,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
                     }`}
                     onClick={() => {
                       if (team != null) {
-                        send({ action: "registerbuzz", team: team });
+                        send({ action: "registerbuzz", team: team, avatar: playerAvatar });
                       }
                     }}
                   >
@@ -351,6 +371,18 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
                   </button>
                 </div>
               </div>
+
+              {/* Avatar Editor Modal */}
+              {showAvatarEditor && (
+                <AvatarEditor
+                  initialAvatar={playerAvatar}
+                  onSave={(avatar) => {
+                    setPlayerAvatar(avatar);
+                    setShowAvatarEditor(false);
+                  }}
+                  onCancel={() => setShowAvatarEditor(false)}
+                />
+              )}
               <div className="py-12">
                 <div className="flex flex-row justify-between">
                   <div className="flex flex-row justify-center">

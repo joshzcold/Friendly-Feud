@@ -38,6 +38,17 @@ func RegisterBuzzer(client *Client, event *Event) GameError {
 	}
 	player.Team = event.Team
 	player.Start = time.Now()
+
+	// Update avatar if provided and validate IDs
+	if event.Avatar != nil {
+		if event.Avatar.Hat >= 0 && event.Avatar.Hat <= 9 &&
+			event.Avatar.Hair >= 0 && event.Avatar.Hair <= 9 &&
+			event.Avatar.Face >= 0 && event.Avatar.Face <= 9 &&
+			event.Avatar.Body >= 0 && event.Avatar.Body <= 9 {
+			player.Avatar = event.Avatar
+		}
+	}
+
 	message, err := NewSendPing(event.ID)
 	if err != nil {
 		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}

@@ -1,7 +1,7 @@
 import RoomCode from "@/components/Title/RoomCode";
 import Team from "@/components/Title/Team";
 import TitleLogo from "@/components/TitleLogo";
-import { Game } from "@/types/game";
+import { Game, RegisteredPlayer } from "@/types/game";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -35,13 +35,16 @@ export default function TitlePage({ game }: TitlePageProps) {
     };
   }, [game.settings.logo_url]);
 
-  function returnTeamMates(team: number) {
-    const players: string[] = [];
+  function returnTeamMates(team: number): Array<{ name: string; player: RegisteredPlayer }> {
+    const players: Array<{ name: string; player: RegisteredPlayer }> = [];
     console.debug(game);
     Object.keys(game.registeredPlayers).forEach((k) => {
       console.debug(k);
       if (game.registeredPlayers[k].team === team) {
-        players.push(game.registeredPlayers[k].name);
+        players.push({
+          name: game.registeredPlayers[k].name,
+          player: game.registeredPlayers[k],
+        });
       }
     });
     console.debug(players);

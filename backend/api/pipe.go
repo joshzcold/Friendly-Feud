@@ -10,18 +10,19 @@ type Event struct {
 	Action string `json:"action"`
 
 	// supplemental fields
-	File         string `json:"file"`
-	Lang         string `json:"lang"`
-	Data         any    `json:"data"`
-	LogoData     string `json:"logoData"`
-	Room         string `json:"room"`
-	Name         string `json:"name"`
-	Host         bool   `json:"host"`
-	ID           string `json:"id"`
-	HostPassword string `json:"hostPassword"`
-	Session      string `json:"session"`
-	Team         *int   `json:"team"`
-	MimeType     string `json:"mimetype"`
+	File         string  `json:"file"`
+	Lang         string  `json:"lang"`
+	Data         any     `json:"data"`
+	LogoData     string  `json:"logoData"`
+	Room         string  `json:"room"`
+	Name         string  `json:"name"`
+	Host         bool    `json:"host"`
+	ID           string  `json:"id"`
+	HostPassword string  `json:"hostPassword"`
+	Session      string  `json:"session"`
+	Team         *int    `json:"team"`
+	MimeType     string  `json:"mimetype"`
+	Avatar       *avatar `json:"avatar"`
 }
 
 type ActionFunc func(*Client, *Event) GameError

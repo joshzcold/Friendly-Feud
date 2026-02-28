@@ -2,6 +2,13 @@ export interface Host {
   id: string;
 }
 
+export interface Avatar {
+  hat: number;
+  hair: number;
+  face: number;
+  body: number;
+}
+
 export interface RegisteredPlayer {
   start: Date;
   latencies: number[];
@@ -9,6 +16,7 @@ export interface RegisteredPlayer {
   latency: number;
   name: string;
   hidden: boolean;
+  avatar?: Avatar;
 }
 
 export const WSAction = {
@@ -43,10 +51,10 @@ export const WSAction = {
   BUZZ: "buzz",
   REGISTER_BUZZ: "registerbuzz",
   REGISTER_SPECTATOR: "registerspectator",
-} as const
+} as const;
 
-type WSActionKey = keyof typeof WSAction
-type WSActionValue = (typeof WSAction)[WSActionKey]
+type WSActionKey = keyof typeof WSAction;
+type WSActionValue = (typeof WSAction)[WSActionKey];
 
 export interface WSEvent {
   action: WSActionValue;
@@ -67,6 +75,7 @@ export interface WSEvent {
   session?: string;
   team?: number;
   mimetype?: string;
+  avatar?: Avatar;
 
   // on WSAction.CHANGE_LANG we get a list of game files back
   // from the server to select for the user.

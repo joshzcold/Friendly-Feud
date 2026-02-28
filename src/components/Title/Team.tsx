@@ -1,6 +1,9 @@
+import AvatarDisplay from "@/components/AvatarDisplay";
+import { RegisteredPlayer } from "@/types/game";
+
 interface TeamProps {
   team: string;
-  players: string[];
+  players: Array<{ name: string; player: RegisteredPlayer }>;
 }
 
 export default function Team({ team, players }: TeamProps) {
@@ -13,8 +16,12 @@ export default function Team({ team, players }: TeamProps) {
         <div className="absolute inset-0 overflow-y-auto">
           <div className="flex flex-row flex-wrap justify-center px-2">
             {players.map((m, index) => (
-              <div key={`${m}-${index}`} className="m-2 w-20 rounded-lg bg-primary-200 p-2 xl:w-28">
-                <p className="truncate font-bold text-foreground">{m}</p>
+              <div
+                key={`${m.name}-${index}`}
+                className="m-2 flex flex-col items-center gap-1 w-20 rounded-lg bg-primary-200 p-2 xl:w-28"
+              >
+                <AvatarDisplay avatar={m.player.avatar} size="small" />
+                <p className="truncate font-bold text-foreground text-xs">{m.name}</p>
               </div>
             ))}
           </div>
