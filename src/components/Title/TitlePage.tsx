@@ -14,17 +14,13 @@ export default function TitlePage({ game }: TitlePageProps) {
 
   useEffect(() => {
     const handleResize = () => {
-      if (game.settings.logo_url) {
-        setTitleSize(70);
-      } else {
-        setTitleSize(
-          window.innerWidth < 640
-            ? 45 // Mobile
-            : window.innerWidth < 1024
-              ? 80 // Tablet
-              : 90 // Desktop and larger
-        );
-      }
+      setTitleSize(
+        window.innerWidth < 640
+          ? 45 // Mobile
+          : window.innerWidth < 1024
+            ? 80 // Tablet
+            : 90 // Desktop and larger
+      );
     };
 
     handleResize();
@@ -33,7 +29,7 @@ export default function TitlePage({ game }: TitlePageProps) {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [game.settings.logo_url]);
+  }, []);
 
   function returnTeamMates(team: number) {
     const players: string[] = [];
@@ -58,17 +54,18 @@ export default function TitlePage({ game }: TitlePageProps) {
         }}
         className="inline-block align-middle"
       >
-        <div className="flex w-full justify-center ">
+        <div className="flex w-full justify-center">
           {game.settings.logo_url ? (
-            <Image
-              width={300}
-              height={300}
-              style={{ objectFit: "contain" }}
-              src={`${game.settings.logo_url}?v=${Date.now()}`}
-              alt="Game logo"
-              priority // Load image immediately
-              unoptimized // Skip caching
-            />
+            <div className="relative mb-6 w-full max-h-[40vh] aspect-[16/9]" >
+              <Image
+                fill
+                style={{ objectFit: "contain" }}
+                src={`${game.settings.logo_url}?v=${Date.now()}`}
+                alt="Game logo"
+                priority
+                unoptimized
+              />
+            </div>
           ) : (
             <TitleLogo insert={game.title_text} />
           )}
