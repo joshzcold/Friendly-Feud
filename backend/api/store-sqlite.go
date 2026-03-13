@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"sync"
+	"time"
 
 	"gorm.io/datatypes"
 	"gorm.io/driver/sqlite"
@@ -39,10 +40,12 @@ func NewSQLiteStore() (*SQLiteStore, GameError) {
 		return &SQLiteStore{}, GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
 	}
 	db.AutoMigrate(&Room{})
-	return &SQLiteStore{
+	s := &SQLiteStore{
 		db:    db,
 		rooms: make(map[string]roomConnections),
-	}, GameError{}
+	}
+	go s.sweepStaleRooms()
+	return s, GameError{}
 }
 
 func (s *SQLiteStore) currentRooms() []string {
@@ -131,6 +134,26 @@ func (s *SQLiteStore) loadLogo(roomCode string) ([]byte, GameError) {
 func (s *SQLiteStore) deleteLogo(roomCode string) GameError {
 	s.db.Model(&Room{}).Where("room_code = ?", roomCode).Update("room_icon", nil)
 	return GameError{}
+}
+
+func (s *SQLiteStore) sweepStaleRooms() {
+	// Clean up stale rooms on startup
+	s.deleteStaleRooms()
+
+	ticker := time.NewTicker(5 * time.Minute)
+	defer ticker.Stop()
+	for range ticker.C {
+		s.deleteStaleRooms()
+	}
+}
+
+func (s *SQLiteStore) deleteStaleRooms() {
+	timeout := time.Duration(cfg.roomTimeoutSeconds) * time.Second
+	cutoff := time.Now().UTC().Add(-timeout)
+	result := s.db.Unscoped().Where("updated_at < ?", cutoff).Delete(&Room{})
+	if result.RowsAffected > 0 {
+		log.Println("Swept", result.RowsAffected, "stale rooms older than", cutoff)
+	}
 }
 
 func (s *SQLiteStore) isHealthy() error {
