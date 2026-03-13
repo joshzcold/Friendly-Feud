@@ -46,12 +46,11 @@ func NewSQLiteStore() (*SQLiteStore, GameError) {
 }
 
 func (s *SQLiteStore) currentRooms() []string {
-	var rooms []Room
-	var roomList []string
-	s.db.Model(&Room{}).Select("room_code").Find(&rooms)
-
-	for _, r := range rooms {
-		roomList = append(roomList, r.RoomCode)
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	roomList := make([]string, 0, len(s.rooms))
+	for code := range s.rooms {
+		roomList = append(roomList, code)
 	}
 	return roomList
 }
