@@ -34,6 +34,7 @@ type settings struct {
 	FinalRoundTitle      any    `json:"final_round_title"`
 	PlayerBuzzerSound    bool   `json:"player_buzzer_sound"`
 	FirstBuzzerSoundOnly bool   `json:"first_buzzer_sound_only"`
+	HideJoinInfo         bool   `json:"hide_join_info"`
 }
 
 type team struct {

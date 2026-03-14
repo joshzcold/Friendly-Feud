@@ -72,17 +72,19 @@ export default function TitlePage({ game }: TitlePageProps) {
         </div>
       </div>
 
-      <div
-        className="grid h-[200px] grid-cols-3 gap-4 2xl:h-[250px]"
-        style={{
-          width: `${titleSize}%`,
-          transition: "width 2s",
-        }}
-      >
-        <Team team={game.teams[0].name} players={returnTeamMates(0)} />
-        <RoomCode code={game.room} />
-        <Team team={game.teams[1].name} players={returnTeamMates(1)} />
-      </div>
+      {!game.settings.hide_join_info && (
+        <div
+          className="grid h-[200px] grid-cols-3 gap-4 2xl:h-[250px]"
+          style={{
+            width: `${titleSize}%`,
+            transition: "width 2s",
+          }}
+        >
+          <Team team={game.teams[0].name} players={returnTeamMates(0)} />
+          <RoomCode code={game.room} />
+          <Team team={game.teams[1].name} players={returnTeamMates(1)} />
+        </div>
+      )}
     </div>
   );
 }

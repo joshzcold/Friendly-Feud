@@ -97,6 +97,7 @@ export interface Settings {
   final_round_title: string | null;
   player_buzzer_sound: boolean;
   first_buzzer_sound_only: boolean;
+  hide_join_info: boolean;
 }
 
 export interface SettingsTheme {

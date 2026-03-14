@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import ToolTipIcon from "../../ui/tooltip";
 import BuzzerSoundSettings from "./BuzzerSoundSettings";
 import FinalRoundTitleChanger from "./FinalRoundTitleChanger";
+import SettingsCheckbox from "./SettingsCheckbox";
 
 interface AdminSettingsProps {
   game: Game;
@@ -22,6 +23,14 @@ export default function AdminSettings({ game, setGame, send, hostPassword }: Adm
         <ThemeSwitcher game={game} setGame={setGame} send={send} />
         <FinalRoundTitleChanger game={game} setGame={setGame} send={send} />
         <BuzzerSoundSettings game={game} setGame={setGame} send={send} />
+        <SettingsCheckbox
+          game={game}
+          setGame={setGame}
+          send={send}
+          label="Hide Join Info"
+          tooltip="Hide the room code and team info on the title screen"
+          settingKey="hide_join_info"
+        />
         <div className="flex flex-row items-center space-x-2">
           <ToolTipIcon message={t("Used when setting up buzzers on an external admin device.")} />
           <p className="text-xl capitalize text-foreground">{t("host password")}:</p>
