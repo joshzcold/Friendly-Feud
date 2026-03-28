@@ -5,6 +5,7 @@ import "@/i18n/i18n";
 import FinalPage from "@/components/FinalPage";
 import QuestionBoard from "@/components/QuestionBoard";
 import Round from "@/components/Round";
+import ScaleToFit from "@/components/ScaleToFit";
 import StrikeOverlay from "@/components/StrikeOverlay";
 import TeamName from "@/components/TeamName";
 import { ERROR_CODES } from "@/i18n/errorCodes";
@@ -159,8 +160,13 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
         {id in game.registeredPlayers && game.registeredPlayers[id].team !== null ? (
           <>
             {!game.title && !game.is_final_round ? (
-              <div className="flex flex-col space-y-5 pt-8">
-                <Round game={game} />
+              <div className="flex flex-col space-y-5">
+                <ScaleToFit>
+                  <div className="flex flex-col items-center gap-3">
+                    <Round game={game} />
+                    <QuestionBoard round={game.rounds[game.round]} />
+                  </div>
+                </ScaleToFit>
 
                 {/* Buzzer Section TODO replace with function*/}
                 <div className="w-full text-center">
@@ -195,12 +201,13 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
                   <p className="p-2 italic text-secondary-900">{t("buzzer is reset between rounds")}</p>
                 </div>
                 {/* END Buzzer Section TODO replace with function*/}
-                <div className="flex min-w-full flex-row justify-between space-x-3">
-                  <TeamName game={game} team={0} />
-                  <TeamName game={game} team={1} />
-                </div>
-                <div className="">
-                  <QuestionBoard round={game.rounds[game.round]} />
+                <div className="flex w-full justify-around">
+                  <div className="w-2/5">
+                    <TeamName game={game} team={0} />
+                  </div>
+                  <div className="w-2/5">
+                    <TeamName game={game} team={1} />
+                  </div>
                 </div>
                 <div className="w-full grow space-y-2 rounded border-4 text-center">
                   <div className="flex flex-col">
