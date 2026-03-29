@@ -162,8 +162,9 @@ export default function GamePage() {
       } else if (json.action === "start_timer") {
         timerInterval = setInterval(() => {
           setTimer((prevTimer) => {
-            if (prevTimer > 0) {
-              return prevTimer - 1;
+            const nextTimer = prevTimer - 1;
+            if (nextTimer > 0) {
+              return nextTimer;
             } else {
               const audio = new Audio("try-again.mp3");
               audio.play();
