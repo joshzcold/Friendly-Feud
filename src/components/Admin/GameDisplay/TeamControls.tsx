@@ -50,6 +50,7 @@ export default function TeamControls({ game, setGame, team, send, setPointsGiven
           send({ action: "data", data: game });
           send({
             action: "mistake",
+            data: game.teams[team].mistakes,
           });
         }}
       >

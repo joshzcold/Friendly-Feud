@@ -33,7 +33,7 @@ export default function TeamName({ team, game }: TeamNameProps) {
       <div id={`team${team}MistakesList`} className="flex flex-row justify-center space-x-2 text-center">
         {Array(game.teams[team].mistakes).fill(
           <div className="shrink">
-            <Image width={139} height={160} src="/x.png" alt="Team Mistake Indicator" />
+            <Image width={139} height={160} src="/x.svg" alt="Team Mistake Indicator" />
           </div>
         )}
       </div>

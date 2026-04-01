@@ -2,13 +2,13 @@ import BuzzerPopup from "@/components/BuzzerPopup";
 import FinalPage from "@/components/FinalPage";
 import QuestionBoard from "@/components/QuestionBoard";
 import Round from "@/components/Round";
+import StrikeOverlay from "@/components/StrikeOverlay";
 import TeamName from "@/components/TeamName";
 import TitlePage from "@/components/Title/TitlePage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
 import { BuzzedState, Game, WSEvent } from "@/types/game";
 // @ts-expect-error: not sure if cookie-cutter is typed
 import cookieCutter from "cookie-cutter";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -20,12 +20,13 @@ export default function GamePage() {
   const { i18n, t } = useTranslation();
   const [game, setGame] = useState<Game | null>(null);
   const [timer, setTimer] = useState(0);
-  const [showMistake, setShowMistake] = useState(false);
+  const [showMistake, setShowMistake] = useState<number | null>(null);
   const [isHost, setIsHost] = useState(false);
   const [buzzed, setBuzzed] = useState<BuzzedState>({});
   const ws = useRef<WebSocket | null>(null);
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const refreshCounterRef = useRef(0);
+  const mistakeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (game?.is_final_round && game.final_round_timers) {
@@ -131,10 +132,11 @@ export default function GamePage() {
       } else if (json.action === "mistake" || json.action === "show_mistake") {
         const audio = new Audio("wrong.mp3");
         audio.play();
-        setShowMistake(true);
-        setTimeout(() => {
-          setShowMistake(false);
-        }, 2000);
+        if (mistakeTimeoutRef.current) clearTimeout(mistakeTimeoutRef.current);
+        setShowMistake(typeof json.data === "number" ? json.data : 1);
+        mistakeTimeoutRef.current = setTimeout(() => {
+          setShowMistake(null);
+        }, 1000);
       } else if (json.action === "quit") {
         setGame(null);
         window.close();
@@ -301,19 +303,7 @@ export default function GamePage() {
             </button>
           </div>
         ) : null}
-        <div className="pointer-events-none absolute">
-          <Image
-            id="xImg"
-            width={1000}
-            height={1000}
-            className={`pointer-events-none fixed inset-0 z-50 p-24 ${
-              showMistake ? "opacity-90" : "opacity-0"
-            } transition-opacity duration-300 ease-in-out`}
-            src="/x.png"
-            alt="Mistake indicator"
-            aria-hidden={!showMistake}
-          />
-        </div>
+        <StrikeOverlay count={showMistake} />
         <div className={`${game?.settings?.theme ?? "default"} min-h-screen`}>
           <div className="">{gameSession}</div>
         </div>
