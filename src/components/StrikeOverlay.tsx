@@ -13,7 +13,7 @@ export default function StrikeOverlay({ count }: StrikeOverlayProps) {
 
   return (
     <div
-      className={`pointer-events-none fixed inset-0 z-50 flex items-center justify-center gap-4 ${
+      className={`pointer-events-none fixed inset-0 z-50 flex items-center justify-center gap-[1vw] ${
         visible ? "opacity-100" : "opacity-0"
       } transition-opacity duration-300 ease-in-out`}
       aria-hidden={!visible}
@@ -21,11 +21,11 @@ export default function StrikeOverlay({ count }: StrikeOverlayProps) {
       {Array.from({ length: displayCount.current }, (_, i) => (
         <Image
           key={i}
-          width={200}
-          height={220}
+          width={1000}
+          height={1000}
           src="/x.svg"
           alt="Strike"
-          className="h-[50vh] w-auto"
+          className="h-[50vh] max-w-[30vw] w-auto"
         />
       ))}
     </div>
