@@ -248,6 +248,7 @@ export default function GamePage() {
 
     return () => {
       if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
+      if (mistakeTimeoutRef.current) clearTimeout(mistakeTimeoutRef.current);
       if (timerInterval) clearInterval(timerInterval);
       ws.current?.close();
     };
