@@ -5,6 +5,7 @@ import "@/i18n/i18n";
 import FinalPage from "@/components/FinalPage";
 import QuestionBoard from "@/components/QuestionBoard";
 import Round from "@/components/Round";
+import StrikeOverlay from "@/components/StrikeOverlay";
 import TeamName from "@/components/TeamName";
 import { ERROR_CODES } from "@/i18n/errorCodes";
 import { getTeamDisplayName } from "@/lib/utils";
@@ -32,8 +33,9 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
   const { i18n, t } = useTranslation();
   const [buzzed, setBuzzed] = useState(false);
   const [timer, setTimer] = useState(0);
-  const [showMistake, setShowMistake] = useState(false);
+  const [showMistake, setShowMistake] = useState<number | null>(null);
   const refreshCounterRef = useRef(0);
+  const mistakeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const send = function (data: WSEvent) {
     data.room = room;
@@ -75,12 +77,11 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
       } else if (json.action === "mistake" || json.action === "show_mistake") {
         const audio = new Audio("wrong.mp3");
         audio.play();
-        if (json.action === "mistake" || json.action === "show_mistake") {
-          setShowMistake(true);
-          setTimeout(() => {
-            setShowMistake(false);
-          }, 2000);
-        }
+        if (mistakeTimeoutRef.current) clearTimeout(mistakeTimeoutRef.current);
+        setShowMistake(typeof json.data === "number" ? json.data : 1);
+        mistakeTimeoutRef.current = setTimeout(() => {
+          setShowMistake(null);
+        }, 1000);
       } else if (json.action === "quit") {
         setGame(null);
         setTeam(null);
@@ -126,6 +127,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
 
     return () => {
       clearInterval(retryInterval);
+      if (mistakeTimeoutRef.current) clearTimeout(mistakeTimeoutRef.current);
     };
   }, []);
 
@@ -144,19 +146,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
   if (game.teams != null) {
     return (
       <>
-        <div className="pointer-events-none absolute">
-          <Image
-            id="xImg"
-            width={1000}
-            height={1000}
-            className={`pointer-events-none fixed inset-0 z-50 p-24 ${
-              showMistake ? "opacity-90" : "opacity-0"
-            } transition-opacity duration-300 ease-in-out`}
-            src="/x.png"
-            alt="Mistake indicator"
-            aria-hidden={!showMistake}
-          />
-        </div>
+        <StrikeOverlay count={showMistake} />
         <button
           id="quitButton"
           className="text-1xl z-50 w-24 self-end rounded-lg bg-secondary-900 p-2 font-bold uppercase shadow-md hover:bg-secondary-300"
