@@ -2,6 +2,7 @@ import BuzzerPopup from "@/components/BuzzerPopup";
 import FinalPage from "@/components/FinalPage";
 import QuestionBoard from "@/components/QuestionBoard";
 import Round from "@/components/Round";
+import ScaleToFit from "@/components/ScaleToFit";
 import StrikeOverlay from "@/components/StrikeOverlay";
 import TeamName from "@/components/TeamName";
 import TitlePage from "@/components/Title/TitlePage";
@@ -273,13 +274,17 @@ export default function GamePage() {
         gameSession = <div>Error: Invalid round data</div>;
       } else {
         gameSession = (
-          <div className="flex flex-col space-y-10 px-10 py-20">
-            <Round game={game} />
-            <QuestionBoard round={currentRoundData} />
-            <div className="flex flex-row justify-around">
-              <TeamName game={game} team={0} />
-              <TeamName game={game} team={1} />
-            </div>
+          <div className="h-screen w-screen p-[2vw]">
+            <ScaleToFit contain className="flex h-full w-full items-center justify-center">
+              <div className="flex flex-col items-center gap-3">
+                <Round game={game} />
+                <div className="grid items-center gap-6" style={{ gridTemplateColumns: "192px auto 192px" }}>
+                  <TeamName game={game} team={0} />
+                  <QuestionBoard round={currentRoundData} />
+                  <TeamName game={game} team={1} />
+                </div>
+              </div>
+            </ScaleToFit>
           </div>
         );
       }

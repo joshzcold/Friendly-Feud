@@ -26,3 +26,13 @@
   font-style: bold;
   font-display: swap;
 }
+@font-face {
+  font-family: "Oswald";
+  src: url("/fonts/Oswald/Oswald-Regular.ttf");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+.font-oswald {
+  font-family: "Oswald";
+}
