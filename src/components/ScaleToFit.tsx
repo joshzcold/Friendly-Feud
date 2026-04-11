@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 interface ScaleToFitProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   /** Scale to fit within both axes. When false, scale to fit width only. */
   contain?: boolean;
@@ -21,8 +21,9 @@ export default function ScaleToFit({ children, className = "", contain = false }
     if (!container || !content) return;
 
     const update = () => {
-      // Reset zoom to measure natural dimensions
-      content.style.zoom = "1";
+      // Reset transform so measurements reflect natural content size.
+      content.style.transform = "scale(1)";
+      content.style.transformOrigin = "top left";
 
       const naturalW = content.scrollWidth;
       if (naturalW === 0) return;
@@ -34,15 +35,14 @@ export default function ScaleToFit({ children, className = "", contain = false }
         scale = Math.min(scale, container.clientHeight / naturalH);
       }
 
-      content.style.zoom = String(scale);
+      content.style.transform = `scale(${scale})`;
     };
 
     update();
     const ro = new ResizeObserver(update);
     ro.observe(container);
-    ro.observe(content);
     return () => ro.disconnect();
-  }, [contain]);
+  }, [contain, children]);
 
   return (
     <div ref={containerRef} className={className}>
