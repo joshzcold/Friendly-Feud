@@ -58,6 +58,7 @@
   "Quit": "Quit",
   "room code": "room code",
   "quit": "quit",
+  "Pause": "Pause",
   "play": "play",
   "input your name": "input your name",
   "room code is not correct length, should be 4 characters": "room code is not correct length, should be 4 characters",
@@ -151,6 +152,7 @@
     "missing_input": "Please fill in the {{message}} field",
     "player_not_found": "Player not found in server.",
     "forbidden": "You are not permitted to perform this operation.",
-    "unauthenticated": "Invalid authentication."
+    "unauthenticated": "Invalid authentication.",
+    "title_music_playback_error": "The game window needs a click before audio can start. Click the game window once, then press play again."
   }
 }

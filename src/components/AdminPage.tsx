@@ -7,7 +7,7 @@ import GameDisplay from "@/components/Admin/GameDisplay";
 import RoomSettings from "@/components/Admin/RoomSettings";
 import TitlesAndLogoSettings from "@/components/Admin/TitlesAndLogoSettings";
 import { ERROR_CODES } from "@/i18n/errorCodes";
-import { Game, WSEvent } from "@/types/game";
+import { Game, WSAction, WSEvent } from "@/types/game";
 import { toast } from "sonner";
 import { GameContext } from "../pages";
 
@@ -59,6 +59,8 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
     } else if (json.action === "error" && json.code) {
       console.error(json.code);
       toast.error(t(json.code, { message: json.message }));
+    } else if (json.action === WSAction.TITLE_MUSIC_PLAYBACK_ERROR) {
+      toast.error(t(ERROR_CODES.TITLE_MUSIC_PLAYBACK_ERROR));
     } else if (json.action === "timer_complete") {
       setTimerStarted(false);
       setTimerCompleted(true);

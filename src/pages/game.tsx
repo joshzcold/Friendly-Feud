@@ -7,7 +7,7 @@ import StrikeOverlay from "@/components/StrikeOverlay";
 import TeamName from "@/components/TeamName";
 import TitlePage from "@/components/Title/TitlePage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
-import { BuzzedState, Game, WSEvent } from "@/types/game";
+import { BuzzedState, Game, WSAction, WSEvent } from "@/types/game";
 // @ts-expect-error: not sure if cookie-cutter is typed
 import cookieCutter from "cookie-cutter";
 import { useEffect, useRef, useState } from "react";
@@ -38,6 +38,23 @@ export default function GamePage() {
     }
 
     return titleMusicRef.current;
+  };
+
+  const notifyTitleMusicPlaybackError = () => {
+    const session = cookieCutter.get("session");
+    const [room, id] = session?.split(":") ?? [];
+
+    if (!room || !id || ws.current?.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
+    ws.current.send(
+      JSON.stringify({
+        action: WSAction.TITLE_MUSIC_PLAYBACK_ERROR,
+        room,
+        id,
+      })
+    );
   };
 
   useEffect(() => {
@@ -171,10 +188,14 @@ export default function GamePage() {
         const titleMusic = getTitleMusic();
         titleMusic.play().catch((error) => {
           console.warn("Unable to play title music:", error);
+          toast.error(t(ERROR_CODES.TITLE_MUSIC_PLAYBACK_ERROR));
+          notifyTitleMusicPlaybackError();
         });
       } else if (json.action === "pause_title_music") {
         const titleMusic = getTitleMusic();
         titleMusic.pause();
+      } else if (json.action === WSAction.TITLE_MUSIC_PLAYBACK_ERROR) {
+        console.debug("Title music playback error reported");
       } else if (json.action === "set_timer") {
         setTimer(json.data);
       } else if (json.action === "stop_timer") {
