@@ -32,6 +32,8 @@ export const WSAction = {
   CLEARBUZZERS: "clearbuzzers",
   MISTAKE: "mistake",
   SHOW_MISTAKE: "show_mistake",
+  PLAY_TITLE_MUSIC: "play_title_music",
+  PAUSE_TITLE_MUSIC: "pause_title_music",
   BUZZED: "buzzed",
   REGISTERED: "registered",
   REGISTER_BUZZER_SCREEN: "register_buzzer_screen",

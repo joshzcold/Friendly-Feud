@@ -28,6 +28,17 @@ export default function GamePage() {
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const refreshCounterRef = useRef(0);
   const mistakeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const titleMusicRef = useRef<HTMLAudioElement | null>(null);
+
+  const getTitleMusic = () => {
+    if (!titleMusicRef.current) {
+      const audio = new Audio("title.mp3");
+      audio.loop = true;
+      titleMusicRef.current = audio;
+    }
+
+    return titleMusicRef.current;
+  };
 
   useEffect(() => {
     if (game?.is_final_round && game.final_round_timers) {
@@ -156,6 +167,14 @@ export default function GamePage() {
       } else if (json.action === "final_wrong") {
         const audio = new Audio("try-again.mp3");
         audio.play();
+      } else if (json.action === "play_title_music") {
+        const titleMusic = getTitleMusic();
+        titleMusic.play().catch((error) => {
+          console.warn("Unable to play title music:", error);
+        });
+      } else if (json.action === "pause_title_music") {
+        const titleMusic = getTitleMusic();
+        titleMusic.pause();
       } else if (json.action === "set_timer") {
         setTimer(json.data);
       } else if (json.action === "stop_timer") {
@@ -251,6 +270,9 @@ export default function GamePage() {
       if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
       if (mistakeTimeoutRef.current) clearTimeout(mistakeTimeoutRef.current);
       if (timerInterval) clearInterval(timerInterval);
+      if (titleMusicRef.current) {
+        titleMusicRef.current.pause();
+      }
       ws.current?.close();
     };
   }, []);
