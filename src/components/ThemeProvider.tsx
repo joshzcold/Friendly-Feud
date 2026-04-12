@@ -24,6 +24,7 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
         slate: "slate",
         educational: "educational",
         red: "red",
+        chromaKey: "chromaKey",
       }}
       storageKey="theme"
     >
