@@ -110,8 +110,8 @@ test("can answer final round questions", async () => {
     await adminPage.finalRound.answers[0].submit.click();
 
     await expect(gamePage.finalRound.answers[0][0]).toBeVisible();
-    await expect(gamePage.finalRound.points[1]).toBeVisible();
-    expect(await gamePage.finalRound.points[1].textContent()).toBe(finalRound0PointsValue.toString());
+    await expect(gamePage.finalRound.points[0][0]).toBeVisible();
+    expect(await gamePage.finalRound.points[0][0].textContent()).toBe(finalRound0PointsValue.toString());
   }).toPass({ timeout: 5000 });
 });
 

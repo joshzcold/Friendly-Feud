@@ -7,7 +7,7 @@ class GamePage {
     unanswered: Locator;
   }[];
   finalRound: {
-    points: Locator[];
+    points: Locator[][];
     answers: Locator[][];
   };
   roomCodeText: Locator;
@@ -40,7 +40,10 @@ class GamePage {
     }));
 
     this.finalRound = {
-      points: [page.getByTestId("finalRound0PointsTotalText"), page.getByTestId("finalRound1PointsTotalText")],
+      points: [
+        Array.from({ length: 6 }, (_, i) => page.getByTestId(`finalRound1Answer${i}PointsTotalText`)),
+        Array.from({ length: 6 }, (_, i) => page.getByTestId(`finalRound2Answer${i}PointsTotalText`)),
+      ],
       answers: [
         Array.from({ length: 6 }, (_, i) => page.getByTestId(`finalRound1Answer${i}Text`)),
         Array.from({ length: 6 }, (_, i) => page.getByTestId(`finalRound2Answer${i}Text`)),

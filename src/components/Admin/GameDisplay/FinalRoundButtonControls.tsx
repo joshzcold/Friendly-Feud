@@ -82,20 +82,25 @@ export default function FinalRoundButtonControls({ game, send, setGame }: FinalR
                 return prevGame;
               }
 
-              const newValue = true;
-              const propertyToUpdate = "revealed";
+              const updateRoundOnReveal = (round: (typeof prevGame.final_round)[number], index: number) => {
+                if (index !== i) return round;
+
+                // Legacy compatibility: old state used non-negative selection before award.
+                // Convert to pending form so reveal does not immediately show 0 points.
+                if (round.points === 0 && round.selection >= 0) {
+                  return { ...round, revealed: true, selection: -(round.selection + 1) };
+                }
+
+                return { ...round, revealed: true };
+              };
 
               const updatedGame = {
                 ...prevGame,
                 final_round: prevGame.is_final_second
                   ? prevGame.final_round
-                  : prevGame.final_round.map((round, index) =>
-                      index === i ? { ...round, [propertyToUpdate]: newValue } : round
-                    ),
+                  : prevGame.final_round.map(updateRoundOnReveal),
                 final_round_2: prevGame.is_final_second
-                  ? prevGame.final_round_2.map((round, index) =>
-                      index === i ? { ...round, [propertyToUpdate]: newValue } : round
-                    )
+                  ? prevGame.final_round_2.map(updateRoundOnReveal)
                   : prevGame.final_round_2,
               };
 
@@ -113,7 +118,7 @@ export default function FinalRoundButtonControls({ game, send, setGame }: FinalR
         {/* POINTS AWARDED FINAL ROUND */}
         <select
           id={`finalRoundAnswer${i}Selector`}
-          value={x.selection}
+          value={x.selection >= 0 ? x.selection : -x.selection - 1}
           className="w-48 grow rounded border-4 bg-secondary-300 p-5 text-2xl text-foreground"
           onChange={(e) => {
             const xSelection = parseInt(e.target.value);
@@ -122,7 +127,7 @@ export default function FinalRoundButtonControls({ game, send, setGame }: FinalR
                 return prevGame;
               }
 
-              const newValue = xSelection;
+              const newValue = -(xSelection + 1);
               const propertyToUpdate = "selection";
 
               const updatedGame = {
@@ -157,32 +162,39 @@ export default function FinalRoundButtonControls({ game, send, setGame }: FinalR
           className="grow rounded border-4 bg-secondary-300 p-5 text-2xl text-foreground"
           id={`finalRoundAnswers${i}SubmitButton`}
           onClick={() => {
-            const xPoints = x.selection !== 0 ? x.answers[x.selection - 1][1] : 0;
             setGame((prevGame) => {
               if (prevGame === null) {
                 return prevGame;
               }
 
-              const newValue = xPoints;
-              const propertyToUpdate = "points";
+              const activeRounds = prevGame.is_final_second ? prevGame.final_round_2 : prevGame.final_round;
+              const current = activeRounds[i];
+              if (!current) {
+                return prevGame;
+              }
+
+              const effectiveSelection = current.selection >= 0 ? current.selection : -current.selection - 1;
+              const selectedIndex = effectiveSelection - 1;
+              const selectedAnswer = effectiveSelection !== 0 ? current.answers[selectedIndex] : null;
+              const xPoints = selectedAnswer ? Number(selectedAnswer[1]) || 0 : 0;
 
               const updatedGame = {
                 ...prevGame,
                 final_round: prevGame.is_final_second
                   ? prevGame.final_round
                   : prevGame.final_round.map((round, index) =>
-                      index === i ? { ...round, [propertyToUpdate]: newValue } : round
+                      index === i ? { ...round, points: xPoints, selection: effectiveSelection } : round
                     ),
                 final_round_2: prevGame.is_final_second
                   ? prevGame.final_round_2.map((round, index) =>
-                      index === i ? { ...round, [propertyToUpdate]: newValue } : round
+                      index === i ? { ...round, points: xPoints, selection: effectiveSelection } : round
                     )
                   : prevGame.final_round_2,
               };
 
               send({ action: "data", data: updatedGame });
               send({
-                action: x.selection !== 0 ? "final_submit" : "mistake",
+                action: effectiveSelection !== 0 ? "final_submit" : "mistake",
               });
 
               return updatedGame;
