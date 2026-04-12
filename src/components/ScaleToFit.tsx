@@ -23,7 +23,7 @@ export default function ScaleToFit({ children, className = "", contain = false }
     const update = () => {
       // Reset transform so measurements reflect natural content size.
       content.style.transform = "scale(1)";
-      content.style.transformOrigin = "top left";
+      content.style.transformOrigin = "center center";
 
       const naturalW = content.scrollWidth;
       if (naturalW === 0) return;
