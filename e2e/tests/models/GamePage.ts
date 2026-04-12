@@ -1,5 +1,6 @@
 import { Locator, Page } from "@playwright/test";
 
+//this comment does not change anything
 class GamePage {
   page: Page;
   answers: {
