@@ -36,3 +36,8 @@
 .font-oswald {
   font-family: "Oswald";
 }
+
+body.game-screen.chromaKey,
+.game-screen.chromaKey {
+  background-color: #00ff00 !important;
+}

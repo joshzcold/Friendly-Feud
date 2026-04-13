@@ -37,6 +37,17 @@ export default function GamePage() {
   }, [game?.is_final_round, game?.is_final_second, game?.final_round_timers]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const themeClass = game?.settings?.theme ?? "default";
+    document.body.className = `${themeClass} bg-background game-screen`;
+
+    return () => {
+      document.body.classList.remove("game-screen");
+    };
+  }, [game?.settings?.theme]);
+
+  useEffect(() => {
     ws.current = new WebSocket(`wss://${window.location.host}/api/ws`);
     ws.current.onopen = function () {
       console.log("game connected to server");
@@ -256,6 +267,8 @@ export default function GamePage() {
   }, []);
 
   if (game?.teams != null) {
+    const activeTheme = game?.settings?.theme ?? "default";
+
     let gameSession;
     if (game.title) {
       gameSession = <TitlePage game={game} />;
@@ -290,9 +303,6 @@ export default function GamePage() {
       }
     }
 
-    if (typeof window !== "undefined") {
-      document.body.className = (game?.settings?.theme ?? "default") + " bg-background";
-    }
     return (
       <>
         {!isHost ? (
@@ -310,7 +320,7 @@ export default function GamePage() {
           </div>
         ) : null}
         <StrikeOverlay count={showMistake} />
-        <div className={`${game?.settings?.theme ?? "default"} min-h-screen`}>
+        <div className={`${activeTheme} game-screen min-h-screen bg-background`}>
           <div className="">{gameSession}</div>
         </div>
         <BuzzerPopup buzzed={buzzed} />

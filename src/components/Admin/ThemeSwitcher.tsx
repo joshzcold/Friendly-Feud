@@ -40,6 +40,11 @@ export default function ThemeSwitcher({ game, setGame, send }: ThemeSwitcherProp
       fgcolor: "text-white",
       title: "red",
     },
+    chromaKey: {
+      bgcolor: "#00ff00",
+      fgcolor: "text-black",
+      title: "chroma key",
+    },
   };
 
   const handleThemeChange = (newTheme: string) => {

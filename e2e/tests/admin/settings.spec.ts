@@ -44,7 +44,7 @@ test("can switch themes", async () => {
   });
   await adminPage.themeSwitcherInput.selectOption({ index: 1 });
   await themeChanged;
-  await expect(spectator.page.locator("body")).toHaveClass("darkTheme bg-background");
+  await expect(spectator.page.locator("body")).toHaveClass("darkTheme bg-background game-screen");
 });
 
 test("can hide questions", async () => {
