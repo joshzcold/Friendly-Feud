@@ -61,8 +61,10 @@ e2e: dev-background
 	npm install
 	cd e2e
 	npx playwright test
+	status=$$?
 	cd -
 	$(MAKE) dev-down
+	exit $$status
 
 e2e-ui: dev-background
 	trap 'make dev-down' EXIT
