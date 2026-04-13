@@ -12,8 +12,8 @@ COPY --from=games . /src/games/
 COPY . .
 RUN mkdir -p /.cache/go-build /.cache/go-mod && \
     go mod download
-RUN go build .
-CMD ["air", "--build.cmd", "go build .", "--build.bin", "/src/Cold-Friendly-Feud"]
+RUN mkdir -p /src/tmp && go build -o /src/tmp/main .
+CMD ["air", "--build.cmd", "go build -o /src/tmp/main .", "--build.bin", "/src/tmp/main"]
 
 FROM base AS builder
 ENV CGO_ENABLED=1

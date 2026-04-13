@@ -11,6 +11,7 @@ function ToasterWithTheme({ ...props }) {
     slate: "dark",
     educational: "light",
     red: "dark",
+    chromaKey: "light",
   };
 
   const sonnerTheme = themeMap[theme as keyof typeof themeMap] || "light";
