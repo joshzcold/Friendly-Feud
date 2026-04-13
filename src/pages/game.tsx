@@ -184,14 +184,14 @@ export default function GamePage() {
       } else if (json.action === "final_wrong") {
         const audio = new Audio("try-again.mp3");
         audio.play();
-      } else if (json.action === "play_title_music") {
+      } else if (json.action === WSAction.PLAY_TITLE_MUSIC) {
         const titleMusic = getTitleMusic();
         titleMusic.play().catch((error) => {
           console.warn("Unable to play title music:", error);
           toast.error(t(ERROR_CODES.TITLE_MUSIC_PLAYBACK_ERROR));
           notifyTitleMusicPlaybackError();
         });
-      } else if (json.action === "pause_title_music") {
+      } else if (json.action === WSAction.PAUSE_TITLE_MUSIC) {
         const titleMusic = getTitleMusic();
         titleMusic.pause();
       } else if (json.action === WSAction.TITLE_MUSIC_PLAYBACK_ERROR) {

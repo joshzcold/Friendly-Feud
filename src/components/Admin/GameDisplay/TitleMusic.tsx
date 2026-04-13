@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { WSEvent } from "@/types/game";
+import { WSAction, WSEvent } from "@/types/game";
 
 interface TitleMusicProps {
   send: (data: WSEvent) => void;
@@ -14,14 +14,14 @@ export default function TitleMusic({ send }: TitleMusicProps) {
       <button
         id="playTitleMusicButton"
         className="rounded border-2 bg-secondary-300 px-4 py-2 text-foreground"
-        onClick={() => send({ action: "play_title_music" })}
+        onClick={() => send({ action: WSAction.PLAY_TITLE_MUSIC })}
       >
-        {t("play")}
+        {t("Play")}
       </button>
       <button
         id="pauseTitleMusicButton"
         className="rounded border-2 bg-secondary-300 px-4 py-2 text-foreground"
-        onClick={() => send({ action: "pause_title_music" })}
+        onClick={() => send({ action: WSAction.PAUSE_TITLE_MUSIC })}
       >
         {t("Pause")}
       </button>
