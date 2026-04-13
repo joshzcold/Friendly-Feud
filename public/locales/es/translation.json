@@ -74,6 +74,7 @@
     "Quit": "Dejar",
     "room code": "c\u00f3digo de habitaci\u00f3n",
     "quit": "dejar",
+    "Pause": "Pausar",
     "play": "tocar",
     "No game session. retry from the admin window": "Sin sesi\u00f3n de juego. reintentar desde la ventana de administraci\u00f3n",
     "input your name": "ingrese su nombre",
@@ -125,6 +126,7 @@
         "csv_too_large": "El archivo CSV es demasiado grande",
         "connection_lost": "Se perdió la conexión con el servidor, reintentando en {{message}}s",
         "csv_invalid_format": "Formato CSV inválido",
-        "missing_input": "Por favor complete el campo {{message}}"
+        "missing_input": "Por favor complete el campo {{message}}",
+        "title_music_playback_error": "Haz clic una vez en la ventana del juego para permitir el audio y luego presiona reproducir de nuevo."
     }
 }

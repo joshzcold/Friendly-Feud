@@ -57,6 +57,7 @@
   "Quit": "Keluar",
   "room code": "Kode Room",
   "quit": "keluar",
+  "Pause": "Jeda",
   "play": "Mulai",
   "input your name": "Masukkan nama Anda",
   "room code is not correct length, should be 4 characters": "Kode room tidak sesuai, harus terdiri 4 karakter",
@@ -124,6 +125,7 @@
     "csv_too_large": "File CSV terlalu besar",
     "connection_lost": "Koneksi ke server terputus, mencoba lagi dalam {{message}}s",
     "csv_invalid_format": "Format CSV tidak valid",
-    "missing_input": "Silakan isi kolom {{message}}"
+    "missing_input": "Silakan isi kolom {{message}}",
+    "title_music_playback_error": "Klik jendela game sekali untuk mengaktifkan audio, lalu tekan play lagi."
   }
 }

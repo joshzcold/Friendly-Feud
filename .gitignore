@@ -12,3 +12,4 @@ backend/famf.db
 test-results/
 backend/.cache/
 .vscode
+.DS_Store
