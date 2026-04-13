@@ -35,6 +35,7 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
   const [imageUploaded, setImageUploaded] = useState<File | null>(null);
   const [timerStarted, setTimerStarted] = useState(false);
   const [timerCompleted, setTimerCompleted] = useState(false);
+  const [titleMusicPlaying, setTitleMusicPlaying] = useState(false);
   const [csvFileUpload, setCsvFileUpload] = useState<File | null>(null);
   const [csvFileUploadText, setCsvFileUploadText] = useState("");
   const refreshCounterRef = useRef(0);
@@ -59,7 +60,12 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
     } else if (json.action === "error" && json.code) {
       console.error(json.code);
       toast.error(t(json.code, { message: json.message }));
+    } else if (json.action === WSAction.PLAY_TITLE_MUSIC) {
+      setTitleMusicPlaying(true);
+    } else if (json.action === WSAction.PAUSE_TITLE_MUSIC) {
+      setTitleMusicPlaying(false);
     } else if (json.action === WSAction.TITLE_MUSIC_PLAYBACK_ERROR) {
+      setTitleMusicPlaying(false);
       toast.error(t(ERROR_CODES.TITLE_MUSIC_PLAYBACK_ERROR));
     } else if (json.action === "timer_complete") {
       setTimerStarted(false);
@@ -140,6 +146,8 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
         timerCompleted={timerCompleted}
         setTimerStarted={setTimerStarted}
         setTimerCompleted={setTimerCompleted}
+        titleMusicPlaying={titleMusicPlaying}
+        setTitleMusicPlaying={setTitleMusicPlaying}
       />
       {/* Modal over whole admin page */}
       {csvFileUpload && (

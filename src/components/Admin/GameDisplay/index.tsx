@@ -22,6 +22,8 @@ interface GameDisplayProps {
   timerCompleted: boolean;
   setTimerStarted: (timerStarted: boolean) => void;
   setTimerCompleted: (timerCompleted: boolean) => void;
+  titleMusicPlaying: boolean;
+  setTitleMusicPlaying: (titleMusicPlaying: boolean) => void;
 }
 
 export default function GameDisplay({
@@ -36,6 +38,8 @@ export default function GameDisplay({
   timerCompleted,
   setTimerStarted,
   setTimerCompleted,
+  titleMusicPlaying,
+  setTitleMusicPlaying,
 }: GameDisplayProps) {
   const { t } = useTranslation();
 
@@ -68,7 +72,7 @@ export default function GameDisplay({
       <div className="flex-col space-y-5 p-5">
         <hr />
         <div className="flex flex-row items-baseline justify-evenly">
-          <TitleMusic send={send} />
+          <TitleMusic send={send} isPlaying={titleMusicPlaying} setIsPlaying={setTitleMusicPlaying} />
           {/* CURRENT SCREEN TEXT */}
           <p id="currentScreenText" className="pt-5 text-center text-2xl text-foreground">
             {" "}
