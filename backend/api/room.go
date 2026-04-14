@@ -12,7 +12,7 @@ import (
 const ()
 
 var roomLetterLength = 4
-var roomLetters = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+var roomLetters = []rune("ABCDEFGHJKMNPQRSTUVWXYZ")
 
 var cfg struct {
 	roomTimeoutSeconds int64
@@ -122,7 +122,7 @@ type roomConnections struct {
 }
 
 type room struct {
-	Game *game `json:"game"`
+	Game         *game `json:"game"`
 	HostPassword string
 	// Assign to ws Hub when hosting room
 	roomConnections
