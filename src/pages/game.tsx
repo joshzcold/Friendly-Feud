@@ -7,7 +7,7 @@ import StrikeOverlay from "@/components/StrikeOverlay";
 import TeamName from "@/components/TeamName";
 import TitlePage from "@/components/Title/TitlePage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
-import { BuzzedState, Game, WSEvent } from "@/types/game";
+import { BuzzedState, Game, WSAction, WSEvent } from "@/types/game";
 // @ts-expect-error: not sure if cookie-cutter is typed
 import cookieCutter from "cookie-cutter";
 import { useEffect, useRef, useState } from "react";
@@ -28,6 +28,34 @@ export default function GamePage() {
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const refreshCounterRef = useRef(0);
   const mistakeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const titleMusicRef = useRef<HTMLAudioElement | null>(null);
+
+  const getTitleMusic = () => {
+    if (!titleMusicRef.current) {
+      const audio = new Audio("title.mp3");
+      audio.loop = true;
+      titleMusicRef.current = audio;
+    }
+
+    return titleMusicRef.current;
+  };
+
+  const notifyTitleMusicPlaybackError = () => {
+    const session = cookieCutter.get("session");
+    const [room, id] = session?.split(":") ?? [];
+
+    if (!room || !id || ws.current?.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
+    ws.current.send(
+      JSON.stringify({
+        action: WSAction.TITLE_MUSIC_PLAYBACK_ERROR,
+        room,
+        id,
+      })
+    );
+  };
 
   useEffect(() => {
     if (game?.is_final_round && game.final_round_timers) {
@@ -167,6 +195,18 @@ export default function GamePage() {
       } else if (json.action === "final_wrong") {
         const audio = new Audio("try-again.mp3");
         audio.play();
+      } else if (json.action === WSAction.PLAY_TITLE_MUSIC) {
+        const titleMusic = getTitleMusic();
+        titleMusic.play().catch((error) => {
+          console.warn("Unable to play title music:", error);
+          toast.error(t(ERROR_CODES.TITLE_MUSIC_PLAYBACK_ERROR));
+          notifyTitleMusicPlaybackError();
+        });
+      } else if (json.action === WSAction.PAUSE_TITLE_MUSIC) {
+        const titleMusic = getTitleMusic();
+        titleMusic.pause();
+      } else if (json.action === WSAction.TITLE_MUSIC_PLAYBACK_ERROR) {
+        console.debug("Title music playback error reported");
       } else if (json.action === "set_timer") {
         setTimer(json.data);
       } else if (json.action === "stop_timer") {
@@ -262,6 +302,9 @@ export default function GamePage() {
       if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
       if (mistakeTimeoutRef.current) clearTimeout(mistakeTimeoutRef.current);
       if (timerInterval) clearInterval(timerInterval);
+      if (titleMusicRef.current) {
+        titleMusicRef.current.pause();
+      }
       ws.current?.close();
     };
   }, []);

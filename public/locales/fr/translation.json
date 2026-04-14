@@ -57,6 +57,7 @@
   "Quit": "Quitter",
   "room code": "code de la salle",
   "quit": "quitter",
+  "Pause": "pause",
   "play": "jouer",
   "input your name": "entrez votre nom",
   "room code is not correct length, should be 4 characters": "le code salle est incorrect, il doit comporter 4 lettres",
@@ -124,6 +125,7 @@
     "csv_too_large": "Le fichier CSV est trop volumineux",
     "connection_lost": "La connexion au serveur a été perdue, nouvelle tentative dans {{message}}s",
     "csv_invalid_format": "Format CSV invalide",
-    "missing_input": "Veuillez remplir le champ {{message}}"
+    "missing_input": "Veuillez remplir le champ {{message}}",
+    "title_music_playback_error": "Cliquez une fois sur la fenêtre de jeu pour autoriser le son, puis appuyez de nouveau sur jouer."
   }
 }

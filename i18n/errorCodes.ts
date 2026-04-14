@@ -16,4 +16,5 @@ export const ERROR_CODES = {
   UNABLE_TO_CONNECT: "errors.unable_to_connect",
   PLAYER_NOT_FOUND: "errors.player_not_found",
   UNAUTHENTICATED: "errors.unauthenticated",
+  TITLE_MUSIC_PLAYBACK_ERROR: "errors.title_music_playback_error",
 };
