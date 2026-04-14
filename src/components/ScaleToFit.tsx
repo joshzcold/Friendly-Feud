@@ -21,9 +21,8 @@ export default function ScaleToFit({ children, className = "", contain = false }
     if (!container || !content) return;
 
     const update = () => {
-      // Reset transform so measurements reflect natural content size.
-      content.style.transform = "scale(1)";
-      content.style.transformOrigin = "center center";
+      // Reset zoom to measure natural dimensions
+      content.style.zoom = "1";
 
       const naturalW = content.scrollWidth;
       if (naturalW === 0) return;
@@ -35,14 +34,15 @@ export default function ScaleToFit({ children, className = "", contain = false }
         scale = Math.min(scale, container.clientHeight / naturalH);
       }
 
-      content.style.transform = `scale(${scale})`;
+      content.style.zoom = String(scale);
     };
 
     update();
     const ro = new ResizeObserver(update);
     ro.observe(container);
+    ro.observe(content);
     return () => ro.disconnect();
-  }, [contain, children]);
+  }, [contain]);
 
   return (
     <div ref={containerRef} className={className}>
