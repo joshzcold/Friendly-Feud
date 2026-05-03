@@ -110,7 +110,7 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
         return;
       }
 
-      confetti();
+      confetti({});
       hasConfettiRef.current = true;
     };
 
