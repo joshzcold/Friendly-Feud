@@ -41,3 +41,33 @@ body.game-screen.chromaKey,
 .game-screen.chromaKey {
   background-color: #00ff00 !important;
 }
+
+.final-reveal {
+  display: block;
+  animation: final-swipe-in 240ms ease-out both;
+  will-change: transform, clip-path, opacity;
+}
+
+@keyframes final-swipe-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+    transform: translateX(-10px);
+    opacity: 0.7;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes final-score-pop {
+  from {
+    transform: translateX(-6px) scale(0.98);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}

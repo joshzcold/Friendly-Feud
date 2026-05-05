@@ -1,9 +1,9 @@
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
 import { FinalRound, Game } from "@/types/game";
-import FitText from "@/components/FitText";
 
-const TEXT_SHADOW = "3px 3px 0 black";
+const TEXT_SHADOW = "2px 2px 0 black";
 
 interface AnswersProps {
   round: FinalRound[];
@@ -21,29 +21,33 @@ function Answers({ round, finalRoundNumber }: AnswersProps) {
       }}
     >
       <div
-        className="relative flex min-w-0 grow items-center overflow-hidden border-4 border-white bg-gradient-to-t from-primary-900 via-primary-500 to-primary-700 px-3 uppercase"
+        className="relative flex min-w-0 grow items-center overflow-hidden border-2 bg-black px-4 uppercase"
         style={{ minHeight: 80 }}
       >
         {x.revealed && (
-          <FitText
-            id={`finalRound${finalRoundNumber}Answer${i}Text`}
-            text={x.input}
-            fontSize={54}
-            className="w-full font-bold text-white"
-            style={{
-              textShadow: TEXT_SHADOW,
-            }}
-          />
+          <div
+            className="final-reveal w-full"
+            style={{ animationDelay: `${i * 60}ms` }}
+          >
+            <p
+              id={`finalRound${finalRoundNumber}Answer${i}Text`}
+              className="w-full truncate text-left text-5xl font-bold leading-none text-white"
+              style={{ textShadow: TEXT_SHADOW }}
+            >
+              {x.input}
+            </p>
+          </div>
         )}
       </div>
       <div
-        className="flex w-24 shrink-0 items-center justify-center border-4 border-white bg-gradient-to-t from-primary-700 to-primary-500 font-extrabold uppercase text-white"
+        className="flex w-24 shrink-0 items-center justify-center border-2  bg-black font-extrabold uppercase text-white"
         style={{ textShadow: TEXT_SHADOW }}
       >
         {x.revealed && x.selection >= 0 && (
           <p
             id={`finalRound${finalRoundNumber}Answer${i}PointsTotalText`}
             className="text-5xl leading-none"
+            style={{ animationDelay: `${i * 60 + 80}ms` }}
           >
             {t("number", { count: x.points })}
           </p>
@@ -60,56 +64,119 @@ interface FinalPageProps {
 
 export default function FinalPage({ game, timer }: FinalPageProps) {
   const { t } = useTranslation();
+  const hasConfettiRef = useRef(false);
   const total = [...game.final_round, ...game.final_round_2].reduce((sum, round) => sum + round.points, 0);
   const showFirstRound = !game.hide_first_round;
-  const showSecondRound = game.is_final_second;
+  const showWin = total >= 200;
+  const showConfetti = total > 200;
+
+  const emptyFinalRound: FinalRound =
+    {
+      answers: [],
+      question: "",
+      input: "",
+      selection: 0,
+      points: 0,
+      revealed: false
+    }
+
+  const emptyFinalRounds: FinalRound[] = Array.from(
+    { length: game.final_round.length },
+    () => emptyFinalRound
+  );
+
+  useEffect(() => {
+    if (!showConfetti) {
+      return;
+    }
+
+    if (hasConfettiRef.current) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const runConfetti = async () => {
+      if (typeof window === "undefined") {
+        return;
+      }
+
+      const { default: confetti } = await import("@hiseb/confetti");
+      if (cancelled) {
+        return;
+      }
+
+      confetti({});
+      hasConfettiRef.current = true;
+    };
+
+    void runConfetti();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [showConfetti]);
 
   return (
     <div className="font-oswald flex w-full flex-col items-center gap-5">
-      <div className="my-10 text-center">
-        <p
-          id="finalRoundTitle"
-          className="text-3xl font-bold uppercase text-foreground"
+      <div className="relative w-full max-w-[1060px]">
+        <svg
+          className="absolute inset-x-0 top-4 h-24 w-full text-blue-900"
+          viewBox="0 0 1000 200"
+          preserveAspectRatio="none"
+          aria-hidden="true"
         >
-          {game.settings.final_round_title || t("Fast Money")}
-        </p>
+          <path
+            d="M0,200 L140,200 Q200,200 240,160 L360,40 Q380,20 400,20 L600,20 Q620,20 640,40 L760,160 Q800,200 860,200 L1000,200 Z"
+            fill="currentColor"
+          />
+        </svg>
+        <div className="relative flex items-center top-2 justify-center pt-12 text-center">
+          <p
+            id="finalRoundTitle"
+            className="text-4xl font-bold uppercase text-white"
+          >
+            {game.settings.final_round_title || t("Fast Money")}
+          </p>
+        </div>
       </div>
 
-      <div className="w-full max-w-[1060px] rounded-2xl border-8 border-white bg-black p-4">
-        <div className={`grid gap-3 ${showFirstRound && showSecondRound ? "lg:grid-cols-2" : ""}`}>
-          {showFirstRound && (
+      <div className="relative w-full max-w-[1060px] overflow-hidden rounded-2xl bg-blue-900 px-5 pb-6 pt-8">
+        <div className={`grid gap-4 lg:grid-cols-2`}>
+          {showFirstRound? (
             <div className="grid min-w-0 gap-3 lg:grid-flow-row">
               <Answers finalRoundNumber={1} round={game.final_round} />
             </div>
-          )}
-
-          {showSecondRound && (
+          ) : (
             <div className="grid min-w-0 gap-3 lg:grid-flow-row">
-              <Answers finalRoundNumber={2} round={game.final_round_2} />
+              <Answers finalRoundNumber={1} round={emptyFinalRounds} />
             </div>
-          )}
+            )
+          }
+
+          <div className="grid min-w-0 gap-3 lg:grid-flow-row">
+            <Answers finalRoundNumber={2} round={game.final_round_2} />
+          </div>
+        </div>
+        <div className="mt-6 w-full max-w-[1060px] items-center">
+          <div className="flex h-14 w-56 items-center justify-center justify-self-end rounded-lg border-2 bg-black px-5 py-2 text-white">
+            <p id="finalRoundTotalPointsText" className="text-4xl font-bold uppercase" style={{ textShadow: TEXT_SHADOW }}>
+              {t("total")} {t("number", { count: total })}
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="relative my-3 h-16 w-full max-w-[1060px]">
-        {/* Timer */}
-        <div className="absolute left-1/2 top-1/2 w-fit -translate-x-1/2 -translate-y-1/2 rounded-lg border-4 border-white bg-gradient-to-tr from-primary-900 to-primary-500 px-4 py-2 text-white">
-          <p id="finalRoundTimerLabel" className="text-4xl font-bold uppercase" style={{ textShadow: TEXT_SHADOW }}>
-            {t("timer")} <span id="finalRoundTimerValue">{t("number", { count: timer })}</span>
-          </p>
-        </div>
-
-        {/* Total */}
-        <div className="absolute right-0 top-1/2 w-fit -translate-y-1/2 rounded-lg border-4 border-white bg-gradient-to-tr from-primary-900 to-primary-500 px-4 py-2 text-white">
-          <p id="finalRoundTotalPointsText" className="text-4xl font-bold uppercase" style={{ textShadow: TEXT_SHADOW }}>
-            {t("total")} {t("number", { count: total })}
-          </p>
-        </div>
+      {/* TIMER */}
+      <div className="relative bottom-16 flex h-24 w-24 items-center justify-center justify-self-center rounded-full border-4 bg-blue-900 text-white">
+        <p id="finalRoundTimerLabel" className="text-5xl font-bold uppercase" style={{ textShadow: TEXT_SHADOW }}>
+          <span id="finalRoundTimerValue">{t("number", { count: timer })}</span>
+        </p>
       </div>
 
       {/* WIN TEXT */}
       <div className="text-center">
-        {total >= 200 ? (
+        {showWin ? (
           <p
             id="finalRoundWinText"
             className="text-7xl font-bold uppercase leading-none text-foreground"

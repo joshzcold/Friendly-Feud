@@ -54,8 +54,9 @@ dev-background: build-dev
 		exit 1
 	}
 
+# Teardown and delete cache volumes
 dev-down:
-	docker compose -p famf -f ./docker/docker-compose-dev.yaml down
+	docker compose -p famf -f ./docker/docker-compose-dev.yaml down -v
 
 e2e: dev-background
 	npm install
