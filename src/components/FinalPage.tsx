@@ -22,7 +22,7 @@ function Answers({ round, finalRoundNumber }: AnswersProps) {
       }}
     >
       <div
-        className="relative flex min-w-0 grow items-center overflow-hidden border-2  bg-black px-4 uppercase"
+        className="relative flex min-w-0 grow items-center overflow-hidden border-2 bg-black px-4 uppercase"
         style={{ minHeight: 80 }}
       >
         {x.revealed && (
@@ -30,15 +30,13 @@ function Answers({ round, finalRoundNumber }: AnswersProps) {
             className="final-reveal w-full"
             style={{ animationDelay: `${i * 60}ms` }}
           >
-            <FitText
+            <p
               id={`finalRound${finalRoundNumber}Answer${i}Text`}
-              text={x.input}
-              fontSize={54}
-              className="w-full font-bold text-white"
-              style={{
-                textShadow: TEXT_SHADOW,
-              }}
-            />
+              className="w-full truncate text-left text-5xl font-bold leading-none text-white"
+              style={{ textShadow: TEXT_SHADOW }}
+            >
+              {x.input}
+            </p>
           </div>
         )}
       </div>
@@ -162,8 +160,8 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
             <Answers finalRoundNumber={2} round={game.final_round_2} />
           </div>
         </div>
-        <div className="w-full max-w-[1060px] items-center mt-6">
-          <div className="justify-self-end rounded-lg border-2  bg-black px-5 py-2 text-white">
+        <div className="mt-6 w-full max-w-[1060px] items-center">
+          <div className="flex h-14 w-56 items-center justify-center justify-self-end rounded-lg border-2 bg-black px-5 py-2 text-white">
             <p id="finalRoundTotalPointsText" className="text-4xl font-bold uppercase" style={{ textShadow: TEXT_SHADOW }}>
               {t("total")} {t("number", { count: total })}
             </p>
@@ -172,7 +170,7 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
       </div>
 
       {/* TIMER */}
-      <div className="justify-self-center rounded-full border-4  bg-blue-900 bottom-16 relative px-8 py-4 text-white">
+      <div className="relative bottom-16 flex h-24 w-24 items-center justify-center justify-self-center rounded-full border-4 bg-blue-900 text-white">
         <p id="finalRoundTimerLabel" className="text-5xl font-bold uppercase" style={{ textShadow: TEXT_SHADOW }}>
           <span id="finalRoundTimerValue">{t("number", { count: timer })}</span>
         </p>
