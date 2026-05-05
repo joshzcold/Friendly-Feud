@@ -37,13 +37,12 @@ services:
   proxy:
     image: nginx:1.27-alpine
     ports:
-      - 443:443
+      - 80:80
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ../dev/cert/:/etc/nginx/cert/
     healthcheck:
-      # -k flag allows self-signed certificates in development
-      test: ['CMD', 'curl', '-f', '-k', 'https://localhost:443']
+      test: ['CMD', 'curl', '-f', 'http://localhost:80']
       interval: 5s
       timeout: 3s
       retries: 3

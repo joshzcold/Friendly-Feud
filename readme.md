@@ -1,6 +1,6 @@
 <div align="center">
 <img src="./public/title.png" alt="title logo" width="200"/>
-  
+
 This app is currently available at ➡ https://famf.app
 
 </div>
@@ -36,16 +36,28 @@ Features:
 To run a local instance of the application using the prebuilt "all in one" image.
 
 ```sh
-    sudo docker run -p 443:443 -ti ghcr.io/joshzcold/famf-allinone:latest
+    sudo docker run -p 80:80 -ti ghcr.io/joshzcold/famf-allinone:latest
 ```
 
 go to
 
-https://localhost/
+http://localhost/
 
 Click on the "Host" button to go to the admin console
 
 Players can join your game by entering in the supplied room code.
+
+### HTTPS (optional)
+
+<details>
+Local HTTPS is optional. For most local or LAN setups, HTTP keeps development friction low and avoids self-signed certificate warnings.
+
+If you want HTTPS locally (for example, to mirror production or test secure contexts):
+
+- Run a proxy that listens on `443` with TLS and use `https://localhost/`.
+- You'll need a trusted local certificate (self-signed certs may be blocked by some browsers or mobile devices).
+- WebSockets will automatically use `wss://` when the page is served over HTTPS.
+</details>
 
 ### Screen Share Audio Linux
 
