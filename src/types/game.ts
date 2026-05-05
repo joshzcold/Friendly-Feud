@@ -46,10 +46,10 @@ export const WSAction = {
   BUZZ: "buzz",
   REGISTER_BUZZ: "registerbuzz",
   REGISTER_SPECTATOR: "registerspectator",
-} as const
+} as const;
 
-type WSActionKey = keyof typeof WSAction
-type WSActionValue = (typeof WSAction)[WSActionKey]
+type WSActionKey = keyof typeof WSAction;
+type WSActionValue = (typeof WSAction)[WSActionKey];
 
 export interface WSEvent {
   action: WSActionValue;

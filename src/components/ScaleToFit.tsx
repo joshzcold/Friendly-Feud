@@ -46,10 +46,7 @@ export default function ScaleToFit({ children, className = "", contain = false }
 
   return (
     <div ref={containerRef} className={className}>
-      <div
-        ref={contentRef}
-        style={{ width: "max-content" }}
-      >
+      <div ref={contentRef} style={{ width: "max-content" }}>
         {children}
       </div>
     </div>

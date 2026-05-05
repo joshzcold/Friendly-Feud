@@ -33,7 +33,7 @@
     "lint": "eslint .",
     "fix": "eslint --fix .",
     "test": "",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\" \"e2e/**/*.{js,jsx,ts,tsx,css}\"",
     "prepare": "husky"
   },
   "lint-staged": {

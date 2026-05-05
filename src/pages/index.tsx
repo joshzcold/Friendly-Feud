@@ -82,14 +82,14 @@ export default function Home() {
           const received_msg = evt.data;
           const json: WSEvent = JSON.parse(received_msg);
           if (json.action === "host_room") {
-            if(
+            if (
               json.id === undefined ||
               json.game === undefined ||
               json.room === undefined ||
               json.hostPassword === undefined
-            )  {
-              console.error("Undefined fields in action host_room")
-              return
+            ) {
+              console.error("Undefined fields in action host_room");
+              return;
             }
             console.debug("registering room with host", json.room);
             setPlayerID(json.id);
@@ -99,9 +99,9 @@ export default function Home() {
             setHostPassword(json.hostPassword);
             cookieCutter.set("session", `${json.room}:${json.id}:${json.hostPassword}`);
           } else if (json.action === "join_room") {
-            if(json.id === undefined || json.game === undefined || json.room === undefined)  {
-              console.error("Undefined fields in action join_room")
-              return
+            if (json.id === undefined || json.game === undefined || json.room === undefined) {
+              console.error("Undefined fields in action join_room");
+              return;
             }
             console.debug("Joining room: ", json);
             setPlayerID(json.id);
@@ -119,14 +119,14 @@ export default function Home() {
             setHost(false);
           } else if (json.action === "get_back_in") {
             console.debug("Getting back into room", json);
-            if(
+            if (
               json.id === undefined ||
               json.game === undefined ||
               json.room === undefined ||
               json.hostPassword === undefined
-            )  {
-              console.error("Undefined fields in action get_back_in")
-              return
+            ) {
+              console.error("Undefined fields in action get_back_in");
+              return;
             }
             if (json.host === true) {
               setHost(true);
@@ -140,9 +140,9 @@ export default function Home() {
             setGame(json.game);
           } else if (json.action === "error") {
             console.error(json);
-            if(!json.code )  {
-              console.error("Undefined fields in action error")
-              return
+            if (!json.code) {
+              console.error("Undefined fields in action error");
+              return;
             }
             toast.error(t(json.code, { message: json.message }));
             if (json.code === "errors.room_not_found") {
