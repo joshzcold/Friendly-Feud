@@ -1,4 +1,4 @@
-import { useRef, useEffect, type CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 
 // Controls how aggressively vertical height shrinks when text is compressed horizontally.
 // 0 = no vertical change; 1 = uniform scale.
@@ -50,12 +50,7 @@ export default function FitText({ text, fontSize, className = "", id, style }: F
 
   return (
     <div ref={containerRef} className={`flex items-center justify-center ${className}`}>
-      <h3
-        ref={textRef}
-        id={id}
-        className="whitespace-nowrap leading-none"
-        style={{ fontSize, ...style }}
-      >
+      <h3 ref={textRef} id={id} className="whitespace-nowrap leading-none" style={{ fontSize, ...style }}>
         {text}
       </h3>
     </div>

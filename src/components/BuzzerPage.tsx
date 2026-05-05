@@ -258,7 +258,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
                 ) : (
                   <div>
                     {game.settings.logo_url ? (
-                      <div className="relative mx-auto w-full max-h-[40vh] aspect-[16/9]" >
+                      <div className="relative mx-auto w-full max-h-[40vh] aspect-[16/9]">
                         <Image
                           fill
                           style={{ objectFit: "contain" }}
@@ -284,7 +284,7 @@ export default function BuzzerPage({ ws, game, id, setGame, room, setTeam, team 
             <div>
               <div className="flex flex-col space-y-6 py-12">
                 {game.settings.logo_url ? (
-                  <div className="relative mx-auto w-full max-w-md max-h-[40vh] aspect-[16/9]" >
+                  <div className="relative mx-auto w-full max-w-md max-h-[40vh] aspect-[16/9]">
                     <Image
                       id="titleLogoUserUploaded"
                       fill

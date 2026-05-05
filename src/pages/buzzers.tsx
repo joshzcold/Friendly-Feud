@@ -76,9 +76,9 @@ export default function BuzzersPage() {
           break;
 
         case WSAction.ERROR:
-          if (!json.code){
-            console.error("Error code is undefined")
-            return
+          if (!json.code) {
+            console.error("Error code is undefined");
+            return;
           }
           setHostPassword("");
           toast.error(t(json.code, { message: json.message }));
