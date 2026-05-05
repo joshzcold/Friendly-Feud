@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
 import { FinalRound, Game } from "@/types/game";
-import FitText from "@/components/FitText";
 
 const TEXT_SHADOW = "2px 2px 0 black";
 
@@ -68,7 +67,6 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
   const hasConfettiRef = useRef(false);
   const total = [...game.final_round, ...game.final_round_2].reduce((sum, round) => sum + round.points, 0);
   const showFirstRound = !game.hide_first_round;
-  const showSecondRound = true;
   const showWin = total >= 200;
   const showConfetti = total > 200;
 
