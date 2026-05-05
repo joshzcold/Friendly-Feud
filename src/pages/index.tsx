@@ -11,6 +11,7 @@ import { Game, WSEvent } from "@/types/game";
 // @ts-expect-error: not sure if cookie-cutter is typed
 import cookieCutter from "cookie-cutter";
 import { toast } from "sonner";
+import { getWebSocketUrl } from "@/lib/utils";
 
 interface GameContextType {
   roomCode: string;
@@ -74,7 +75,7 @@ export default function Home() {
   }
 
   function startWsConnection() {
-    ws.current = new WebSocket(`wss://${window.location.host}/api/ws`);
+    ws.current = new WebSocket(getWebSocketUrl());
     ws.current.onopen = function () {
       console.debug("game connected to server", ws.current);
       if (ws.current) {
