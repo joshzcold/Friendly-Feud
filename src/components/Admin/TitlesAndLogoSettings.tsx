@@ -106,7 +106,7 @@ export default function TitlesAndLogoSettings({
               let number = parseInt(e.target.value);
               console.debug(number);
               if (isNaN(number)) {
-                number = 0
+                number = 0;
               }
               setGame((prevGame) => {
                 if (prevGame === null) {
@@ -176,7 +176,7 @@ export default function TitlesAndLogoSettings({
             onChange={(e) => {
               let number = parseInt(e.target.value);
               if (isNaN(number)) {
-                number = 0
+                number = 0;
               }
 
               setGame((prevGame) => {

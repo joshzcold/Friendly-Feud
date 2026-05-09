@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
-import { Round } from "@/types/game";
 import FitText from "@/components/FitText";
+import { Round } from "@/types/game";
 
 interface QuestionBoardProps {
   round: Round;
@@ -16,9 +16,7 @@ const PERSPECTIVE = 800;
 const DEPTH_SCALE = (PERSPECTIVE - FLIP_DEPTH / 2) / PERSPECTIVE;
 
 function EmptySlot() {
-  return (
-    <div className="h-full border-4 border-white bg-gradient-to-t from-primary-700 to-primary-500" />
-  );
+  return <div className="h-full border-4 border-white bg-gradient-to-t from-primary-700 to-primary-500" />;
 }
 
 function UnrevealedFace({ index }: { index: number }) {
@@ -70,10 +68,7 @@ function RevealedFace({ index, ans, pnt }: { index: number; ans: string; pnt: nu
         className="flex shrink-0 items-center justify-center border-l-2 border-primary-900 bg-gradient-to-t from-primary-700 to-primary-500"
         style={{ aspectRatio: "9 / 10", textShadow: TEXT_SHADOW }}
       >
-        <span
-          className="text-[64px] font-bold text-white"
-          id={`answer${index}PointsText`}
-        >
+        <span className="text-[64px] font-bold text-white" id={`answer${index}PointsText`}>
           {t("number", { count: pnt })}
         </span>
       </div>
@@ -113,19 +108,13 @@ function FlipCard({ index, ans, pnt, trig }: { index: number; ans: string; pnt: 
 
 export default function QuestionBoard({ round }: QuestionBoardProps) {
   const slots = Array.from({ length: 8 }, (_, i) =>
-    i < round.answers.length ? { ...round.answers[i], index: i } : null,
+    i < round.answers.length ? { ...round.answers[i], index: i } : null
   );
 
   return (
-    <div
-      className="w-[1060px] aspect-[16/9] rounded-2xl bg-black p-[26px] grid grid-cols-2 grid-rows-4 grid-flow-col gap-x-3 gap-y-6 font-oswald"
-    >
+    <div className="w-[1060px] aspect-[16/9] rounded-2xl bg-black p-[26px] grid grid-cols-2 grid-rows-4 grid-flow-col gap-x-3 gap-y-6 font-oswald">
       {slots.map((slot, i) => (
-        <div
-          key={`qboard-slot-${i}`}
-          className="uppercase"
-          style={{ perspective: PERSPECTIVE }}
-        >
+        <div key={`qboard-slot-${i}`} className="uppercase" style={{ perspective: PERSPECTIVE }}>
           {slot === null ? (
             <EmptySlot />
           ) : (

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
-import { FinalRound, Game } from "@/types/game";
 import FitText from "@/components/FitText";
+import { FinalRound, Game } from "@/types/game";
 
 const TEXT_SHADOW = "3px 3px 0 black";
 
@@ -41,10 +41,7 @@ function Answers({ round, finalRoundNumber }: AnswersProps) {
         style={{ textShadow: TEXT_SHADOW }}
       >
         {x.revealed && x.selection >= 0 && (
-          <p
-            id={`finalRound${finalRoundNumber}Answer${i}PointsTotalText`}
-            className="text-5xl leading-none"
-          >
+          <p id={`finalRound${finalRoundNumber}Answer${i}PointsTotalText`} className="text-5xl leading-none">
             {t("number", { count: x.points })}
           </p>
         )}
@@ -67,10 +64,7 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
   return (
     <div className="font-oswald flex w-full flex-col items-center gap-5">
       <div className="my-10 text-center">
-        <p
-          id="finalRoundTitle"
-          className="text-3xl font-bold uppercase text-foreground"
-        >
+        <p id="finalRoundTitle" className="text-3xl font-bold uppercase text-foreground">
           {game.settings.final_round_title || t("Fast Money")}
         </p>
       </div>
@@ -101,7 +95,11 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
 
         {/* Total */}
         <div className="absolute right-0 top-1/2 w-fit -translate-y-1/2 rounded-lg border-4 border-white bg-gradient-to-tr from-primary-900 to-primary-500 px-4 py-2 text-white">
-          <p id="finalRoundTotalPointsText" className="text-4xl font-bold uppercase" style={{ textShadow: TEXT_SHADOW }}>
+          <p
+            id="finalRoundTotalPointsText"
+            className="text-4xl font-bold uppercase"
+            style={{ textShadow: TEXT_SHADOW }}
+          >
             {t("total")} {t("number", { count: total })}
           </p>
         </div>
@@ -110,10 +108,7 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
       {/* WIN TEXT */}
       <div className="text-center">
         {total >= 200 ? (
-          <p
-            id="finalRoundWinText"
-            className="text-7xl font-bold uppercase leading-none text-foreground"
-          >
+          <p id="finalRoundWinText" className="text-7xl font-bold uppercase leading-none text-foreground">
             {t("win")}
           </p>
         ) : null}

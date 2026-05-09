@@ -56,7 +56,7 @@ export default function TitlePage({ game }: TitlePageProps) {
       >
         <div className="flex w-full justify-center">
           {game.settings.logo_url ? (
-            <div className="relative mb-6 w-full max-h-[40vh] aspect-[16/9]" >
+            <div className="relative mb-6 w-full max-h-[40vh] aspect-[16/9]">
               <Image
                 fill
                 style={{ objectFit: "contain" }}

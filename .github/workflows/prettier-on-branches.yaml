@@ -1,0 +1,24 @@
+name: Prettier Format (Branches)
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+
+jobs:
+  prettier:
+    name: Prettier Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "24"
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci
+      - name: Run prettier on src
+        run: npm run format
+      - name: Verify no formatting changes
+        run: git diff --exit-code
