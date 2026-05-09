@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import "@/i18n/i18n";
-import { Game } from "@/types/game";
 import ScoreMonitor from "@/components/ScoreMonitor";
+import { Game } from "@/types/game";
 
 interface RoundProps {
   game: Game;
@@ -26,10 +26,7 @@ export default function Round({ game }: RoundProps) {
         )}
       </div>
       {game.settings.hide_questions === false && (
-        <p
-          id="roundQuestionText"
-          className="mt-1 max-w-[1060px] text-center text-2xl text-foreground opacity-80"
-        >
+        <p id="roundQuestionText" className="mt-1 max-w-[1060px] text-center text-2xl text-foreground opacity-80">
           {round.question}
         </p>
       )}

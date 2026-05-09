@@ -87,17 +87,17 @@ export default function CreateGame() {
                           console.debug(data);
 
                           if (data.final_round == null) {
-                            data.final_round = gameTemplate.final_round
+                            data.final_round = gameTemplate.final_round;
                           }
 
                           if (data.rounds == null) {
-                            data.rounds = gameTemplate.rounds
+                            data.rounds = gameTemplate.rounds;
                           }
                           if (data.final_round_timers == null) {
-                            data.final_round_timers = gameTemplate.final_round_timers
+                            data.final_round_timers = gameTemplate.final_round_timers;
                           }
                           if (data.settings == null) {
-                            data.settings = gameTemplate.settings
+                            data.settings = gameTemplate.settings;
                           }
                           setGame(data);
                         }

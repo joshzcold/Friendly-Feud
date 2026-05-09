@@ -1,5 +1,6 @@
 import HostBuzzersPage from "@/components/HostBuzzersPage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
+import { getWebSocketUrl } from "@/lib/utils";
 import { Game, WSAction, WSEvent } from "@/types/game";
 // @ts-expect-error: not sure if cookie-cutter is typed
 import cookieCutter from "cookie-cutter";
@@ -31,7 +32,7 @@ export default function BuzzersPage() {
   }
 
   useEffect(() => {
-    ws.current = new WebSocket(`wss://${window.location.host}/api/ws`);
+    ws.current = new WebSocket(getWebSocketUrl());
     ws.current.onopen = function () {
       console.log("game connected to server");
       const session = cookieCutter.get("session");
@@ -76,9 +77,9 @@ export default function BuzzersPage() {
           break;
 
         case WSAction.ERROR:
-          if (!json.code){
-            console.error("Error code is undefined")
-            return
+          if (!json.code) {
+            console.error("Error code is undefined");
+            return;
           }
           setHostPassword("");
           toast.error(t(json.code, { message: json.message }));

@@ -7,6 +7,7 @@ import StrikeOverlay from "@/components/StrikeOverlay";
 import TeamName from "@/components/TeamName";
 import TitlePage from "@/components/Title/TitlePage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
+import { getWebSocketUrl } from "@/lib/utils";
 import { BuzzedState, Game, WSAction, WSEvent } from "@/types/game";
 // @ts-expect-error: not sure if cookie-cutter is typed
 import cookieCutter from "cookie-cutter";
@@ -76,7 +77,7 @@ export default function GamePage() {
   }, [game?.settings?.theme]);
 
   useEffect(() => {
-    ws.current = new WebSocket(`wss://${window.location.host}/api/ws`);
+    ws.current = new WebSocket(getWebSocketUrl());
     ws.current.onopen = function () {
       console.log("game connected to server");
       const session = cookieCutter.get("session");

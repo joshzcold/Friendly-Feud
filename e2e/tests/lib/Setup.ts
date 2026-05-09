@@ -9,12 +9,11 @@ export enum PlayerType {
   HOST_BUZZER = 3,
 }
 
-
 class Player {
   context!: BrowserContext;
   page!: Page;
   name!: string;
-  team!: number
+  team!: number;
 }
 
 export class Setup {
@@ -33,19 +32,19 @@ export class Setup {
     this.clients = {
       host: {
         context: undefined,
-        page: undefined
+        page: undefined,
       },
-      players: []
-    }
+      players: [],
+    };
   }
 
-  async host(): Promise<{ context: BrowserContext, page: Page }> {
+  async host(): Promise<{ context: BrowserContext; page: Page }> {
     const hostContext = await this.browser.newContext();
-    this.clients.host.context = hostContext
-    this.clients.host.page = await hostContext.newPage()
+    this.clients.host.context = hostContext;
+    this.clients.host.page = await hostContext.newPage();
     await this.clients.host.page.goto("/", { waitUntil: "domcontentloaded", timeout: 10000 });
     this.roomCode = await this.hostRoom(this.clients.host.page);
-    return {context: this.clients.host.context, page: this.clients.host.page};
+    return { context: this.clients.host.context, page: this.clients.host.page };
   }
 
   /**

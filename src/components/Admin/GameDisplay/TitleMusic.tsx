@@ -1,5 +1,5 @@
-import { useTranslation } from "react-i18next";
 import { WSAction, WSEvent } from "@/types/game";
+import { useTranslation } from "react-i18next";
 
 interface TitleMusicProps {
   send: (data: WSEvent) => void;

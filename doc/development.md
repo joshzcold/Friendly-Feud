@@ -56,12 +56,15 @@ For Windows users, we recommend using WSL.
 You might need to configure Windows firewall to allow WSL network access:
 ```powershell
 # Add outbound rules
-netsh advfirewall firewall add rule name="WSL2 HTTPS Out" dir=out action=allow protocol=TCP localport=443
+# netsh advfirewall firewall add rule name="WSL2 HTTPS Out" dir=out action=allow protocol=TCP localport=443
 netsh advfirewall firewall add rule name="WSL2 HTTP Out" dir=out action=allow protocol=TCP localport=80
+
 # Add inbound rules
-netsh advfirewall firewall add rule name="WSL2 HTTPS" dir=in action=allow protocol=TCP localport=443
+# netsh advfirewall firewall add rule name="WSL2 HTTPS" dir=in action=allow protocol=TCP localport=443
 netsh advfirewall firewall add rule name="WSL2 HTTP" dir=in action=allow protocol=TCP localport=80
 ```
+
+If you opt into local HTTPS, also allow port 443.
 
 ### Linux Setup
 
@@ -74,7 +77,7 @@ Install dependencies
    ```bash
    make dev
    ```
-4. Access the application at [localhost](https://localhost/)
+4. Access the application at [localhost](http://localhost/)
 
 ## Running development
 The stack consists of:
@@ -89,7 +92,7 @@ The development environment is managed through a Makefile. Key commands include:
 - `make dev-background`: Same as `make dev`, but detaches
 - `make dev-down`: Stops/removes the development stack
 
-Access the application at [localhost/](https://localhost/)
+Access the application at [localhost/](http://localhost/)
 
 The compose files should automatically be selected by the Makefile, but you can:
 - check out the [Linux version](../docker/docker-compose.yaml) if on Linux or Macos

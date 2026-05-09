@@ -25,10 +25,7 @@ function Answers({ round, finalRoundNumber }: AnswersProps) {
         style={{ minHeight: 80 }}
       >
         {x.revealed && (
-          <div
-            className="final-reveal w-full"
-            style={{ animationDelay: `${i * 60}ms` }}
-          >
+          <div className="final-reveal w-full" style={{ animationDelay: `${i * 60}ms` }}>
             <p
               id={`finalRound${finalRoundNumber}Answer${i}Text`}
               className="w-full truncate text-left text-5xl font-bold leading-none text-white"
@@ -70,20 +67,16 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
   const showWin = total >= 200;
   const showConfetti = total > 200;
 
-  const emptyFinalRound: FinalRound =
-    {
-      answers: [],
-      question: "",
-      input: "",
-      selection: 0,
-      points: 0,
-      revealed: false
-    }
+  const emptyFinalRound: FinalRound = {
+    answers: [],
+    question: "",
+    input: "",
+    selection: 0,
+    points: 0,
+    revealed: false,
+  };
 
-  const emptyFinalRounds: FinalRound[] = Array.from(
-    { length: game.final_round.length },
-    () => emptyFinalRound
-  );
+  const emptyFinalRounds: FinalRound[] = Array.from({ length: game.final_round.length }, () => emptyFinalRound);
 
   useEffect(() => {
     if (!showConfetti) {
@@ -132,10 +125,7 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
           />
         </svg>
         <div className="relative flex items-center top-2 justify-center pt-12 text-center">
-          <p
-            id="finalRoundTitle"
-            className="text-4xl font-bold uppercase text-white"
-          >
+          <p id="finalRoundTitle" className="text-4xl font-bold uppercase text-white">
             {game.settings.final_round_title || t("Fast Money")}
           </p>
         </div>
@@ -143,7 +133,7 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
 
       <div className="relative w-full max-w-[1060px] overflow-hidden rounded-2xl bg-blue-900 px-5 pb-6 pt-8">
         <div className={`grid gap-4 lg:grid-cols-2`}>
-          {showFirstRound? (
+          {showFirstRound ? (
             <div className="grid min-w-0 gap-3 lg:grid-flow-row">
               <Answers finalRoundNumber={1} round={game.final_round} />
             </div>
@@ -151,8 +141,7 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
             <div className="grid min-w-0 gap-3 lg:grid-flow-row">
               <Answers finalRoundNumber={1} round={emptyFinalRounds} />
             </div>
-            )
-          }
+          )}
 
           <div className="grid min-w-0 gap-3 lg:grid-flow-row">
             <Answers finalRoundNumber={2} round={game.final_round_2} />
@@ -160,7 +149,11 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
         </div>
         <div className="mt-6 w-full max-w-[1060px] items-center">
           <div className="flex h-14 w-56 items-center justify-center justify-self-end rounded-lg border-2 bg-black px-5 py-2 text-white">
-            <p id="finalRoundTotalPointsText" className="text-4xl font-bold uppercase" style={{ textShadow: TEXT_SHADOW }}>
+            <p
+              id="finalRoundTotalPointsText"
+              className="text-4xl font-bold uppercase"
+              style={{ textShadow: TEXT_SHADOW }}
+            >
               {t("total")} {t("number", { count: total })}
             </p>
           </div>
@@ -177,10 +170,7 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
       {/* WIN TEXT */}
       <div className="text-center">
         {showWin ? (
-          <p
-            id="finalRoundWinText"
-            className="text-7xl font-bold uppercase leading-none text-foreground"
-          >
+          <p id="finalRoundWinText" className="text-7xl font-bold uppercase leading-none text-foreground">
             {t("win")}
           </p>
         ) : null}

@@ -1,11 +1,11 @@
 import CreateNewGameButton from "@/components/Admin/CreateNewGameButton";
 import GameLoader from "@/components/Admin/GameLoader";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { WSEvent } from "@/src/types";
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 import HelpButton from "../HelpButton";
-import { WSEvent } from "@/src/types";
 
 interface RoomSettingsProps {
   room: string;
