@@ -6,6 +6,7 @@ import cookieCutter from "cookie-cutter";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { getWebSocketUrl } from "@/lib/utils";
 import NoSession from "../components/ui/NoSession";
 
 export default function BuzzersPage() {
@@ -31,7 +32,7 @@ export default function BuzzersPage() {
   }
 
   useEffect(() => {
-    ws.current = new WebSocket(`wss://${window.location.host}/api/ws`);
+    ws.current = new WebSocket(getWebSocketUrl());
     ws.current.onopen = function () {
       console.log("game connected to server");
       const session = cookieCutter.get("session");

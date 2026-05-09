@@ -23,7 +23,6 @@ COPY ./games/ /app/games/
 COPY --from=back-end-builder /src/Cold-Friendly-Feud /app/Cold-Friendly-Feud
 COPY --from=front-end-builder /app/node_modules/ /app/node_modules/
 COPY docker/allinone/nginx.conf /etc/nginx/nginx.conf
-COPY dev/cert/ /etc/nginx/cert/
 COPY . /app/
 RUN npm run build
 
