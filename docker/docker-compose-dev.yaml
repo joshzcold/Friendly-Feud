@@ -40,7 +40,6 @@ services:
       - 80:80
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ../dev/cert/:/etc/nginx/cert/
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:80']
       interval: 5s
