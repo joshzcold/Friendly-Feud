@@ -50,6 +50,8 @@ Players can join your game by entering in the supplied room code.
 ### HTTPS (optional)
 
 <details>
+<summary>Enable local HTTPS</summary>
+
 Local HTTPS is optional. For most local or LAN setups, HTTP keeps development friction low and avoids self-signed certificate warnings.
 
 If you want HTTPS locally (for example, to mirror production or test secure contexts):
