@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 export default function NoSession() {
   const { t } = useTranslation();
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center gap-10 text-center  h-1/2">
+    <div className="flex min-h-screen w-full flex-col items-center justify-center gap-10 text-center">
       <p className="text-foreground">{t("No game session. retry from the admin window")}</p>
       <button
         className="m-1 rounded-lg bg-secondary-500 p-2 font-bold uppercase shadow-md hover:bg-secondary-200"
