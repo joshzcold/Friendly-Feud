@@ -54,8 +54,12 @@ dev-background: build-dev
 		exit 1
 	}
 
-# Teardown and delete cache volumes
+# Teardown
 dev-down:
+	docker compose -p famf -f ./docker/docker-compose-dev.yaml down
+
+# Teardown and delete cache volumes. Needed for package.json changes.
+dev-down-clean:
 	docker compose -p famf -f ./docker/docker-compose-dev.yaml down -v
 
 e2e: dev-background

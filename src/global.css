@@ -60,14 +60,3 @@ body.game-screen.chromaKey,
     opacity: 1;
   }
 }
-
-@keyframes final-score-pop {
-  from {
-    transform: translateX(-6px) scale(0.98);
-    opacity: 0.6;
-  }
-  to {
-    transform: translateX(0) scale(1);
-    opacity: 1;
-  }
-}

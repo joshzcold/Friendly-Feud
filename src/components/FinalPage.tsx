@@ -65,7 +65,6 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
   const total = [...game.final_round, ...game.final_round_2].reduce((sum, round) => sum + round.points, 0);
   const showFirstRound = !game.hide_first_round;
   const showWin = total >= 200;
-  const showConfetti = total > 200;
 
   const emptyFinalRound: FinalRound = {
     answers: [],
@@ -79,7 +78,7 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
   const emptyFinalRounds: FinalRound[] = Array.from({ length: game.final_round.length }, () => emptyFinalRound);
 
   useEffect(() => {
-    if (!showConfetti) {
+    if (!showWin) {
       return;
     }
 
@@ -108,7 +107,7 @@ export default function FinalPage({ game, timer }: FinalPageProps) {
     return () => {
       cancelled = true;
     };
-  }, [showConfetti]);
+  }, [showWin]);
 
   return (
     <div className="font-oswald flex w-full flex-col items-center gap-5">
