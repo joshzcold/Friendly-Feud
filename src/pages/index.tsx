@@ -7,11 +7,11 @@ import BuzzerPage from "@/components/BuzzerPage";
 import Footer from "@/components/Login/Footer";
 import LoginPage from "@/components/LoginPage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
+import { getWebSocketUrl } from "@/lib/utils";
 import { Game, WSEvent } from "@/types/game";
 // @ts-expect-error: not sure if cookie-cutter is typed
 import cookieCutter from "cookie-cutter";
 import { toast } from "sonner";
-import { getWebSocketUrl } from "@/lib/utils";
 
 interface GameContextType {
   roomCode: string;

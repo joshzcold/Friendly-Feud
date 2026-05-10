@@ -1,12 +1,12 @@
 import HostBuzzersPage from "@/components/HostBuzzersPage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
+import { getWebSocketUrl } from "@/lib/utils";
 import { Game, WSAction, WSEvent } from "@/types/game";
 // @ts-expect-error: not sure if cookie-cutter is typed
 import cookieCutter from "cookie-cutter";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { getWebSocketUrl } from "@/lib/utils";
 import NoSession from "../components/ui/NoSession";
 
 export default function BuzzersPage() {

@@ -7,13 +7,13 @@ import StrikeOverlay from "@/components/StrikeOverlay";
 import TeamName from "@/components/TeamName";
 import TitlePage from "@/components/Title/TitlePage";
 import { ERROR_CODES } from "@/i18n/errorCodes";
+import { getWebSocketUrl } from "@/lib/utils";
 import { BuzzedState, Game, WSAction, WSEvent } from "@/types/game";
 // @ts-expect-error: not sure if cookie-cutter is typed
 import cookieCutter from "cookie-cutter";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { getWebSocketUrl } from "@/lib/utils";
 import NoSession from "../components/ui/NoSession";
 
 let timerInterval: NodeJS.Timeout | null = null;
