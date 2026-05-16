@@ -30,10 +30,19 @@ export default function GamePage() {
   const refreshCounterRef = useRef(0);
   const mistakeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const titleMusicRef = useRef<HTMLAudioElement | null>(null);
+  const titleMusicSourceRef = useRef("/title.mp3");
 
   const getTitleMusic = () => {
+    const source = titleMusicSourceRef.current;
+    const resolvedSource = typeof window === "undefined" ? source : new URL(source, window.location.href).toString();
+
+    if (titleMusicRef.current && titleMusicRef.current.src !== resolvedSource) {
+      titleMusicRef.current.pause();
+      titleMusicRef.current = null;
+    }
+
     if (!titleMusicRef.current) {
-      const audio = new Audio("title.mp3");
+      const audio = new Audio(source);
       audio.loop = true;
       titleMusicRef.current = audio;
     }
@@ -126,6 +135,14 @@ export default function GamePage() {
       console.debug(json);
       if (json.action === "data") {
         const newGameData: Game = json.data;
+        const nextTitleMusicSource = newGameData.settings?.title_music_url ?? "/title.mp3";
+        if (titleMusicSourceRef.current !== nextTitleMusicSource) {
+          titleMusicSourceRef.current = nextTitleMusicSource;
+          if (titleMusicRef.current) {
+            titleMusicRef.current.pause();
+            titleMusicRef.current = null;
+          }
+        }
 
         if (Object.keys(buzzed).length === 0 && newGameData.buzzed.length > 0) {
           const buzzerInfo = newGameData.buzzed[0];

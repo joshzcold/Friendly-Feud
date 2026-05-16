@@ -99,6 +99,7 @@ func (r *room) gameTimeout() error {
 				}
 				r.Hub.broadcast <- message
 				store.deleteLogo(r.Game.Room)
+				store.deleteTitleMusic(r.Game.Room)
 				store.deleteRoom(r.Game.Room)
 				return nil
 			}
@@ -122,7 +123,7 @@ type roomConnections struct {
 }
 
 type room struct {
-	Game *game `json:"game"`
+	Game         *game `json:"game"`
 	HostPassword string
 	// Assign to ws Hub when hosting room
 	roomConnections

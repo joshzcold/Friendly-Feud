@@ -24,6 +24,12 @@ type gameStore interface {
 	loadLogo(string) ([]byte, GameError)
 	// Delete a logo image from room
 	deleteLogo(string) GameError
+	// Save an audio file for the game title music
+	saveTitleMusic(string, []byte) GameError
+	// Load title music audio from room
+	loadTitleMusic(string) ([]byte, GameError)
+	// Delete title music audio from room
+	deleteTitleMusic(string) GameError
 	// Health check
 	isHealthy() error
 }

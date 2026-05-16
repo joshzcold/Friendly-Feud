@@ -14,6 +14,7 @@ type Event struct {
 	Lang         string `json:"lang"`
 	Data         any    `json:"data"`
 	LogoData     string `json:"logoData"`
+	AudioData    string `json:"audioData"`
 	Room         string `json:"room"`
 	Name         string `json:"name"`
 	Host         bool   `json:"host"`
@@ -45,7 +46,9 @@ var recieveActions = map[string]ActionFunc{
 // Actions that require a host password
 var hostRecieveActions = map[string]ActionFunc{
 	"del_logo_upload":        DeleteLogoUpload,
+	"del_title_music_upload": DeleteTitleMusicUpload,
 	"logo_upload":            LogoUpload,
+	"title_music_upload":     TitleMusicUpload,
 	"register_buzzer_screen": RegisterBuzzerScreen,
 	"buzzer_screen_buzz":     BuzzerScreenBuzz,
 	"load_game":              LoadGame,
