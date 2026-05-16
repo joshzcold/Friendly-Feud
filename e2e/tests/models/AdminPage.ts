@@ -91,6 +91,10 @@ class AdminPage {
   team1MistakeButton: Locator;
   team0GivePointsButton: Locator;
   team1GivePointsButton: Locator;
+  titleMusicUpload: Locator;
+  uploadTitleMusicButton: Locator;
+  playTitleMusicButton: Locator;
+  pauseTitleMusicButton: Locator;
   hostPassword: Locator;
 
   /**
@@ -163,7 +167,7 @@ class AdminPage {
     this.finalRoundTotalPointsText = page.getByTestId("finalRoundTotalPointsText")
     this.finalRoundWinText = page.getByTestId("finalRoundWinText")
     this.gamePickerFileUpload = page.getByTestId("gamePickerFileUploadButton");
-    this.gameSelector = page.getByTestId("gameSelector");
+    this.gameSelector = page.locator("#gameSelector");
     this.hideFirstRoundAnswersButton = page.getByTestId("hideFirstRoundAnswersButton",);
     this.hideQuestionsInput = page.getByTestId("hideQuestionsInput")
     this.logoUpload = page.getByTestId("logoUpload");
@@ -196,6 +200,10 @@ class AdminPage {
     this.team1MistakeButton = page.getByTestId("team1MistakeButton")
     this.team0GivePointsButton = page.getByTestId("team0GivePointsButton")
     this.team1GivePointsButton = page.getByTestId("team1GivePointsButton")
+    this.titleMusicUpload = page.locator("#titleMusicUpload");
+    this.uploadTitleMusicButton = page.locator("#uploadTitleMusicButton");
+    this.playTitleMusicButton = page.locator("#playTitleMusicButton");
+    this.pauseTitleMusicButton = page.locator("#pauseTitleMusicButton");
     this.hostPassword = page.getByTestId("hostPassword")
   }
 }
