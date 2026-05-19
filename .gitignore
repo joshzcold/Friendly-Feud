@@ -13,3 +13,4 @@ test-results/
 backend/.cache/
 .vscode
 .DS_Store
+.env
