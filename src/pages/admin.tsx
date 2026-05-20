@@ -41,6 +41,12 @@ interface BannerResponse {
   } | null;
 }
 
+interface LoginResponse {
+  success?: boolean;
+  error?: string;
+  retryAfterSeconds?: number;
+}
+
 async function readJson<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
 }
@@ -55,6 +61,8 @@ export default function AdminToolsPage() {
   const [isLoadingRooms, setIsLoadingRooms] = useState(false);
   const [actionInFlight, setActionInFlight] = useState("");
   const [authError, setAuthError] = useState("");
+  const [authRetrySeconds, setAuthRetrySeconds] = useState(0);
+  const [lockoutEndsAt, setLockoutEndsAt] = useState<number | null>(null);
   const [adminStatus, setAdminStatus] = useState("");
   const [rooms, setRooms] = useState<AdminRoomSummary[]>([]);
   const [roomCreationPaused, setRoomCreationPaused] = useState(false);
@@ -137,9 +145,37 @@ export default function AdminToolsPage() {
     void checkAdminSession();
   }, []);
 
+  useEffect(() => {
+    if (lockoutEndsAt === null) {
+      setAuthRetrySeconds(0);
+      return;
+    }
+
+    const lockoutEndMs = lockoutEndsAt;
+
+    function updateRetrySeconds() {
+      const seconds = Math.max(0, Math.ceil((lockoutEndMs - Date.now()) / 1000));
+      setAuthRetrySeconds(seconds);
+
+      if (seconds === 0) {
+        setLockoutEndsAt(null);
+      }
+    }
+
+    updateRetrySeconds();
+    const intervalId = window.setInterval(updateRetrySeconds, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [lockoutEndsAt]);
+
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setAuthError("");
+
+    if (authRetrySeconds > 0) {
+      setAuthError(`Too many login attempts. Try again in ${authRetrySeconds}s.`);
+      return;
+    }
 
     if (!password.trim()) {
       setAuthError("Please enter your password.");
@@ -157,16 +193,24 @@ export default function AdminToolsPage() {
         body: JSON.stringify({ password }),
       });
 
-      const result = (await response.json()) as { success?: boolean; error?: string };
+      const result = (await response.json()) as LoginResponse;
 
       if (!response.ok || !result.success) {
         setIsAuthenticated(false);
+        if (response.status === 429) {
+          const headerRetryAfterSeconds = Number(response.headers.get("Retry-After"));
+          const retryAfterSeconds = result.retryAfterSeconds ?? headerRetryAfterSeconds;
+          const retrySeconds = Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0 ? retryAfterSeconds : 60;
+          setLockoutEndsAt(Date.now() + retrySeconds * 1000);
+        }
+
         setAuthError(result.error || "Invalid credentials");
         toast.error(result.error || "Invalid credentials");
         return;
       }
 
       setPassword("");
+      setLockoutEndsAt(null);
       setIsAuthenticated(true);
       toast.success("Signed in");
       void refreshAdminState();
@@ -315,15 +359,15 @@ export default function AdminToolsPage() {
                 onChange={(event) => setPassword(event.target.value)}
                 className="rounded-xl border-4 border-secondary-600 bg-background p-3 text-xl text-foreground"
                 placeholder="Enter admin console password"
-                disabled={isLoggingIn || isCheckingSession || isAuthenticated}
+                disabled={isLoggingIn || isCheckingSession || isAuthenticated || authRetrySeconds > 0}
               />
             </div>
             <button
               type="submit"
-              disabled={isLoggingIn || isCheckingSession || isAuthenticated}
+              disabled={isLoggingIn || isCheckingSession || isAuthenticated || authRetrySeconds > 0}
               className="rounded-md bg-success-300 px-6 py-3 text-xl uppercase text-foreground shadow-md disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isLoggingIn ? "Signing in..." : "Sign in"}
+              {authRetrySeconds > 0 ? `Wait ${authRetrySeconds}s` : isLoggingIn ? "Signing in..." : "Sign in"}
             </button>
           </form>
           {authError && <p className="mt-3 text-sm text-failure-500">{authError}</p>}

@@ -1,6 +1,8 @@
 package api
 
 import (
+	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -48,7 +50,11 @@ func setRoomCreationPaused(paused bool) {
 func AdminAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		expectedPassword := os.Getenv("ADMIN_CONSOLE_PASSWORD")
-		if expectedPassword == "" || r.Header.Get("X-Admin-Password") != expectedPassword {
+		providedPassword := r.Header.Get("X-Admin-Password")
+		expectedPasswordHash := sha256.Sum256([]byte(expectedPassword))
+		providedPasswordHash := sha256.Sum256([]byte(providedPassword))
+
+		if expectedPassword == "" || subtle.ConstantTimeCompare(expectedPasswordHash[:], providedPasswordHash[:]) != 1 {
 			writeAdminJSON(w, http.StatusUnauthorized, map[string]any{
 				"success": false,
 				"error":   "Unauthorized",

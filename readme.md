@@ -83,6 +83,7 @@ one your the monitor of your desktop or headset. Resulting in output audio getti
 The application can be configured using environment variables. Check the `.env` file in the root directory for all available configuration options.
 
 - `ADMIN_CONSOLE_PASSWORD=your-admin-password` (required for admin console login).
+- `ADMIN_SESSION_SECRET=your-long-random-secret` (recommended for signing admin login cookies).
 
 ## Screenshots
 
