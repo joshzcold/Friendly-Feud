@@ -81,6 +81,11 @@ func main() {
 		roomCode := httpRequest.PathValue("roomCode")
 		api.FetchLogo(httpWriter, roomCode)
 	})
+
+	http.HandleFunc("/api/internal/admin/rooms", api.AdminAuthMiddleware(api.AdminRoomsHandler))
+	http.HandleFunc("/api/internal/admin/room-creation", api.AdminAuthMiddleware(api.AdminRoomCreationHandler))
+	http.HandleFunc("/api/internal/admin/refresh-game-cache", api.AdminAuthMiddleware(api.AdminRefreshGameCacheHandler))
+	http.HandleFunc("/api/internal/admin/reconnect-rooms", api.AdminAuthMiddleware(api.AdminReconnectRoomsHandler))
 	log.Printf("Server listening on %s", cfg.addr)
 	err = http.ListenAndServe(cfg.addr, nil)
 	if err != nil {

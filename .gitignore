@@ -14,3 +14,5 @@ backend/.cache/
 .vscode
 .DS_Store
 .env
+.env.local
+.env.*.local

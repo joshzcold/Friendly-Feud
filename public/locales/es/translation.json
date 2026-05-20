@@ -115,7 +115,7 @@
     "email": "correo electr\u00f3nico",
     "source code": "c\u00f3digo fuente",
     "Question": "Pregunta",
-    "Remove player's blindfold": "Quitarle la venda de los ojos al jugador", 
+    "Remove player's blindfold": "Quitarle la venda de los ojos al jugador",
     "Blindfold player": "Ponerle una venda en los ojos al jugador",
     "Remove player from game": "Eliminar jugador del juego",
     "errors": {
@@ -130,6 +130,7 @@
         "connection_lost": "Se perdió la conexión con el servidor, reintentando en {{message}}s",
         "csv_invalid_format": "Formato CSV inválido",
         "missing_input": "Por favor complete el campo {{message}}",
+        "room_creation_paused": "New room creation is paused.",
         "title_music_playback_error": "Haz clic una vez en la ventana del juego para permitir el audio y luego presiona reproducir de nuevo."
     }
 }

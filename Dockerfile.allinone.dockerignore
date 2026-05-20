@@ -21,7 +21,6 @@
 !src/global.css
 !src/types/
 !src/
-!.env
 !docker/frontend-start.sh
 
 ## Backend

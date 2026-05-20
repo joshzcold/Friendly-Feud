@@ -18,6 +18,27 @@ export function getAnnouncementBanner() {
   return bannerState;
 }
 
+export function getActiveAnnouncementBanner(now = new Date()) {
+  if (!bannerState?.enabled) {
+    return null;
+  }
+
+  if (bannerState.publishNow) {
+    return bannerState;
+  }
+
+  if (!bannerState.startAt) {
+    return null;
+  }
+
+  const startAt = new Date(bannerState.startAt);
+  if (Number.isNaN(startAt.getTime())) {
+    return null;
+  }
+
+  return startAt <= now ? bannerState : null;
+}
+
 export function setAnnouncementBanner(nextState: AnnouncementBanner) {
   bannerState = nextState;
 }

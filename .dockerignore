@@ -15,5 +15,4 @@
 !backend/server.js
 !backend/load-game.js
 !src/
-!.env
 !docker/frontend-start.sh

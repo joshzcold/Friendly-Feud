@@ -132,6 +132,10 @@ func InitalizeRoom(client *Client, newRoomCode string) room {
 
 // HostRoom create new room and websocket hub
 func HostRoom(client *Client, event *Event) GameError {
+	if isRoomCreationPaused() {
+		return GameError{code: ROOM_CREATION_PAUSED, message: "New room creation is paused"}
+	}
+
 	newRoomCode := roomCode()
 	s := store
 	currentRooms := s.currentRooms()

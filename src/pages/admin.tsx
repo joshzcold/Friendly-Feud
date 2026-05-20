@@ -1,11 +1,53 @@
-import HelpButton from "@/components/HelpButton";
 import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
+import HelpButton from "@/components/HelpButton";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { GameTheme } from "../types";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { GameTheme } from "../types";
 
 const MAX_BANNER_TEXT_LENGTH = 280;
+
+interface AdminPlayerSummary {
+  id: string;
+  name: string;
+  team: number | null;
+  isHost: boolean;
+  connected: boolean;
+}
+
+interface AdminRoomSummary {
+  roomCode: string;
+  hostId: string;
+  playerCount: number;
+  sessionCount: number;
+  lastActivity: string;
+  players: AdminPlayerSummary[];
+}
+
+interface AdminRoomsResponse {
+  success?: boolean;
+  error?: string;
+  rooms?: AdminRoomSummary[];
+  roomCreationPaused?: boolean;
+  ended?: number;
+  roomsUpdated?: number;
+}
+
+interface BannerResponse {
+  success?: boolean;
+  error?: string;
+  banner?: {
+    text: string;
+    startAt: string | null;
+    publishNow: boolean;
+    severity: "info" | "warning" | "critical";
+    enabled: boolean;
+  } | null;
+}
+
+async function readJson<T>(response: Response): Promise<T> {
+  return (await response.json()) as T;
+}
 
 export default function AdminToolsPage() {
   const [themeState, setThemeState] = useState<GameTheme>({ settings: { theme: "default" } });
@@ -15,21 +57,81 @@ export default function AdminToolsPage() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isSavingBanner, setIsSavingBanner] = useState(false);
+  const [isLoadingRooms, setIsLoadingRooms] = useState(false);
+  const [actionInFlight, setActionInFlight] = useState("");
   const [authError, setAuthError] = useState("");
+  const [adminStatus, setAdminStatus] = useState("");
+  const [rooms, setRooms] = useState<AdminRoomSummary[]>([]);
+  const [roomCreationPaused, setRoomCreationPaused] = useState(false);
   const [bannerMessage, setBannerMessage] = useState("");
-  const [bannerEnabled, setBannerEnabled] = useState(false);
+  const [bannerEnabled, setBannerEnabled] = useState(true);
   const [publishNow, setPublishNow] = useState(true);
   const [bannerStartAt, setBannerStartAt] = useState("");
   const [bannerSeverity, setBannerSeverity] = useState("info");
   const [bannerStatus, setBannerStatus] = useState("");
   const [bannerValidationError, setBannerValidationError] = useState("");
 
+  async function fetchRooms() {
+    setIsLoadingRooms(true);
+
+    try {
+      const response = await fetch("/api/admin/rooms");
+      const result = await readJson<AdminRoomsResponse>(response);
+
+      if (response.status === 401) {
+        setIsAuthenticated(false);
+        toast.error("Your admin session expired. Please sign in again.");
+        return;
+      }
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to load active sessions");
+      }
+
+      setRooms(result.rooms ?? []);
+      setRoomCreationPaused(Boolean(result.roomCreationPaused));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to load active sessions";
+      setAdminStatus(message);
+      toast.error(message);
+    } finally {
+      setIsLoadingRooms(false);
+    }
+  }
+
+  async function fetchBannerSettings() {
+    try {
+      const response = await fetch("/api/admin/banner");
+      const result = await readJson<BannerResponse>(response);
+
+      if (!response.ok || !result.banner) {
+        return;
+      }
+
+      setBannerMessage(result.banner.text);
+      setBannerEnabled(result.banner.enabled);
+      setPublishNow(result.banner.publishNow);
+      setBannerStartAt(result.banner.startAt ?? "");
+      setBannerSeverity(result.banner.severity);
+    } catch {
+      return;
+    }
+  }
+
+  async function refreshAdminState() {
+    await Promise.all([fetchRooms(), fetchBannerSettings()]);
+  }
+
   useEffect(() => {
     async function checkAdminSession() {
       try {
         const response = await fetch("/api/admin/session");
         const result = (await response.json()) as { authenticated?: boolean };
-        setIsAuthenticated(Boolean(result.authenticated));
+        const authenticated = Boolean(result.authenticated);
+        setIsAuthenticated(authenticated);
+        if (authenticated) {
+          void refreshAdminState();
+        }
       } catch {
         setIsAuthenticated(false);
       } finally {
@@ -65,12 +167,14 @@ export default function AdminToolsPage() {
       if (!response.ok || !result.success) {
         setIsAuthenticated(false);
         setAuthError(result.error || "Invalid credentials");
+        toast.error(result.error || "Invalid credentials");
         return;
       }
 
       setPassword("");
       setIsAuthenticated(true);
       toast.success("Signed in");
+      void refreshAdminState();
     } finally {
       setIsLoggingIn(false);
     }
@@ -84,9 +188,46 @@ export default function AdminToolsPage() {
       await fetch("/api/admin/logout", { method: "POST" });
       setIsAuthenticated(false);
       setBannerStatus("");
+      setAdminStatus("");
+      setRooms([]);
       toast.success("Signed out");
     } finally {
       setIsLoggingOut(false);
+    }
+  }
+
+  async function runAdminAction(
+    actionName: string,
+    request: () => Promise<Response>,
+    successMessage: (result: AdminRoomsResponse) => string
+  ) {
+    setActionInFlight(actionName);
+    setAdminStatus("");
+
+    try {
+      const response = await request();
+      const result = await readJson<AdminRoomsResponse>(response);
+
+      if (response.status === 401) {
+        setIsAuthenticated(false);
+        toast.error("Your admin session expired. Please sign in again.");
+        return;
+      }
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Admin action failed");
+      }
+
+      const message = successMessage(result);
+      setAdminStatus(message);
+      toast.success(message);
+      await fetchRooms();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Admin action failed";
+      setAdminStatus(message);
+      toast.error(message);
+    } finally {
+      setActionInFlight("");
     }
   }
 
@@ -98,16 +239,20 @@ export default function AdminToolsPage() {
     const trimmedMessage = bannerMessage.trim();
     if (!trimmedMessage) {
       setBannerValidationError("Banner message is required.");
+      toast.error("Banner message is required.");
       return;
     }
 
     if (trimmedMessage.length > MAX_BANNER_TEXT_LENGTH) {
-      setBannerValidationError(`Banner message must be at most ${MAX_BANNER_TEXT_LENGTH} characters.`);
+      const message = `Banner message must be at most ${MAX_BANNER_TEXT_LENGTH} characters.`;
+      setBannerValidationError(message);
+      toast.error(message);
       return;
     }
 
     if (!publishNow && !bannerStartAt.trim()) {
       setBannerValidationError("Choose publish now or provide a start time.");
+      toast.error("Choose publish now or provide a start time.");
       return;
     }
 
@@ -128,11 +273,12 @@ export default function AdminToolsPage() {
         }),
       });
 
-      const result = (await response.json()) as { success?: boolean; error?: string };
+      const result = await readJson<BannerResponse>(response);
 
       if (response.status === 401) {
         setIsAuthenticated(false);
         setBannerStatus("Your admin session expired. Please sign in again.");
+        toast.error("Your admin session expired. Please sign in again.");
         return;
       }
 
@@ -143,12 +289,15 @@ export default function AdminToolsPage() {
         return;
       }
 
-      setBannerStatus("Banner saved.");
-      toast.success("Banner saved");
+      setBannerStatus(bannerEnabled ? "Banner saved and visible." : "Banner saved but disabled.");
+      toast.success(bannerEnabled ? "Banner saved and visible" : "Banner saved but disabled");
+      window.dispatchEvent(new Event("announcement-banner-updated"));
     } finally {
       setIsSavingBanner(false);
     }
   }
+
+  const controlsDisabled = Boolean(actionInFlight);
 
   return (
     <div className="min-h-screen bg-background p-5 text-foreground">
@@ -193,8 +342,11 @@ export default function AdminToolsPage() {
         {!isCheckingSession && isAuthenticated && (
           <>
             <section className="rounded-xl border-2 border-secondary-600 bg-secondary-300 p-6">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <h2 className="text-2xl font-semibold">Maintenance Actions</h2>
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-2xl font-semibold">Maintenance Actions</h2>
+                  {adminStatus && <p className="mt-1 text-sm">{adminStatus}</p>}
+                </div>
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -205,18 +357,154 @@ export default function AdminToolsPage() {
                 </button>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
-                <button className="rounded-md bg-primary-200 p-3 text-left text-lg text-foreground shadow-sm hover:shadow-md">Refresh game cache</button>
-                <button className="rounded-md bg-primary-200 p-3 text-left text-lg text-foreground shadow-sm hover:shadow-md">Reconnect active rooms</button>
-                <button className="rounded-md bg-warning-200 p-3 text-left text-lg text-foreground shadow-sm hover:shadow-md">Pause new room creation</button>
-                <button className="rounded-md bg-failure-200 p-3 text-left text-lg text-foreground shadow-sm hover:shadow-md">End all active sessions</button>
+                <button
+                  type="button"
+                  disabled={controlsDisabled}
+                  onClick={() =>
+                    void runAdminAction(
+                      "refresh",
+                      () => fetch("/api/admin/refresh-game-cache", { method: "POST" }),
+                      () => "Game cache refreshed"
+                    )
+                  }
+                  className="rounded-md bg-primary-200 p-3 text-left text-lg text-foreground shadow-sm hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {actionInFlight === "refresh" ? "Refreshing game cache..." : "Refresh game cache"}
+                </button>
+                <button
+                  type="button"
+                  disabled={controlsDisabled}
+                  onClick={() =>
+                    void runAdminAction(
+                      "reconnect",
+                      () => fetch("/api/admin/reconnect-rooms", { method: "POST" }),
+                      (result) =>
+                        `Reconnected ${result.roomsUpdated ?? 0} active session${result.roomsUpdated === 1 ? "" : "s"}`
+                    )
+                  }
+                  className="rounded-md bg-primary-200 p-3 text-left text-lg text-foreground shadow-sm hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {actionInFlight === "reconnect" ? "Reconnecting rooms..." : "Reconnect active rooms"}
+                </button>
+                <button
+                  type="button"
+                  disabled={controlsDisabled}
+                  onClick={() =>
+                    void runAdminAction(
+                      "pause",
+                      () =>
+                        fetch("/api/admin/room-creation", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ paused: !roomCreationPaused }),
+                        }),
+                      () => (roomCreationPaused ? "New room creation resumed" : "New room creation paused")
+                    )
+                  }
+                  className="rounded-md bg-warning-200 p-3 text-left text-lg text-foreground shadow-sm hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {actionInFlight === "pause"
+                    ? "Updating room creation..."
+                    : roomCreationPaused
+                      ? "Resume new room creation"
+                      : "Pause new room creation"}
+                </button>
+                <button
+                  type="button"
+                  disabled={controlsDisabled}
+                  onClick={() =>
+                    void runAdminAction(
+                      "end-all",
+                      () =>
+                        fetch("/api/admin/rooms", {
+                          method: "DELETE",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({}),
+                        }),
+                      (result) => `Ended ${result.ended ?? 0} active session${result.ended === 1 ? "" : "s"}`
+                    )
+                  }
+                  className="rounded-md bg-failure-200 p-3 text-left text-lg text-foreground shadow-sm hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {actionInFlight === "end-all" ? "Ending all active sessions..." : "End all active sessions"}
+                </button>
               </div>
+            </section>
+
+            <section className="rounded-xl border-2 border-secondary-600 bg-secondary-300 p-6">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-2xl font-semibold">Active Sessions</h2>
+                <button
+                  type="button"
+                  onClick={() => void fetchRooms()}
+                  disabled={isLoadingRooms || controlsDisabled}
+                  className="rounded-md bg-secondary-600 px-4 py-2 text-base text-foreground shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isLoadingRooms ? "Loading..." : "Refresh"}
+                </button>
+              </div>
+
+              {rooms.length === 0 ? (
+                <p className="rounded-md bg-background p-4 text-base">No active sessions.</p>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {rooms.map((room) => (
+                    <div key={room.roomCode} className="rounded-md border-2 border-secondary-600 bg-background p-4">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <p className="text-2xl font-semibold uppercase">{room.roomCode}</p>
+                          <p className="text-sm">
+                            {room.playerCount} player{room.playerCount === 1 ? "" : "s"} · {room.sessionCount} session
+                            {room.sessionCount === 1 ? "" : "s"}
+                          </p>
+                          {room.lastActivity && (
+                            <p className="text-xs">Last activity {new Date(room.lastActivity).toLocaleString()}</p>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          disabled={controlsDisabled}
+                          onClick={() =>
+                            void runAdminAction(
+                              `end-${room.roomCode}`,
+                              () =>
+                                fetch("/api/admin/rooms", {
+                                  method: "DELETE",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ roomCode: room.roomCode }),
+                                }),
+                              () => `Ended session ${room.roomCode}`
+                            )
+                          }
+                          className="rounded-md bg-failure-200 px-4 py-2 text-base text-foreground shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {actionInFlight === `end-${room.roomCode}` ? "Ending..." : "End session"}
+                        </button>
+                      </div>
+                      {room.players.length > 0 && (
+                        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                          {room.players.map((player) => (
+                            <div key={player.id} className="rounded-md bg-secondary-300 px-3 py-2 text-sm">
+                              <span className="font-semibold">{player.isHost ? "Host" : player.name}</span>
+                              {!player.isHost && player.team !== null && <span> · Team {player.team + 1}</span>}
+                              <span> · {player.connected ? "Connected" : "Disconnected"}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
 
             <section className="rounded-xl border-2 border-secondary-600 bg-secondary-300 p-6">
               <h2 className="mb-4 text-2xl font-semibold">Launch announcement banner</h2>
               <form className="flex flex-col gap-4" onSubmit={saveBanner}>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="bannerMessage" className="text-lg">Banner message</label>
+                  <label htmlFor="bannerMessage" className="text-lg">
+                    Banner message
+                  </label>
                   <textarea
                     id="bannerMessage"
                     value={bannerMessage}
@@ -241,16 +529,30 @@ export default function AdminToolsPage() {
                   </select>
                 </div>
                 <label className="flex items-center gap-2 text-lg">
-                  <input type="checkbox" checked={bannerEnabled} onChange={(event) => setBannerEnabled(event.target.checked)} className="h-5 w-5" disabled={isSavingBanner} />
+                  <input
+                    type="checkbox"
+                    checked={bannerEnabled}
+                    onChange={(event) => setBannerEnabled(event.target.checked)}
+                    className="h-5 w-5"
+                    disabled={isSavingBanner}
+                  />
                   Enable banner
                 </label>
                 <label className="flex items-center gap-2 text-lg">
-                  <input type="checkbox" checked={publishNow} onChange={(event) => setPublishNow(event.target.checked)} className="h-5 w-5" disabled={isSavingBanner} />
+                  <input
+                    type="checkbox"
+                    checked={publishNow}
+                    onChange={(event) => setPublishNow(event.target.checked)}
+                    className="h-5 w-5"
+                    disabled={isSavingBanner}
+                  />
                   Publish now
                 </label>
                 {!publishNow && (
                   <div className="flex flex-col gap-2">
-                    <label htmlFor="bannerStartAt" className="text-lg">Start time</label>
+                    <label htmlFor="bannerStartAt" className="text-lg">
+                      Start time
+                    </label>
                     <input
                       id="bannerStartAt"
                       type="datetime-local"
@@ -262,7 +564,11 @@ export default function AdminToolsPage() {
                   </div>
                 )}
                 <div className="flex gap-3">
-                  <button type="submit" disabled={isSavingBanner} className="rounded-md bg-success-300 px-5 py-2 text-lg text-foreground shadow-sm hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60">
+                  <button
+                    type="submit"
+                    disabled={isSavingBanner}
+                    className="rounded-md bg-success-300 px-5 py-2 text-lg text-foreground shadow-sm hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+                  >
                     {isSavingBanner ? "Saving..." : "Save banner"}
                   </button>
                 </div>

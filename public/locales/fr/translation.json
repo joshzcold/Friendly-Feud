@@ -129,6 +129,7 @@
     "connection_lost": "La connexion au serveur a été perdue, nouvelle tentative dans {{message}}s",
     "csv_invalid_format": "Format CSV invalide",
     "missing_input": "Veuillez remplir le champ {{message}}",
+    "room_creation_paused": "New room creation is paused.",
     "title_music_playback_error": "Cliquez une fois sur la fenêtre de jeu pour autoriser le son, puis appuyez de nouveau sur jouer."
   }
 }

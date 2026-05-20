@@ -134,7 +134,7 @@
     "You have been blindfolded...": "Sind on pimestatud...",
     "Reset Mistakes": "Lähtesta vead",
     "Version": "Versioon",
-    "Remove player's blindfold": "Eemalda mängija ekraani kate", 
+    "Remove player's blindfold": "Eemalda mängija ekraani kate",
     "Blindfold player": "Peitke mängija ekraan",
     "Remove player from game": "Eemaldage mängija mängust",
     "Game file error": "Küsimustiku vormingu viga",
@@ -154,6 +154,7 @@
         "missing_input": "{{message}} lahter on täitmata",
         "player_not_found": "Mängijat ei leitud.",
         "forbidden": "Te ei tohi seda toimingut teha.",
+        "room_creation_paused": "New room creation is paused.",
         "title_music_playback_error": "Heli lubamiseks klõpsa korra mänguaknal, seejärel vajuta uuesti mängi."
     }
 }

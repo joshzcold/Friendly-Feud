@@ -1,6 +1,8 @@
 services:
   frontend:
     image: ${docker_registry}/famf-web:dev
+    env_file:
+      - ../.env
     ports:
       - 3000:3000
     healthcheck:
@@ -13,6 +15,8 @@ services:
       start_period: 60s
   backend:
     image: ${docker_registry}/famf-server:dev
+    env_file:
+      - ../.env
     ports:
       - 8080:8080
     environment:

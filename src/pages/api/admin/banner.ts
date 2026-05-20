@@ -1,11 +1,11 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { hasAdminSession } from "@/lib/server/admin-auth";
 import {
   BannerSeverity,
-  MAX_BANNER_TEXT_LENGTH,
   getAnnouncementBanner,
+  MAX_BANNER_TEXT_LENGTH,
   setAnnouncementBanner,
 } from "@/lib/server/admin-banner-store";
-import { hasAdminSession } from "@/lib/server/admin-auth";
+import { NextApiRequest, NextApiResponse } from "next";
 
 function isValidSeverity(value: string): value is BannerSeverity {
   return value === "info" || value === "warning" || value === "critical";
@@ -39,7 +39,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   if (text.length > MAX_BANNER_TEXT_LENGTH) {
-    return res.status(400).json({ success: false, error: `Banner content exceeds ${MAX_BANNER_TEXT_LENGTH} characters` });
+    return res
+      .status(400)
+      .json({ success: false, error: `Banner content exceeds ${MAX_BANNER_TEXT_LENGTH} characters` });
   }
 
   if (!publishNow && startAt === null) {
@@ -56,5 +58,5 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     author: "admin console",
   });
 
-  return res.status(200).json({ success: true });
+  return res.status(200).json({ success: true, banner: getAnnouncementBanner() });
 }

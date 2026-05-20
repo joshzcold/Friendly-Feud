@@ -156,6 +156,7 @@
     "player_not_found": "Player not found in server.",
     "forbidden": "You are not permitted to perform this operation.",
     "unauthenticated": "Invalid authentication.",
+    "room_creation_paused": "New room creation is paused.",
     "title_music_playback_error": "The game window needs a click before audio can start. Click the game window once, then press play again."
   }
 }
