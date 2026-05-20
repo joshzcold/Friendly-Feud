@@ -2,7 +2,7 @@ services:
   frontend:
     image: ${docker_registry}/famf-web:dev
     env_file:
-      - ../.env
+      - ../.env.example
     ports:
       - 3000:3000
     healthcheck:
@@ -16,7 +16,7 @@ services:
   backend:
     image: ${docker_registry}/famf-server:dev
     env_file:
-      - ../.env
+      - ../.env.example
     ports:
       - 8080:8080
     environment:

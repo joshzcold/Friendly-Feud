@@ -2,7 +2,7 @@ services:
   frontend:
     image: ${docker_registry}/famf-web:dev
     env_file:
-      - ../.env
+      - ../.env.example
     volumes:
       - ../:/app
       # for SWC compatibility
@@ -21,7 +21,7 @@ services:
   backend:
     image: ${docker_registry}/famf-server:dev
     env_file:
-      - ../.env
+      - ../.env.example
     ports:
       - 8080:8080
     environment:
