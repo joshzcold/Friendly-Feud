@@ -1,9 +1,5 @@
-import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
-import HelpButton from "@/components/HelpButton";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { GameTheme } from "../types";
 
 const MAX_BANNER_TEXT_LENGTH = 280;
 
@@ -50,7 +46,6 @@ async function readJson<T>(response: Response): Promise<T> {
 }
 
 export default function AdminToolsPage() {
-  const [themeState, setThemeState] = useState<GameTheme>({ settings: { theme: "default" } });
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
@@ -304,11 +299,6 @@ export default function AdminToolsPage() {
       <div className="mx-auto flex w-full max-w-5xl flex-col space-y-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-4xl font-semibold">Admin</h1>
-          <div className="flex items-center gap-3">
-            <LanguageSwitcher />
-            <ThemeSwitcher game={themeState} setGame={setThemeState} send={() => {}} />
-            <HelpButton doc="/help" />
-          </div>
         </div>
 
         <section className="rounded-xl border-2 border-secondary-600 bg-secondary-300 p-6">
