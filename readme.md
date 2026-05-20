@@ -30,6 +30,7 @@ Features:
   - Español
   - Indonesian
   - Estonian
+  - French
 
 ## Start
 
