@@ -1,7 +1,7 @@
 import HelpButton from "@/components/HelpButton";
 import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { GameTheme } from "@/types";
+import { GameTheme } from "../types";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 

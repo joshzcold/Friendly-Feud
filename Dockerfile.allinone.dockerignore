@@ -15,6 +15,11 @@
 !tailwind.config.js
 !backend/server.js
 !backend/load-game.js
+!src/pages/
+!src/components/
+!src/lib/
+!src/global.css
+!src/types/
 !src/
 !.env
 !docker/frontend-start.sh
