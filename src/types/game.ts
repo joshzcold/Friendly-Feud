@@ -42,6 +42,8 @@ export const WSAction = {
   LOAD_GAME: "load_game",
   LOGO_UPLOAD: "logo_upload",
   DEL_LOGO_UPLOAD: "del_logo_upload",
+  TITLE_MUSIC_UPLOAD: "title_music_upload",
+  DEL_TITLE_MUSIC_UPLOAD: "del_title_music_upload",
   PONG: "pong",
   BUZZ: "buzz",
   REGISTER_BUZZ: "registerbuzz",
@@ -62,6 +64,7 @@ export interface WSEvent {
   data?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   game?: Game;
   logoData?: string;
+  audioData?: string;
   room?: string;
   name?: string;
   host?: boolean;
@@ -95,6 +98,7 @@ export interface BuzzedState {
 
 export interface Settings {
   logo_url: string | null;
+  title_music_url: string | null;
   hide_questions: boolean;
   theme: string;
   final_round_title: string | null;

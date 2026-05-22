@@ -1,7 +1,10 @@
+import path from "node:path";
 import { expect, test } from "@playwright/test";
 import { PlayerType, Setup } from "../lib/Setup.js";
 import { AdminPage } from "../models/AdminPage.js";
 import { GamePage } from "../models/GamePage.js";
+
+const titleMusicFixturePath = path.resolve(process.cwd(), "../public/wrong.mp3");
 
 let s: Setup;
 let host: Awaited<ReturnType<Setup["host"]>>;
@@ -53,4 +56,18 @@ test("can hide questions", async () => {
   await adminPage.startRoundOneButton.click();
   await adminPage.hideQuestionsInput.click();
   await expect(gamePage.roundQuestionText).toBeVisible();
+});
+
+test("can keep default title music and upload custom title music", async () => {
+  await expect(adminPage.uploadTitleMusicButton).toHaveText("Upload Music");
+
+  const defaultTitleMusicRequest = spectator.page.waitForRequest("**/title.mp3");
+  await adminPage.playTitleMusicButton.click();
+  await defaultTitleMusicRequest;
+  await adminPage.pauseTitleMusicButton.click();
+
+  await adminPage.titleMusicUpload.setInputFiles(titleMusicFixturePath);
+  const titleMusicRequest = spectator.page.waitForRequest("**/api/rooms/*/title-music");
+  await adminPage.playTitleMusicButton.click();
+  await titleMusicRequest;
 });

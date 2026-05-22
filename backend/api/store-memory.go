@@ -98,6 +98,54 @@ func (m *MemoryStore) deleteLogo(roomCode string) GameError {
 	return GameError{}
 }
 
+func (m *MemoryStore) saveTitleMusic(roomCode string, audio []byte) GameError {
+	dirPath := filepath.Join(".", "public", "rooms", roomCode)
+	err := VerifyAudio(audio)
+	if err != nil {
+		if err.Error() == string(UNKNOWN_FILE_TYPE) {
+			return GameError{code: UNKNOWN_FILE_TYPE}
+		}
+		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+	}
+	err = os.MkdirAll(dirPath, os.ModePerm)
+	if err != nil {
+		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+	}
+
+	err = os.WriteFile(filepath.Join(dirPath, "title-music.mp3"), audio, 0644)
+	if err != nil {
+		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+	}
+	return GameError{}
+}
+
+func (m *MemoryStore) loadTitleMusic(roomCode string) ([]byte, GameError) {
+	log.Println("Trying to load title music from", "./public/rooms/", roomCode, "title-music.mp3")
+	titleMusicPath := filepath.Join(".", "public", "rooms", roomCode, "title-music.mp3")
+	_, err := os.Stat(titleMusicPath)
+	if err != nil {
+		return nil, GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+	}
+	titleMusic, err := os.ReadFile(titleMusicPath)
+	if err != nil {
+		return nil, GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+	}
+	return titleMusic, GameError{}
+}
+
+func (m *MemoryStore) deleteTitleMusic(roomCode string) GameError {
+	titleMusicPath := filepath.Join(".", "public", "rooms", roomCode, "title-music.mp3")
+	_, err := os.Stat(titleMusicPath)
+	if err != nil {
+		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+	}
+	err = os.Remove(titleMusicPath)
+	if err != nil {
+		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
+	}
+	return GameError{}
+}
+
 func (m *MemoryStore) isHealthy() error {
 	if m.rooms == nil {
 		return fmt.Errorf("memory store is not initialized")

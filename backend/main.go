@@ -81,6 +81,11 @@ func main() {
 		roomCode := httpRequest.PathValue("roomCode")
 		api.FetchLogo(httpWriter, roomCode)
 	})
+
+	http.HandleFunc("/api/rooms/{roomCode}/title-music", func(httpWriter http.ResponseWriter, httpRequest *http.Request) {
+		roomCode := httpRequest.PathValue("roomCode")
+		api.FetchTitleMusic(httpWriter, roomCode)
+	})
 	log.Printf("Server listening on %s", cfg.addr)
 	err = http.ListenAndServe(cfg.addr, nil)
 	if err != nil {
