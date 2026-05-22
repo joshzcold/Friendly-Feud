@@ -55,7 +55,7 @@ function getRemoteAddress(req: NextApiRequest): string {
     .map((part) => cleanAddress(part))
     .filter(Boolean);
 
-  return forwardedForParts.at(-1) || cleanAddress(socketAddress) || "unknown";
+  return forwardedForParts[0] || cleanAddress(socketAddress) || "unknown";
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
