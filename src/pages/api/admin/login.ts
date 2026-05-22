@@ -59,6 +59,8 @@ function getRemoteAddress(req: NextApiRequest): string {
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  res.setHeader("Cache-Control", "no-store, max-age=0");
+
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ success: false });

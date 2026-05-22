@@ -83,6 +83,12 @@ func TestAdminRoomsHandlerAllowsEmptyDeleteBodyForEndAll(t *testing.T) {
 	if gameError := memoryStore.writeRoom("ABCD", room); gameError.code != "" {
 		t.Fatalf("failed to write room: %s", gameError.message)
 	}
+	t.Cleanup(func() {
+		if _, gameError := memoryStore.getRoom(nil, "ABCD"); gameError.code == "" {
+			close(room.cleanup)
+			room.Hub.stop <- true
+		}
+	})
 
 	request := httptest.NewRequest(http.MethodDelete, "/api/internal/admin/rooms", nil)
 	response := httptest.NewRecorder()

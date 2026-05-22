@@ -11,6 +11,14 @@ function isValidSeverity(value: string): value is BannerSeverity {
   return value === "info" || value === "warning" || value === "critical";
 }
 
+function readRequiredBoolean(value: unknown, fieldName: string) {
+  if (typeof value !== "boolean") {
+    return { error: `${fieldName} must be a boolean` };
+  }
+
+  return { value };
+}
+
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   res.setHeader("Cache-Control", "no-store, max-age=0");
 
@@ -29,12 +37,20 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
   const rawText = typeof req.body?.text === "string" ? req.body.text : "";
   const text = rawText.trim();
-  const publishNow = Boolean(req.body?.publishNow);
-  const enabled = Boolean(req.body?.enabled);
+  const publishNowResult = readRequiredBoolean(req.body?.publishNow, "publishNow");
+  const enabledResult = readRequiredBoolean(req.body?.enabled, "enabled");
   const rawStartAt = typeof req.body?.startAt === "string" ? req.body.startAt : "";
   const startAt = rawStartAt.trim() === "" ? null : rawStartAt.trim();
   const rawSeverity = typeof req.body?.severity === "string" ? req.body.severity : "info";
   const severity = isValidSeverity(rawSeverity) ? rawSeverity : "info";
+
+  if ("error" in publishNowResult) {
+    return res.status(400).json({ success: false, error: publishNowResult.error });
+  }
+
+  if ("error" in enabledResult) {
+    return res.status(400).json({ success: false, error: enabledResult.error });
+  }
 
   if (text.length === 0) {
     return res.status(400).json({ success: false, error: "Banner content cannot be empty" });
@@ -46,7 +62,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       .json({ success: false, error: `Banner content exceeds ${MAX_BANNER_TEXT_LENGTH} characters` });
   }
 
-  if (!publishNow && startAt === null) {
+  if (!publishNowResult.value && startAt === null) {
     return res.status(400).json({ success: false, error: "Select publish now or provide a start time" });
   }
 
@@ -54,9 +70,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     setAnnouncementBanner({
       text,
       startAt,
-      publishNow,
+      publishNow: publishNowResult.value,
       severity,
-      enabled,
+      enabled: enabledResult.value,
       updatedAt: new Date().toISOString(),
       author: "admin console",
     });

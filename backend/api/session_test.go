@@ -22,3 +22,16 @@ func TestInitalizeRoomAllowsNilClientForAdminReattach(t *testing.T) {
 		t.Fatal("timed out broadcasting after nil-client room initialization")
 	}
 }
+
+func TestHostRoomRejectsCreationWhenPaused(t *testing.T) {
+	setRoomCreationPaused(true)
+	t.Cleanup(func() {
+		setRoomCreationPaused(false)
+	})
+
+	gameError := HostRoom(nil, &Event{})
+
+	if gameError.code != ROOM_CREATION_PAUSED {
+		t.Fatalf("expected paused room creation error, got %q", gameError.code)
+	}
+}

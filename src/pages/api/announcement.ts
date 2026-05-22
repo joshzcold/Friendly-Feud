@@ -1,4 +1,4 @@
-import { getActiveAnnouncementBanner } from "@/lib/server/admin-banner-store";
+import { getActiveAnnouncementBanner, toPublicAnnouncementBanner } from "@/lib/server/admin-banner-store";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -9,5 +9,5 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ banner: null });
   }
 
-  return res.status(200).json({ banner: getActiveAnnouncementBanner() });
+  return res.status(200).json({ banner: toPublicAnnouncementBanner(getActiveAnnouncementBanner()) });
 }

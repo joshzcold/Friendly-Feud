@@ -1,7 +1,19 @@
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const MAX_BANNER_TEXT_LENGTH = 280;
+declare global {
+   interface Window {
+     __APP_CONFIG__?: {
+       maxBannerTextLength?: number;
+     };
+   }
+ }
+ const DEFAULT_MAX_BANNER_TEXT_LENGTH = 280;
+ const MAX_BANNER_TEXT_LENGTH =
+   typeof window !== "undefined" &&
+   typeof window.__APP_CONFIG__?.maxBannerTextLength === "number"
+     ? window.__APP_CONFIG__.maxBannerTextLength
+     : DEFAULT_MAX_BANNER_TEXT_LENGTH;
 const DESTRUCTIVE_CONFIRM_DELAY_MS = 3_000;
 
 interface AdminPlayerSummary {

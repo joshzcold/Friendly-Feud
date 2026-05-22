@@ -1,4 +1,4 @@
-import type { AnnouncementBanner as AnnouncementBannerState } from "@/lib/server/admin-banner-store";
+import type { PublicAnnouncementBanner as AnnouncementBannerState } from "@/lib/server/admin-banner-store";
 import { useEffect, useState } from "react";
 
 const severityClasses = {
@@ -42,7 +42,6 @@ export default function AnnouncementBanner() {
       } catch {
         if (mounted) {
           setBanner(null);
-          setDismissedBannerKey(null);
         }
       }
     }
