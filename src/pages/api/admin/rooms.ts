@@ -3,6 +3,8 @@ import { fetchAdminBackend, sendBackendResponse } from "@/lib/server/admin-backe
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  res.setHeader("Cache-Control", "no-store, max-age=0");
+
   if (!hasAdminSession(req.headers.cookie)) {
     return res.status(401).json({ success: false, error: "Unauthorized" });
   }

@@ -52,6 +52,39 @@ async function readJson<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
 }
 
+function toLocalDateTimeInput(value: string | null) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const year = String(date.getFullYear());
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+function toIsoDateTimeFromLocal(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const date = new Date(trimmed);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date.toISOString();
+}
+
 interface DestructiveActionButtonProps {
   label: string;
   confirmLabel: string;
@@ -199,7 +232,7 @@ export default function AdminToolsPage() {
       setBannerMessage(result.banner.text);
       setBannerEnabled(result.banner.enabled);
       setPublishNow(result.banner.publishNow);
-      setBannerStartAt(result.banner.startAt ?? "");
+      setBannerStartAt(toLocalDateTimeInput(result.banner.startAt));
       setBannerSeverity(result.banner.severity);
     } catch {
       return;
@@ -378,9 +411,18 @@ export default function AdminToolsPage() {
       return;
     }
 
-    if (!publishNow && !bannerStartAt.trim()) {
+    const trimmedStartAt = bannerStartAt.trim();
+    const startAtIso = publishNow ? null : toIsoDateTimeFromLocal(trimmedStartAt);
+
+    if (!publishNow && !trimmedStartAt) {
       setBannerValidationError("Choose publish now or provide a start time.");
       toast.error("Choose publish now or provide a start time.");
+      return;
+    }
+
+    if (!publishNow && !startAtIso) {
+      setBannerValidationError("Start time must be a valid date and time.");
+      toast.error("Start time must be a valid date and time.");
       return;
     }
 
@@ -395,7 +437,7 @@ export default function AdminToolsPage() {
         body: JSON.stringify({
           text: trimmedMessage,
           publishNow,
-          startAt: publishNow ? null : bannerStartAt,
+          startAt: startAtIso,
           severity: bannerSeverity,
           enabled: bannerEnabled,
         }),
