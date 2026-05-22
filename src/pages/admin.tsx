@@ -462,6 +462,10 @@ export default function AdminToolsPage() {
       setBannerStatus(bannerEnabled ? "Banner saved and visible." : "Banner saved but disabled.");
       toast.success(bannerEnabled ? "Banner saved and visible" : "Banner saved but disabled");
       window.dispatchEvent(new Event("announcement-banner-updated"));
+    } catch (error) {
+      const message = error instanceof Error && error.message ? error.message : "Unable to save banner";
+      setBannerStatus(message);
+      toast.error(message);
     } finally {
       setIsSavingBanner(false);
     }
