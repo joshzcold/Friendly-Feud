@@ -84,6 +84,7 @@ The application can be configured using environment variables. Check the `.env` 
 
 - `ADMIN_CONSOLE_PASSWORD=your-admin-password` (required for admin console login).
 - `ADMIN_SESSION_SECRET=your-long-random-secret` (recommended for signing admin login cookies).
+- `ANNOUNCEMENT_BANNER_FILE=.data/announcement-banner.json` (optional persisted admin announcement banner state; use a shared mounted path across multiple web instances).
 
 ## Screenshots
 

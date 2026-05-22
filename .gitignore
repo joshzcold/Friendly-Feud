@@ -11,6 +11,7 @@ backend/Cold-Friendly-Feud
 backend/famf.db
 test-results/
 backend/.cache/
+.data/
 .vscode
 .DS_Store
 .env

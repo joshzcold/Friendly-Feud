@@ -126,7 +126,9 @@ func InitalizeRoom(client *Client, newRoomCode string) room {
 	initRoom.Hub = NewHub()
 	go initRoom.Hub.run()
 	go initRoom.gameTimeout()
-	initRoom.Hub.register <- client
+	if client != nil {
+		initRoom.Hub.register <- client
+	}
 	return initRoom
 }
 

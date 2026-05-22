@@ -12,6 +12,8 @@ function isValidSeverity(value: string): value is BannerSeverity {
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  res.setHeader("Cache-Control", "no-store, max-age=0");
+
   if (!hasAdminSession(req.headers.cookie)) {
     return res.status(401).json({ success: false, error: "Unauthorized" });
   }
@@ -48,15 +50,19 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).json({ success: false, error: "Select publish now or provide a start time" });
   }
 
-  setAnnouncementBanner({
-    text,
-    startAt,
-    publishNow,
-    severity,
-    enabled,
-    updatedAt: new Date().toISOString(),
-    author: "admin console",
-  });
+  try {
+    setAnnouncementBanner({
+      text,
+      startAt,
+      publishNow,
+      severity,
+      enabled,
+      updatedAt: new Date().toISOString(),
+      author: "admin console",
+    });
+  } catch {
+    return res.status(500).json({ success: false, error: "Unable to persist banner" });
+  }
 
   return res.status(200).json({ success: true, banner: getAnnouncementBanner() });
 }

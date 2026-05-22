@@ -1,7 +1,6 @@
 import { createHmac, timingSafeEqual } from "crypto";
 
 export const ADMIN_COOKIE_NAME = "ff_admin_session";
-const LEGACY_ADMIN_COOKIE_NAME = "admin_session";
 export const ADMIN_SESSION_MAX_AGE_SECONDS = 60 * 15;
 
 const loginAttempts = new Map<string, { failedAttempts: number; nextAllowedAtMs: number }>();
@@ -114,11 +113,11 @@ export function buildAdminSessionCookie(): string {
   return `${ADMIN_COOKIE_NAME}=${cookieValue}; Max-Age=${ADMIN_SESSION_MAX_AGE_SECONDS}; Path=/; HttpOnly; SameSite=Strict${isProduction ? "; Secure" : ""}`;
 }
 
-export function buildAdminSessionClearCookie(): string[] {
+export function buildAdminSessionClearCookie(): string {
   const isProduction = process.env.NODE_ENV === "production";
   const cookieOptions = `Max-Age=0; Path=/; HttpOnly; SameSite=Strict${isProduction ? "; Secure" : ""}`;
 
-  return [`${ADMIN_COOKIE_NAME}=; ${cookieOptions}`, `${LEGACY_ADMIN_COOKIE_NAME}=; ${cookieOptions}`];
+  return `${ADMIN_COOKIE_NAME}=; ${cookieOptions}`;
 }
 
 export function getLoginThrottleState(remoteAddress: string): { allowed: boolean; retryAfterSeconds: number } {

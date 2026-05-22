@@ -28,6 +28,7 @@ func NewHub() *Hub {
 		broadcast:  make(chan []byte),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
+		stop:       make(chan bool),
 		clients:    make(map[*Client]bool),
 	}
 }
@@ -35,7 +36,9 @@ func NewHub() *Hub {
 func (h *Hub) run() {
 	defer func() {
 		for client := range h.clients {
-			client.conn.Close()
+			if client != nil && client.conn != nil {
+				client.conn.Close()
+			}
 		}
 		close(h.register)
 		close(h.unregister)
@@ -44,6 +47,9 @@ func (h *Hub) run() {
 	for {
 		select {
 		case client := <-h.register:
+			if client == nil {
+				continue
+			}
 			h.clients[client] = true
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
@@ -51,13 +57,17 @@ func (h *Hub) run() {
 			}
 		case message := <-h.broadcast:
 			for client := range h.clients {
+				if client == nil {
+					delete(h.clients, client)
+					continue
+				}
 				select {
 				case client.send <- message:
 				default:
 					delete(h.clients, client)
 				}
 			}
-		case <- h.stop:
+		case <-h.stop:
 			return
 		}
 	}

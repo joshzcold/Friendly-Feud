@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const MAX_BANNER_TEXT_LENGTH = 280;
+const DESTRUCTIVE_CONFIRM_DELAY_MS = 3_000;
 
 interface AdminPlayerSummary {
   id: string;
@@ -49,6 +50,90 @@ interface LoginResponse {
 
 async function readJson<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
+}
+
+interface DestructiveActionButtonProps {
+  label: string;
+  confirmLabel: string;
+  inFlightLabel: string;
+  disabled: boolean;
+  isRunning: boolean;
+  onConfirm: () => void;
+  variant?: "grid" | "compact";
+}
+
+function DestructiveActionButton({
+  label,
+  confirmLabel,
+  inFlightLabel,
+  disabled,
+  isRunning,
+  onConfirm,
+  variant = "grid",
+}: DestructiveActionButtonProps) {
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [secondsRemaining, setSecondsRemaining] = useState(0);
+
+  const shapeClassName =
+    variant === "compact" ? "rounded-md px-4 py-2 text-base" : "rounded-md p-3 text-left text-lg";
+  const sharedClassName = `${shapeClassName} shadow-sm hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60`;
+
+  useEffect(() => {
+    if (!isConfirming) {
+      return;
+    }
+
+    const confirmAtMs = Date.now() + DESTRUCTIVE_CONFIRM_DELAY_MS;
+
+    function updateCountdown() {
+      setSecondsRemaining(Math.max(0, Math.ceil((confirmAtMs - Date.now()) / 1000)));
+    }
+
+    updateCountdown();
+    const intervalId = window.setInterval(updateCountdown, 250);
+
+    return () => window.clearInterval(intervalId);
+  }, [isConfirming]);
+
+  useEffect(() => {
+    if (isRunning) {
+      setIsConfirming(false);
+    }
+  }, [isRunning]);
+
+  if (isConfirming) {
+    return (
+      <div className={variant === "compact" ? "flex flex-wrap items-center gap-2" : "flex flex-wrap gap-2"}>
+        <button
+          type="button"
+          disabled={disabled || secondsRemaining > 0}
+          onClick={onConfirm}
+          className={`${sharedClassName} bg-failure-500 text-white`}
+        >
+          {secondsRemaining > 0 ? `Confirm in ${secondsRemaining}s` : confirmLabel}
+        </button>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => setIsConfirming(false)}
+          className={`${shapeClassName} bg-secondary-600 text-foreground shadow-sm hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60`}
+        >
+          Cancel
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={() => setIsConfirming(true)}
+      className={`${sharedClassName} bg-failure-200 text-foreground`}
+    >
+      {isRunning ? inFlightLabel : label}
+    </button>
+  );
 }
 
 export default function AdminToolsPage() {
@@ -447,10 +532,13 @@ export default function AdminToolsPage() {
                       ? "Resume new room creation"
                       : "Pause new room creation"}
                 </button>
-                <button
-                  type="button"
+                <DestructiveActionButton
+                  label="End all active sessions"
+                  confirmLabel="Confirm end all"
+                  inFlightLabel="Ending all active sessions..."
                   disabled={controlsDisabled}
-                  onClick={() =>
+                  isRunning={actionInFlight === "end-all"}
+                  onConfirm={() =>
                     void runAdminAction(
                       "end-all",
                       () =>
@@ -462,10 +550,7 @@ export default function AdminToolsPage() {
                       (result) => `Ended ${result.ended ?? 0} active session${result.ended === 1 ? "" : "s"}`
                     )
                   }
-                  className="rounded-md bg-failure-200 p-3 text-left text-lg text-foreground shadow-sm hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {actionInFlight === "end-all" ? "Ending all active sessions..." : "End all active sessions"}
-                </button>
+                />
               </div>
             </section>
 
@@ -499,10 +584,14 @@ export default function AdminToolsPage() {
                             <p className="text-xs">Last activity {new Date(room.lastActivity).toLocaleString()}</p>
                           )}
                         </div>
-                        <button
-                          type="button"
+                        <DestructiveActionButton
+                          label="End session"
+                          confirmLabel="Confirm end"
+                          inFlightLabel="Ending..."
                           disabled={controlsDisabled}
-                          onClick={() =>
+                          isRunning={actionInFlight === `end-${room.roomCode}`}
+                          variant="compact"
+                          onConfirm={() =>
                             void runAdminAction(
                               `end-${room.roomCode}`,
                               () =>
@@ -514,10 +603,7 @@ export default function AdminToolsPage() {
                               () => `Ended session ${room.roomCode}`
                             )
                           }
-                          className="rounded-md bg-failure-200 px-4 py-2 text-base text-foreground shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          {actionInFlight === `end-${room.roomCode}` ? "Ending..." : "End session"}
-                        </button>
+                        />
                       </div>
                       {room.players.length > 0 && (
                         <div className="mt-3 grid gap-2 sm:grid-cols-2">

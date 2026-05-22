@@ -7,8 +7,25 @@ const severityClasses = {
   critical: "border-failure-300 bg-failure-200 text-foreground",
 };
 
+const DISMISSED_BANNER_STORAGE_KEY = "ff_dismissed_announcement_banner";
+
+function getBannerDismissalKey(banner: AnnouncementBannerState) {
+  return `${banner.updatedAt}:${banner.severity}:${banner.text}`;
+}
+
+function getPublishedLabel(updatedAt: string) {
+  const publishedAt = new Date(updatedAt);
+
+  if (Number.isNaN(publishedAt.getTime())) {
+    return "Published recently";
+  }
+
+  return `Published ${publishedAt.toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}`;
+}
+
 export default function AnnouncementBanner() {
   const [banner, setBanner] = useState<AnnouncementBannerState | null>(null);
+  const [dismissedBannerKey, setDismissedBannerKey] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -18,11 +35,14 @@ export default function AnnouncementBanner() {
         const response = await fetch("/api/announcement");
         const result = (await response.json()) as { banner?: AnnouncementBannerState | null };
         if (mounted) {
-          setBanner(result.banner ?? null);
+          const nextBanner = result.banner ?? null;
+          setBanner(nextBanner);
+          setDismissedBannerKey(window.sessionStorage.getItem(DISMISSED_BANNER_STORAGE_KEY));
         }
       } catch {
         if (mounted) {
           setBanner(null);
+          setDismissedBannerKey(null);
         }
       }
     }
@@ -42,9 +62,32 @@ export default function AnnouncementBanner() {
     return null;
   }
 
+  const bannerDismissalKey = getBannerDismissalKey(banner);
+  if (dismissedBannerKey === bannerDismissalKey) {
+    return null;
+  }
+
+  function dismissBanner() {
+    window.sessionStorage.setItem(DISMISSED_BANNER_STORAGE_KEY, bannerDismissalKey);
+    setDismissedBannerKey(bannerDismissalKey);
+  }
+
   return (
-    <div className={`border-b-2 px-4 py-3 text-center text-base font-semibold ${severityClasses[banner.severity]}`}>
-      {banner.text}
+    <div
+      className={`flex items-center justify-center gap-3 border-b-2 px-4 py-3 ${severityClasses[banner.severity]}`}
+    >
+      <div className="min-w-0 flex-1 text-center">
+        <p className="text-xs font-semibold uppercase">{getPublishedLabel(banner.updatedAt)}</p>
+        <p className="text-base font-semibold">{banner.text}</p>
+      </div>
+      <button
+        type="button"
+        onClick={dismissBanner}
+        className="shrink-0 rounded-md border-2 border-current px-3 py-1 text-sm font-semibold hover:shadow-sm"
+        aria-label="Dismiss announcement"
+      >
+        Close
+      </button>
     </div>
   );
 }
