@@ -253,19 +253,6 @@ func AdminRoomCreationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func AdminRefreshGameCacheHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.Header().Set("Allow", "POST")
-		writeAdminJSON(w, http.StatusMethodNotAllowed, map[string]any{"success": false, "error": "Method not allowed"})
-		return
-	}
-
-	writeAdminJSON(w, http.StatusOK, map[string]any{
-		"success": true,
-		"message": "Game cache refreshed",
-	})
-}
-
 func AdminReconnectRoomsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", "POST")

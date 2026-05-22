@@ -485,20 +485,6 @@ export default function AdminToolsPage() {
                   disabled={controlsDisabled}
                   onClick={() =>
                     void runAdminAction(
-                      "refresh",
-                      () => fetch("/api/admin/refresh-game-cache", { method: "POST" }),
-                      () => "Game cache refreshed"
-                    )
-                  }
-                  className="rounded-md bg-primary-200 p-3 text-left text-lg text-foreground shadow-sm hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {actionInFlight === "refresh" ? "Refreshing game cache..." : "Refresh game cache"}
-                </button>
-                <button
-                  type="button"
-                  disabled={controlsDisabled}
-                  onClick={() =>
-                    void runAdminAction(
                       "reconnect",
                       () => fetch("/api/admin/reconnect-rooms", { method: "POST" }),
                       (result) =>
