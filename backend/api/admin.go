@@ -4,7 +4,9 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"sort"
@@ -208,7 +210,10 @@ func AdminRoomsHandler(w http.ResponseWriter, r *http.Request) {
 		var request struct {
 			RoomCode string `json:"roomCode"`
 		}
-		_ = json.NewDecoder(r.Body).Decode(&request)
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil && !errors.Is(err, io.EOF) {
+			writeAdminJSON(w, http.StatusBadRequest, map[string]any{"success": false, "error": "Invalid request body"})
+			return
+		}
 
 		if request.RoomCode != "" {
 			if gameError := AdminEndRoom(request.RoomCode); gameError.code != "" {

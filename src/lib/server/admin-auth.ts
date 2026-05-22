@@ -3,10 +3,32 @@ import { createHmac, timingSafeEqual } from "crypto";
 export const ADMIN_COOKIE_NAME = "ff_admin_session";
 export const ADMIN_SESSION_MAX_AGE_SECONDS = 60 * 15;
 
-const loginAttempts = new Map<string, { failedAttempts: number; nextAllowedAtMs: number }>();
+type LoginAttemptState = { failedAttempts: number; nextAllowedAtMs: number; updatedAtMs: number };
+
 const LOGIN_COOLDOWN_MS = 60_000;
 const LOGIN_ATTEMPT_LIMIT = 5;
+const LOGIN_ATTEMPT_TTL_MS = LOGIN_COOLDOWN_MS + 5 * 60_000;
+const LOGIN_ATTEMPT_MAX_ENTRIES = 10_000;
 const CLOCK_SKEW_MS = 5 * 60_000;
+
+const loginAttempts = new Map<string, LoginAttemptState>();
+
+function pruneLoginAttempts(now = Date.now()) {
+  for (const [remoteAddress, state] of loginAttempts) {
+    if (now - state.updatedAtMs > LOGIN_ATTEMPT_TTL_MS) {
+      loginAttempts.delete(remoteAddress);
+    }
+  }
+
+  while (loginAttempts.size > LOGIN_ATTEMPT_MAX_ENTRIES) {
+    const oldestRemoteAddress = loginAttempts.keys().next().value;
+    if (oldestRemoteAddress === undefined) {
+      return;
+    }
+
+    loginAttempts.delete(oldestRemoteAddress);
+  }
+}
 
 export function parsePassword(body: unknown): string {
   if (typeof body === "string") {
@@ -122,9 +144,16 @@ export function buildAdminSessionClearCookie(): string {
 
 export function getLoginThrottleState(remoteAddress: string): { allowed: boolean; retryAfterSeconds: number } {
   const now = Date.now();
+  pruneLoginAttempts(now);
+
   const attemptState = loginAttempts.get(remoteAddress);
 
-  if (!attemptState || attemptState.failedAttempts < LOGIN_ATTEMPT_LIMIT || now >= attemptState.nextAllowedAtMs) {
+  if (!attemptState || attemptState.failedAttempts < LOGIN_ATTEMPT_LIMIT) {
+    return { allowed: true, retryAfterSeconds: 0 };
+  }
+
+  if (now >= attemptState.nextAllowedAtMs) {
+    loginAttempts.delete(remoteAddress);
     return { allowed: true, retryAfterSeconds: 0 };
   }
 
@@ -133,14 +162,22 @@ export function getLoginThrottleState(remoteAddress: string): { allowed: boolean
 
 export function incrementLoginThrottle(remoteAddress: string) {
   const now = Date.now();
+  pruneLoginAttempts(now);
+
   const state = loginAttempts.get(remoteAddress);
 
   if (!state) {
-    loginAttempts.set(remoteAddress, { failedAttempts: 1, nextAllowedAtMs: 0 });
+    loginAttempts.set(remoteAddress, { failedAttempts: 1, nextAllowedAtMs: 0, updatedAtMs: now });
+    return;
+  }
+
+  if (state.failedAttempts >= LOGIN_ATTEMPT_LIMIT && now >= state.nextAllowedAtMs) {
+    loginAttempts.set(remoteAddress, { failedAttempts: 1, nextAllowedAtMs: 0, updatedAtMs: now });
     return;
   }
 
   state.failedAttempts += 1;
+  state.updatedAtMs = now;
   if (state.failedAttempts >= LOGIN_ATTEMPT_LIMIT) {
     state.nextAllowedAtMs = now + LOGIN_COOLDOWN_MS;
   }
