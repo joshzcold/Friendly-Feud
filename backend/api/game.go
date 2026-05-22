@@ -29,6 +29,7 @@ type buzzed struct {
 
 type settings struct {
 	LogoUrl              any    `json:"logo_url"`
+	TitleMusicUrl        any    `json:"title_music_url"`
 	HideQuestions        bool   `json:"hide_questions"`
 	Theme                string `json:"theme"`
 	FinalRoundTitle      any    `json:"final_round_title"`
@@ -109,6 +110,7 @@ func NewGame(roomCode string) room {
 			Buzzed:            []buzzed{},
 			Settings: settings{
 				LogoUrl:         nil,
+				TitleMusicUrl:   nil,
 				HideQuestions:   true,
 				Theme:           "default",
 				FinalRoundTitle: nil,

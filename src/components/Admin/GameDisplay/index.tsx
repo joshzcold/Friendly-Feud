@@ -72,7 +72,14 @@ export default function GameDisplay({
       <div className="flex-col space-y-5 p-5">
         <hr />
         <div className="flex flex-row items-baseline justify-evenly">
-          <TitleMusic send={send} isPlaying={titleMusicPlaying} setIsPlaying={setTitleMusicPlaying} />
+          <TitleMusic
+            send={send}
+            room={room}
+            game={game}
+            setGame={setGame}
+            isPlaying={titleMusicPlaying}
+            setIsPlaying={setTitleMusicPlaying}
+          />
           {/* CURRENT SCREEN TEXT */}
           <p id="currentScreenText" className="pt-5 text-center text-2xl text-foreground">
             {" "}
