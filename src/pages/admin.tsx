@@ -214,6 +214,10 @@ export default function AdminToolsPage() {
       setIsAuthenticated(true);
       toast.success("Signed in");
       void refreshAdminState();
+    } catch {
+      setIsAuthenticated(false);
+      setAuthError("Unable to sign in. Please try again.");
+      toast.error("Unable to sign in. Please try again.");
     } finally {
       setIsLoggingIn(false);
     }
