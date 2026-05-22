@@ -157,7 +157,7 @@
     "missing_input": "{{message}} lahter on täitmata",
     "player_not_found": "Mängijat ei leitud.",
     "forbidden": "Te ei tohi seda toimingut teha.",
-    "title_music_playback_error": "Heli lubamiseks klõpsa korra mänguaknal, seejärel vajuta uuesti mängi."
-    "room_creation_paused": "Uute mängude loomine on peatatud.",
+    "title_music_playback_error": "Heli lubamiseks klõpsa korra mänguaknal, seejärel vajuta uuesti mängi.",
+    "room_creation_paused": "Uute mängude loomine on peatatud."
   }
 }
