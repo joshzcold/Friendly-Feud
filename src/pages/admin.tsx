@@ -714,7 +714,7 @@ export default function AdminToolsPage() {
                     className="h-5 w-5"
                     disabled={isSavingBanner}
                   />
-                  Is Visable?
+                  Is Visible?
                 </label>
                 {!publishNow && (
                   <div className="flex flex-col gap-2">
