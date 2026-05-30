@@ -75,6 +75,10 @@ func writeAdminJSON(w http.ResponseWriter, status int, payload any) {
 }
 
 func adminRoomSummary(room room) AdminRoomSummary {
+	room.ensureMu()
+	room.mu.RLock()
+	defer room.mu.RUnlock()
+
 	connectedSessions := make(map[string]bool, len(room.registeredClients))
 	for id := range room.registeredClients {
 		connectedSessions[id] = true
@@ -91,10 +95,15 @@ func adminRoomSummary(room room) AdminRoomSummary {
 	}
 
 	for id, player := range room.Game.RegisteredPlayers {
+		var team *int
+		if player.Team != nil {
+			teamValue := *player.Team
+			team = &teamValue
+		}
 		players = append(players, AdminPlayerSummary{
 			ID:        id,
 			Name:      player.Name,
-			Team:      player.Team,
+			Team:      team,
 			IsHost:    false,
 			Connected: connectedSessions[id],
 		})

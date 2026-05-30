@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -118,8 +119,22 @@ type RegisteredClient struct {
 
 type roomConnections struct {
 	Hub *Hub
+	mu  *sync.RWMutex
 	// Get lag of each client
 	registeredClients map[string]*RegisteredClient
+}
+
+func newRoomConnections() roomConnections {
+	return roomConnections{
+		mu:                &sync.RWMutex{},
+		registeredClients: make(map[string]*RegisteredClient),
+	}
+}
+
+func (r *roomConnections) ensureMu() {
+	if r.mu == nil {
+		r.mu = &sync.RWMutex{}
+	}
 }
 
 type room struct {

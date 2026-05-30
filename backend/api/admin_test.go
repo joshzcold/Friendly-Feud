@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -132,4 +134,28 @@ func TestAdminRoomCreationHandlerBranches(t *testing.T) {
 	if methodResponse.Code != http.StatusMethodNotAllowed {
 		t.Fatalf("expected unsupported method to return 405, got %d", methodResponse.Code)
 	}
+}
+
+func TestAdminRoomSummaryConcurrentRegisteredClientRegistration(t *testing.T) {
+	room := NewGame("ABCD")
+
+	var wg sync.WaitGroup
+	for i := 0; i < 100; i++ {
+		wg.Add(2)
+
+		go func(index int) {
+			defer wg.Done()
+			registerPlayer(&room, fmt.Sprintf("Player %d", index), &Client{
+				send: make(chan []byte, 1),
+				stop: make(chan bool, 1),
+			})
+		}(i)
+
+		go func() {
+			defer wg.Done()
+			_ = adminRoomSummary(room)
+		}()
+	}
+
+	wg.Wait()
 }

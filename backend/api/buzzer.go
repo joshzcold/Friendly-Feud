@@ -55,7 +55,10 @@ func RegisterBuzzer(client *Client, event *Event) GameError {
 	room.Hub.broadcast <- message
 	s.writeRoom(room.Game.Room, room)
 
+	room.ensureMu()
+	room.mu.RLock()
 	clientPlayer, ok := room.registeredClients[event.ID]
+	room.mu.RUnlock()
 	if !ok {
 		return GameError{code: PLAYER_NOT_FOUND}
 	}
