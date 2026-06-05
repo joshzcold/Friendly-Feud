@@ -60,8 +60,8 @@ func (s *SQLiteStore) currentRooms() []string {
 }
 
 func (s *SQLiteStore) getRoom(client *Client, roomCode string) (room, GameError) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	var foundRoomDB Room
 
 	if err := s.db.Where("room_code = ?", roomCode).First(&foundRoomDB).Error; errors.Is(err, gorm.ErrRecordNotFound) {
@@ -77,11 +77,13 @@ func (s *SQLiteStore) getRoom(client *Client, roomCode string) (room, GameError)
 	}
 
 	foundRoom := s.rooms[roomCode]
+	foundRoom.ensureMu()
 	retrievedRoom := room{
 		HostPassword: foundRoomDB.HostPassword,
 		Game:         &game{},
 		roomConnections: roomConnections{
 			Hub:               foundRoom.Hub,
+			mu:                foundRoom.mu,
 			registeredClients: foundRoom.registeredClients,
 		},
 	}
@@ -93,6 +95,7 @@ func (s *SQLiteStore) getRoom(client *Client, roomCode string) (room, GameError)
 func (s *SQLiteStore) writeRoom(roomCode string, room room) GameError {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	room.ensureMu()
 	jsonData, err := json.Marshal(room.Game)
 	if err != nil {
 		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}

@@ -100,10 +100,7 @@ func setTick(client *Client, event *Event) GameError {
 
 func NewGame(roomCode string) room {
 	return room{
-		roomConnections: roomConnections{
-			Hub:               nil,
-			registeredClients: make(map[string]*RegisteredClient),
-		},
+		roomConnections: newRoomConnections(),
 		Game: &game{
 			Room:              roomCode,
 			RegisteredPlayers: make(map[string]*registeredPlayer),

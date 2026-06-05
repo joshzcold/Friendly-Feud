@@ -26,4 +26,5 @@ const (
 	PLAYER_NOT_FOUND         ErrorCode = "errors.player_not_found"
 	FORBIDDEN                ErrorCode = "errors.forbidden"
 	UNAUTHENTICATED          ErrorCode = "errors.unauthenticated"
+	ROOM_CREATION_PAUSED     ErrorCode = "errors.room_creation_paused"
 )

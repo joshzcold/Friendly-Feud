@@ -82,6 +82,10 @@ one your the monitor of your desktop or headset. Resulting in output audio getti
 
 The application can be configured using environment variables. Check the `.env` file in the root directory for all available configuration options.
 
+- `ADMIN_CONSOLE_PASSWORD=your-admin-password` (required for admin console login).
+- `ADMIN_SESSION_SECRET=your-long-random-secret` (recommended for signing admin login cookies).
+- `ANNOUNCEMENT_BANNER_FILE=.data/announcement-banner.json` (optional persisted admin announcement banner state; use a shared mounted path across multiple web instances).
+
 ## Screenshots
 
 ![Example title screen](doc/example_title.png)

@@ -1,4 +1,5 @@
 import "../global.css";
+import AnnouncementBanner from "@/components/AnnouncementBanner";
 import ThemeProvider from "@/components/ThemeProvider";
 import ToasterWithTheme from "@/components/ToasterWithTheme";
 import Head from "next/head";
@@ -49,6 +50,7 @@ export default function MyApp({ Component, pageProps }: MyAppProps) {
         <div>
           <ToasterWithTheme />
         </div>
+        <AnnouncementBanner />
         <Component {...pageProps} />
       </ThemeProvider>
     </>

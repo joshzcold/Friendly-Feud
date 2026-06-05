@@ -8,8 +8,11 @@ import (
 )
 
 func quitPlayer(room *room, client *Client, event *Event) error {
+	room.ensureMu()
+	room.mu.Lock()
 	playerClient, ok := room.registeredClients[event.ID]
 	if !ok {
+		room.mu.Unlock()
 		return fmt.Errorf("player not found")
 	}
 
@@ -26,6 +29,7 @@ func quitPlayer(room *room, client *Client, event *Event) error {
 	// 2. Client is the host
 	// 3. No host exists (orphaned room)
 	if !isPlayer && !isHost && hostExists {
+		room.mu.Unlock()
 		return fmt.Errorf("forbidden")
 	}
 
@@ -36,6 +40,10 @@ func quitPlayer(room *room, client *Client, event *Event) error {
 		}
 	}
 
+	delete(room.Game.RegisteredPlayers, event.ID)
+	dataMessage, dataErr := NewSendData(room.Game)
+	room.mu.Unlock()
+
 	message, err := NewSendQuit()
 	if err != nil {
 		return fmt.Errorf(" %w", err)
@@ -44,12 +52,10 @@ func quitPlayer(room *room, client *Client, event *Event) error {
 		playerClient.client.send <- message
 		playerClient.client.stop <- true
 	}
-	delete(room.Game.RegisteredPlayers, event.ID)
-	message, err = NewSendData(room.Game)
-	if err != nil {
-		return fmt.Errorf(" %w", err)
+	if dataErr != nil {
+		return fmt.Errorf(" %w", dataErr)
 	}
-	room.Hub.broadcast <- message
+	room.Hub.broadcast <- dataMessage
 	return nil
 }
 
@@ -127,12 +133,18 @@ func InitalizeRoom(client *Client, newRoomCode string) room {
 	initRoom.Hub = NewHub()
 	go initRoom.Hub.run()
 	go initRoom.gameTimeout()
-	initRoom.Hub.register <- client
+	if client != nil {
+		initRoom.Hub.register <- client
+	}
 	return initRoom
 }
 
 // HostRoom create new room and websocket hub
 func HostRoom(client *Client, event *Event) GameError {
+	if isRoomCreationPaused() {
+		return GameError{code: ROOM_CREATION_PAUSED, message: "New room creation is paused"}
+	}
+
 	newRoomCode := roomCode()
 	s := store
 	currentRooms := s.currentRooms()
@@ -161,30 +173,36 @@ func getBackInHost(client *Client, room room, roomCode string, playerID string, 
 }
 
 func getBackInPlayer(client *Client, room room, roomCode string, playerID string) GameError {
+	room.ensureMu()
+	room.mu.Lock()
 	player, ok := room.Game.RegisteredPlayers[playerID]
 	if !ok {
+		room.mu.Unlock()
 		return GameError{code: PLAYER_NOT_FOUND}
 	}
-	room.Hub.register <- client
-	message, err := NewSendGetBackIn(roomCode, room.Game, playerID, *player, false, "")
+	playerSnapshot := *player
+	playerClient, ok := room.registeredClients[playerID]
+	nextPlayerClient := &RegisteredClient{
+		id:     playerID,
+		client: client,
+		room:   &room,
+	}
+	room.registeredClients[playerID] = nextPlayerClient
+	message, err := NewSendGetBackIn(roomCode, room.Game, playerID, playerSnapshot, false, "")
+	room.mu.Unlock()
 	if err != nil {
 		return GameError{code: SERVER_ERROR, message: fmt.Sprint(err)}
 	}
+
+	room.Hub.register <- client
 	client.send <- message
 
-	playerClient, ok := room.registeredClients[playerID]
 	if ok {
 		if playerClient.client.stop != nil {
 			playerClient.client.stop <- true
 		}
 	}
-	playerClient = &RegisteredClient{
-		id:     playerID,
-		client: client,
-		room:   &room,
-	}
-	go playerClient.pingInterval()
-	room.registeredClients[playerID] = playerClient
+	go nextPlayerClient.pingInterval()
 
 	return GameError{}
 }
@@ -228,6 +246,9 @@ func HostPasswordHandler(client *Client, event *Event, nextFunc ActionFunc) Game
 
 func registerPlayer(room *room, playerName string, client *Client) string {
 	playerID := playerID()
+	room.ensureMu()
+	room.mu.Lock()
+	defer room.mu.Unlock()
 	room.Game.RegisteredPlayers[playerID] = &registeredPlayer{
 		Name: playerName,
 		Team: nil,
@@ -245,6 +266,9 @@ func registerPlayer(room *room, playerName string, client *Client) string {
 // registerHost Set current player as host
 func registerHost(room *room, client *Client) string {
 	hostID := playerID()
+	room.ensureMu()
+	room.mu.Lock()
+	defer room.mu.Unlock()
 	room.Game.Host = host{
 		ID: hostID,
 	}

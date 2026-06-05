@@ -133,6 +133,7 @@
     "connection_lost": "Se perdió la conexión con el servidor, reintentando en {{message}}s",
     "csv_invalid_format": "Formato CSV inválido",
     "missing_input": "Por favor complete el campo {{message}}",
-    "title_music_playback_error": "Haz clic una vez en la ventana del juego para permitir el audio y luego presiona reproducir de nuevo."
+    "title_music_playback_error": "Haz clic una vez en la ventana del juego para permitir el audio y luego presiona reproducir de nuevo.",
+    "room_creation_paused": "La creación de nuevas salas está en pausa."
   }
 }

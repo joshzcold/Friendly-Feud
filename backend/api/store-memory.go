@@ -42,6 +42,7 @@ func (m *MemoryStore) getRoom(client *Client, roomCode string) (room, GameError)
 func (m *MemoryStore) writeRoom(roomCode string, room room) GameError {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	room.ensureMu()
 	m.rooms[roomCode] = room
 	return GameError{}
 }
