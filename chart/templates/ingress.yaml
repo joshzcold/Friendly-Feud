@@ -47,6 +47,20 @@ spec:
                 name: {{ $fullName }}-frontend
                 port:
                   number: {{ $.Values.frontend.service.port }}
+          - path: /api/admin
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $fullName }}-frontend
+                port:
+                  number: {{ $.Values.frontend.service.port }}
+          - path: /api/announcement
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $fullName }}-frontend
+                port:
+                  number: {{ $.Values.frontend.service.port }}
           - path: /api
             pathType: ImplementationSpecific
             backend:
