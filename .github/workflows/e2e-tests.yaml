@@ -43,6 +43,7 @@ jobs:
   test:
     name: E2E Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
@@ -54,13 +55,22 @@ jobs:
         run: |
           npm ci
           cd e2e
-      - name: Install Playwright browsers
+      - name: Install Playwright system dependencies
+        timeout-minutes: 20
         run: |
-          cd e2e
-          npx playwright install --with-deps
+          npx playwright install-deps chromium
+      - name: Install Playwright browser
+        timeout-minutes: 20
+        run: |
+          npx playwright install --only-shell chromium
       - name: Run e2e tests
+        timeout-minutes: 20
         run: |
           make e2e
+      - name: Stop e2e services
+        if: always()
+        run: |
+          make dev-down || true
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()

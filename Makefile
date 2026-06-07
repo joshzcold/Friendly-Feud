@@ -23,17 +23,15 @@ build-allinone:
 
 build-backend:
 	set -x
-	cd backend
 	docker build \
-		--build-context=games=../games \
-		-t ${docker_registry}/famf-server:latest .
+		--build-context=games=$(CURDIR)/games \
+		-t ${docker_registry}/famf-server:latest ./backend
 
 build-backend-dev:
 	set -x
-	cd backend
 	docker build \
-		--build-context=games=../games \
-		-t ${docker_registry}/famf-server:dev --target dev .
+		--build-context=games=$(CURDIR)/games \
+		-t ${docker_registry}/famf-server:dev --target dev ./backend
 		
 build: build-frontend build-backend build-allinone
 
@@ -49,10 +47,7 @@ dev: build-dev
 	docker compose -p famf -f ./docker/docker-compose-dev.yaml up
 
 dev-background: build-dev
-	docker compose -p famf -f ./docker/docker-compose-dev.yaml up -d --wait --wait-timeout 120 || {
-		docker compose -p famf logs
-		exit 1
-	}
+	docker compose -p famf -f ./docker/docker-compose-dev.yaml up -d --wait --wait-timeout 120 || (docker compose -p famf logs && exit 1)
 
 # Teardown
 dev-down:
@@ -63,29 +58,13 @@ dev-down-clean:
 	docker compose -p famf -f ./docker/docker-compose-dev.yaml down -v
 
 e2e: dev-background
-	npm install
-	cd e2e
-	npx playwright test
-	status=$$?
-	cd -
-	$(MAKE) dev-down
-	exit $$status
+	bash -c 'set -e; trap "docker compose -p famf -f $(CURDIR)/docker/docker-compose-dev.yaml down" EXIT; npm ci; cd e2e; npx playwright test --config playwright.config.ts'
 
 e2e-ui: dev-background
-	trap 'make dev-down' EXIT
-	npm install
-	(
-		cd e2e
-		npx playwright test --ui
-	)
-	$(MAKE) dev-down
+	bash -c 'set -e; trap "docker compose -p famf -f $(CURDIR)/docker/docker-compose-dev.yaml down" EXIT; npm install; cd e2e; npx playwright test --ui'
 
 e2e-prod:
-	cd e2e
-	npm install
-	npx playwright test --ui --config playwright-prod.config.js
+	cd e2e && npm install && npx playwright test --ui --config playwright-prod.config.js
 
 e2e-dev:
-	cd e2e
-	npm install
-	npx playwright test --ui --config playwright-dev.config.js
+	cd e2e && npm install && npx playwright test --ui --config playwright-dev.config.js

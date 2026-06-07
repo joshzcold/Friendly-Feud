@@ -14,6 +14,8 @@ module.exports = defineConfig({
   testDir: "./tests",
   /* 60s timeout (initial build takes 60s) */
   timeout: 60000,
+  /* Bound the whole suite so CI fails fast instead of waiting for the job limit. */
+  globalTimeout: process.env.CI ? 10 * 60 * 1000 : undefined,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
