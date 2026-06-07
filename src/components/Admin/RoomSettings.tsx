@@ -1,7 +1,8 @@
 import CreateNewGameButton from "@/components/Admin/CreateNewGameButton";
 import GameLoader from "@/components/Admin/GameLoader";
+import ThemeSwitcher from "@/components/Admin/ThemeSwitcher";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { WSEvent } from "@/src/types";
+import { Game, WSEvent } from "@/src/types";
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
@@ -9,8 +10,10 @@ import HelpButton from "../HelpButton";
 
 interface RoomSettingsProps {
   room: string;
+  game: Game;
   gameSelector: string[];
   send: (data: WSEvent) => void;
+  setGame: Dispatch<SetStateAction<Game | null>>;
   setCsvFileUpload: Dispatch<SetStateAction<File | null>>;
   setCsvFileUploadText: Dispatch<SetStateAction<string>>;
   quitGame: (host: boolean) => void;
@@ -18,8 +21,10 @@ interface RoomSettingsProps {
 
 export default function RoomSettings({
   room,
+  game,
   gameSelector,
   send,
+  setGame,
   setCsvFileUpload,
   setCsvFileUploadText,
   quitGame,
@@ -49,13 +54,16 @@ export default function RoomSettings({
           </div>
         </button>
       </div>
-      <div className="m-5 flex flex-row items-center justify-evenly">
-        <LanguageSwitcher
-          onChange={(e) => {
-            i18n.changeLanguage(e.target.value);
-            send({ action: "change_lang", data: e.target.value });
-          }}
-        />
+      <div className="m-5 flex flex-col items-center justify-center gap-5 md:flex-row md:justify-evenly">
+        <div className="flex flex-col items-center gap-5 sm:flex-row">
+          <LanguageSwitcher
+            onChange={(e) => {
+              i18n.changeLanguage(e.target.value);
+              send({ action: "change_lang", data: e.target.value });
+            }}
+          />
+          <ThemeSwitcher game={game} setGame={setGame} send={send} />
+        </div>
         <GameLoader
           gameSelector={gameSelector}
           send={send}
