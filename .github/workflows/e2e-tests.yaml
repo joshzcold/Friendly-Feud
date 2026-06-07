@@ -59,10 +59,9 @@ jobs:
         timeout-minutes: 20
         run: |
           npx playwright install-deps chromium
-      - name: Install Playwright browser
-        timeout-minutes: 20
+      - name: Verify Chrome browser
         run: |
-          npx playwright install --only-shell chromium
+          google-chrome --version
       - name: Run e2e tests
         timeout-minutes: 20
         run: |
