@@ -116,8 +116,10 @@ export default function AdminPage({ ws, game, setGame, room, quitGame, playerId 
     >
       <RoomSettings
         room={room}
+        game={game}
         gameSelector={gameSelector}
         send={send}
+        setGame={setGame}
         setCsvFileUpload={setCsvFileUpload}
         setCsvFileUploadText={setCsvFileUploadText}
         quitGame={quitGame}
