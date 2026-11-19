@@ -100,7 +100,9 @@ The compose files should automatically be selected by the Makefile, but you can:
 
 ## End-to-End Testing
 
-`make e2e-ui` will launch [playwright](https://playwright.dev/)
+Run `npm test` to start the application and execute the Playwright end-to-end tests.
+
+Run `make e2e-ui` to launch the Playwright UI for interactive test development.
 
 The e2e tests are located in the [e2e](../e2e/) folder.
 
