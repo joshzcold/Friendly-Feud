@@ -68,7 +68,7 @@ jobs:
       - name: Run e2e tests
         timeout-minutes: 20
         run: |
-          make e2e
+          npm test
       - name: Stop e2e services
         if: always()
         run: |
