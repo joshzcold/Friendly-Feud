@@ -33,7 +33,7 @@
     "parse-locales": "i18next-scanner --config ./i18n/i18next-scanner.config.js",
     "lint": "eslint .",
     "fix": "eslint --fix .",
-    "test": "",
+    "test": "make e2e",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\" \"e2e/**/*.{js,jsx,ts,tsx,css}\"",
     "prepare": "husky"
   },
